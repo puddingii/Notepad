@@ -17,7 +17,7 @@ apiRouter.post("/save", async(req, res) => {
         if(note && user) {
             await Notepads.update({ content: text },{ where: { id } });
         } else {
-            await Notepads.create({ email, title, content: text });
+            await Notepads.create({ id, email, title, content: text });
         }
         return res.sendStatus(201);
     } catch(e) {
@@ -43,7 +43,7 @@ apiRouter.delete("/delete", async(req, res) => {
 // 다른이름으로 저장을 눌렀을 때
 apiRouter.post("/saveAs", async(req, res) => {
     const { 
-        body: { email, title, text } 
+        body: { id, email, title, text } 
     } = req;
 
     try {
@@ -51,8 +51,8 @@ apiRouter.post("/saveAs", async(req, res) => {
         if(item) {
             throw "Notepad is not null";
         }
-        const noteInfo = await Notepads.create({ email, title, content: text });
-        return res.status(201).json({ noteId: jsonManage.classToTextToJson(noteInfo).id });
+        await Notepads.create({ id, email, title, content: text });
+        return res.sendStatus(201);
     } catch(e) {
         console.log(e);
         return res.sendStatus(400);

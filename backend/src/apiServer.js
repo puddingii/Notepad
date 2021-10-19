@@ -20,7 +20,7 @@ const appSetting = (app) => {
 
 appSetting(apiApp);
 
-apiApp.use("/api", cors(corsOptions), apiRouter);
+apiApp.use("/api/notepad", cors(corsOptions), apiRouter);
 apiApp.use("/api/users", cors(corsOptions), userApi);
 
 const handleApiListen = () => console.log(`Api Listening: http://localhost:${APIPORT}`);

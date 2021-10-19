@@ -6,8 +6,7 @@ export default class DropdownList extends MyList {
     }
 
 	initItem(itemInfo, linkInfo) { 
-		const dropdownMenu = document.getElementById(this.idOfList);
-		const dropdownItems = dropdownMenu.querySelectorAll("a");
+		const dropdownItems = this.myList.querySelectorAll("a");
 		let isExisted = false;
 		dropdownItems.forEach((item) => { 
 			if(parseInt(item.dataset.currentid) === itemInfo.dataset.value) isExisted = true;
@@ -19,8 +18,7 @@ export default class DropdownList extends MyList {
 
 	// Dropdown에 있는 아이템 삭제 *
 	deleteDropdownItem(id) {
-		const dropdownList = document.getElementById(this.idOfList);
-		const dropdownItems = dropdownList.querySelectorAll("li");
+		const dropdownItems = this.myList.querySelectorAll("li");
 		dropdownItems.forEach((item) => { 
 			if(parseInt(item.dataset.currentid) === id) item.remove();
 		});

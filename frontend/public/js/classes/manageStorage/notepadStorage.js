@@ -3,23 +3,24 @@ class NotepadStorage {
 		this.currentUserId = id;
 	}
 	async loadContent() {
-		const response = await fetch(`http://localhost:8000/api/loadAllData?email=${this.currentUserId}`, {
+		const response = await fetch(`http://localhost:8000/api/notepad/loadAllData?email=${this.currentUserId}`, {
 		});
 		const storage = await response.json();
 		return storage;
 	}
 
 	async notepadLastId() {
-		const response = await fetch("http://localhost:8000/api/getLastId", {
+		const response = await fetch("http://localhost:8000/api/notepad/getLastId", {
 			headers: {
 				"Content-type": "application/json"
 			}
 		});
-		return await response.json();
+		const storage = await response.json();
+		return storage.id;
 	}
 
 	async deleteContent(noteId, email) {
-		const response = await fetch("http://localhost:8000/api/delete", {
+		const response = await fetch("http://localhost:8000/api/notepad/delete", {
 			method: "delete",
 			headers: {
 				"Content-type": "application/json"
@@ -30,7 +31,7 @@ class NotepadStorage {
 	}
 
 	async saveContent(id, email, title, text) {
-		const response = await fetch("http://localhost:8000/api/save", {
+		const response = await fetch("http://localhost:8000/api/notepad/save", {
 			method: "post",
 			headers: {
 				"Content-type": "application/json"
@@ -40,15 +41,14 @@ class NotepadStorage {
 		return response;
 	}
 
-	async saveAsContent(email, title, text) {
-		const response = await fetch("http://localhost:8000/api/saveAs", {
+	async saveAsContent(id, email, title, text) {
+		const response = await fetch("http://localhost:8000/api/notepad/saveAs", {
 			method: "post",
 			headers: {
 				"Content-type": "application/json"
 			},
-			body: JSON.stringify({ email, title, text })
+			body: JSON.stringify({ id, email, title, text })
 		});
-		const storage = await response.json();
-		return storage;
+		return response;
 	}
 }

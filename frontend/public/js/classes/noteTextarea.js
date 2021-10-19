@@ -20,6 +20,11 @@ export default class NoteTextarea {
         this.#noteName = noteName;
     }
 
+    setIdAndName(id, name) {
+        this.#noteId = parseInt(id);
+        this.#noteName = name;
+    }
+
     // textarea생성과 textarea처리를 위한 버튼 생성
     monitorValue(textarea, text) {
         const handleTextarea = (e) => {

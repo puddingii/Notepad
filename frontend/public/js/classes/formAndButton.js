@@ -34,17 +34,22 @@ export default class Notepad {
 	getNoteIndexById(noteId = this.noteTextarea.noteId) {
 		return this.#noteNameList.findIndex((element) => element.id === noteId);
 	}
+	// DB와 LOCAL의 MAX ID값을 뽑아 비교후 더 큰값 리턴.
+	async getMaxId() {
+		const dbMax = await this.notepadStorage.notepadLastId();
+		const localMax = this.#noteNameList.reduce((max, cur) => cur.id > max ? cur.id : max, this.#noteNameList[0].id);
+		return dbMax > localMax ? dbMax : localMax;
+	}
 	// 데이터 불러오는 초기화함수
 	async initNotepad(currentUserId) {
 		const allData = await new NotepadStorage(currentUserId).loadContent();
 		const { endTitle, openTab } = allData.pop();
 		openTab ? this.#openTabs = openTab.split(',').map( Number ) : this.#openTabs = [];
 		this.#userEmail = currentUserId;
-		this.noteTextarea.noteId = allData.length ? endTitle : 0;
 		this.#noteNameList = allData;
 		this.#noteNameList.forEach((list) => list["isSaved"] = true);
-		this.noteTextarea.noteName = this.noteTextarea.noteId ? this.getNoteById().title : "";
-		this.#noteNameList.sort((a, b) => a.id - b.id);
+		const noteId = allData.length ? parseInt(endTitle) : 0;
+		this.noteTextarea.setIdAndName(noteId, noteId ? this.getNoteById(noteId).title : "");
 	}
 
 	// textarea의 변경이 감지되었을 때 label을 재설정해주는 함수.
@@ -76,9 +81,11 @@ export default class Notepad {
             text: value
         };
 		const dropdownItem = this.dropdownList.initItem(itemInfo, linkInfo);
+		// 정상적으로 초기화 했으면 초기화한 아이템에 이벤트추가하고 리스트에 추가.
 		if(dropdownItem) {
 			this.clickDropdownAndLoadValue(dropdownItem);
-			dropdownMenu.appendChild(dropdownItem);
+			this.dropdownList.addItemAtList(dropdownItem);
+			//dropdownMenu.appendChild(dropdownItem);
 		}
 	}
 
@@ -97,26 +104,30 @@ export default class Notepad {
 		item.addEventListener("click", handleLoadValue);
 	}
 
-	// 리스트에 있는 아이템 클릭시 기존에 적어둔 값 저장, 클릭한 리스트의 값 표시, 현재 가르키고 있는 note갱신
+	// 리스트에 있는 아이템 클릭시 기존에 적어둔 값 저장, 클릭한 리스트의 값 표시
+	// 현재 가르키고 있는 note갱신
 	clickListAndSaveLog(clickedId) {
 		const getBeforeValue = this.getNoteIndexById();
 		noteFormDiv.classList.remove("disNone");
 
+		// notelist에 저장한 value값과 현재 textarea에 있는 value값이 다르면
+		// 저장된 상태와 변경된 값을 해당 배열에 저장.
 		if(getBeforeValue !== -1) {
 			if(this.#noteNameList[getBeforeValue].content !== textareaForm.value) { 
 				this.#noteNameList[getBeforeValue].isSaved = false;
 			}
-			this.#noteNameList[getBeforeValue].content = textareaForm.value; // notelist에서 해당 content값 수정
+			this.#noteNameList[getBeforeValue].content = textareaForm.value;
 		}
+
 		this.navbarList.toggleItem(`noteId${clickedId}`, "a.notelink");
-		this.noteTextarea.noteId = clickedId; // 클릭한 거 가르키기
-		this.noteTextarea.noteName = this.getNoteById().title;
+		// 클릭한 notepad를 알려주기 위한 변수 갱신.
+		this.noteTextarea.setIdAndName(clickedId, this.getNoteById(clickedId).title);
 		if(!this.#openTabs.find(element => element === clickedId)) this.#openTabs.push(clickedId);
 		
+		// 클릭한 notepad의 내용을 textarea에 로드.
 		const getAfterValue = this.getNoteIndexById(clickedId);
 		this.noteTextarea.loadValue("saveAsInput", this.#noteNameList[getAfterValue].title, this.#noteNameList[getAfterValue].content);
 		this.setMonitorLabel();
-		console.log(this.#openTabs);
 	}
 
 	// 리스트 클릭 이벤트등록
@@ -127,7 +138,7 @@ export default class Notepad {
 		list.addEventListener("click", handleList);
 	}
 
-	// noteName값으로 header쪽의 리스트 생성
+	// noteName값으로 navBar에 아이템 추가
 	addItemAtList(value, id) {
 		if(!value) return;
 		const itemInfo = {
@@ -151,17 +162,17 @@ export default class Notepad {
         };
 		const item = this.navbarList.initItem(itemInfo, linkInfo);
 		this.setClickListEvent(item); // 클릭이벤트
-
-		this.navbarList.myList.appendChild(item);
+		this.navbarList.addItemAtList(item);
 	}
 
-	// 파일 만들때 난수 생성해서 이름짓고 리스트추가(저장 안된상태) id값 수정필요함.
+	// 파일 만들때 난수 생성해서 이름짓고 리스트추가
+	// id값은 현재 db에 저장되어있는 최대id값을 참고해서 생성함.(max+1)
 	clickNewFile() {
 		const openBtn = document.getElementById("openFile");
 		const handleNewFile = async(e) => {
 			const random = `tmp${Math.floor(Math.random()*1000000+1)}`;
-			const response = await this.notepadStorage.notepadLastId();
-			const id = response.id + 1;
+			const maxId = await this.getMaxId();
+			const id = maxId + 1;
 			this.#noteNameList.push({
 				id,
 				email: this.#userEmail,
@@ -183,12 +194,12 @@ export default class Notepad {
 		noteFormDiv.classList.add("disNone");
 
 		const note = document.getElementById(`noteList${this.noteTextarea.noteId}`);
-		this.noteTextarea.noteId = "";
-		this.noteTextarea.noteName = "";
+		this.noteTextarea.setIdAndName("","");
 		note.remove();
 	}
 
-	// 버튼을 눌렀을 때 이벤트 처리.(textarea에 있는 value값을 가지고 저장함.)
+	// 버튼을 눌렀을 때 버튼기능에 따른 textarea 처리.
+	// save, saveAs, close, delete 기능
 	setButtonWithData(type, classOfBtn) {
 		const buttonController = new NoteButton(type);
 		const btn = buttonController.setButton(classOfBtn);
@@ -209,7 +220,7 @@ export default class Notepad {
 			case "save":
 				actionOfBtn = async (e) => {
 					const noteData = textareaValue();
-					const response = await this.notepadStorage.saveContent(noteData.id, noteData.email, this.noteTextarea.noteName, textareaForm.value);
+					const response = await this.notepadStorage.saveContent(noteData.id, noteData.email, noteData.title, noteData.content);
 					if(response.status !== 201)  {
 						this.setMonitorLabel(`처리오류 - Response status code : ${response.status}`);
 						return;
@@ -244,13 +255,13 @@ export default class Notepad {
 			case "saveAs":
 				actionOfBtn = async (e) => {
 					const noteData = textareaValue();
+					noteData.id = await this.getMaxId() + 1;
 					noteData.title = document.getElementById("saveAsInput").value;;
-					const response = await this.notepadStorage.saveAsContent(this.#userEmail, noteData.title, textareaForm.value);
+					const response = await this.notepadStorage.saveAsContent(noteData.id, noteData.email, noteData.title, noteData.content);
 					if(response.status === 400)  {
 						this.setMonitorLabel(`처리오류 - Response status code : ${response.status}`);
 						return;
 					}
-					noteData.id = response.noteId;
 					this.addDropdownItem(noteData.title);
 					this.#noteNameList.push(noteData);
 					this.addItemAtList(noteData.title, noteData.id);
@@ -273,7 +284,7 @@ export default class Notepad {
 		await this.userStorage.saveOpenNote(this.#userEmail, this.#openTabs, this.noteTextarea.noteId);
 	}
 
-	// 저장, 다른이름저장, 닫기 버튼 관리
+	// 저장, 다른이름저장, 닫기 버튼 관리, 다른이름저장 input셋팅
 	setButtonGroup() {
 		const btnGroup = document.createElement("div");
 		btnGroup.id = "btnGroup";

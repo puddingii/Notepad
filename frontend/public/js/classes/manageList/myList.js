@@ -1,7 +1,15 @@
 export default class MyList {
+    #myList;
+    #idOfList;
     constructor(idOfList) {
-        this.idOfList = idOfList;
-        this.myList = document.getElementById(idOfList);
+        this.#idOfList = idOfList;
+        this.#myList = document.getElementById(idOfList);
+    }
+    get idOfList() {
+        return this.#idOfList;
+    }
+    get myList() {
+        return this.#myList;
     }
 
     initItem(itemInfo, linkInfo) {
@@ -22,7 +30,7 @@ export default class MyList {
         return item;
     }
 
-    // list 토글 기능만 있음. *
+    // list 토글 기능만 있음.
 	toggleItem(eventTarget, classOfItems) {
 		const noteLinks = document.querySelectorAll(classOfItems); 
 		noteLinks.forEach((notelink) => {
@@ -32,5 +40,9 @@ export default class MyList {
 				notelink.classList.add("active");
 			}
 		})
+    }
+
+    addItemAtList(item) {
+        this.#myList.appendChild(item);
     }
 }
