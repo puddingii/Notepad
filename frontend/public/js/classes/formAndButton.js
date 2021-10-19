@@ -7,7 +7,6 @@ export default class Notepad {
 	#noteNameList = new Array();
 	#userEmail = "";
 	#openTabs;
-	newFileCnt = 0;
 	notepadStorage = new NotepadStorage();
 	userStorage = new UserStorage();
 	textareaForm = document.getElementById("textareaForm");
@@ -159,9 +158,10 @@ export default class Notepad {
 	// 파일 만들때 난수 생성해서 이름짓고 리스트추가(저장 안된상태) id값 수정필요함.
 	clickNewFile() {
 		const openBtn = document.getElementById("openFile");
-		const handleNewFile = (e) => {
+		const handleNewFile = async(e) => {
 			const random = `tmp${Math.floor(Math.random()*1000000+1)}`;
-			const id = `${newFileCnt}`;
+			const response = await this.notepadStorage.notepadLastId();
+			const id = response.id + 1;
 			this.#noteNameList.push({
 				id,
 				email: this.#userEmail,

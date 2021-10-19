@@ -9,6 +9,15 @@ class NotepadStorage {
 		return storage;
 	}
 
+	async notepadLastId() {
+		const response = await fetch("http://localhost:8000/api/getLastId", {
+			headers: {
+				"Content-type": "application/json"
+			}
+		});
+		return await response.json();
+	}
+
 	async deleteContent(noteId, email) {
 		const response = await fetch("http://localhost:8000/api/delete", {
 			method: "delete",

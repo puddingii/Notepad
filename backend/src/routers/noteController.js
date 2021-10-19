@@ -13,7 +13,7 @@ apiRouter.post("/save", async(req, res) => {
 
     try { 
         const user = await Users.findOne({ where: { email } });
-        const note = await Notepads.findOne({ where: { id, email }});
+        const note = await Notepads.findOne({ where: { email, title }});
         if(note && user) {
             await Notepads.update({ content: text },{ where: { id } });
         } else {
@@ -76,5 +76,14 @@ apiRouter.get("/loadAllData", async(req, res) => {
         return res.sendStatus(400);
     }
 });
+
+apiRouter.get("/getLastId", async(req, res) => {
+    try{
+        let id = await Notepads.max("id");
+        return res.status(200).json({ id })
+    } catch(e) {
+        return res.sendStatus(400);
+    }
+})
 
 export default apiRouter;
