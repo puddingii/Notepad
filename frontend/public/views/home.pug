@@ -1,0 +1,29 @@
+extends layouts/main
+
+block headScriptAndCss
+  link(rel='stylesheet' href='/static/css/home.css')
+  script(src="https://code.jquery.com/jquery-3.6.0.js")
+  script(src="https://code.jquery.com/ui/1.13.0/jquery-ui.js")
+
+block content 
+  .container
+  .row.align-items-md-stretch 
+    .col-md-3.card.leftCard
+      p Current id :
+      p.card-text#currentUserId=userId
+      button.btn.btn-danger#logout(type="button") Log out
+    .col-md-9
+      .container.childContainer
+        header
+          ul#navContainer.nav.nav-tabs.sortable
+            .dropdown
+              button#openFile.btn.btn-primary(type='button') 새 파일
+              button#ddButton.btn.btn-primary.dropdown-toggle(type='button' data-bs-toggle='dropdown' aria-expanded='false')
+                | 불러오기
+              ul.dropdown-menu#dropdownMenu(aria-labelledby='ddButton')
+        br
+        section.notepad
+block scripts
+  script(src='/static/js/classes/manageStorage/notepadStorage.js')
+  script(src='/static/js/classes/manageStorage/userStorage.js')
+  script(type="module" src='/static/js/notepadLoader.js')
