@@ -1,4 +1,4 @@
-import Notepad from "./formAndButton.js";
+import Notepad from "./notepad.js";
 
 export class MyWindow {
 	myNotepad = new Notepad();
@@ -11,7 +11,7 @@ export class MyWindow {
 		const lastTabId = this.myNotepad.noteTextarea.noteId;
 		
 		const mainSection = document.querySelector("section.notepad");
-		this.myNotepad.setNotepadForm(mainSection);
+		this.myNotepad.combineComponents(mainSection);
 		this.myNotepad.clickNewFile();
 		if(this.myNotepad.openTabs) {
 			this.myNotepad.openTabs.forEach((tab) => {

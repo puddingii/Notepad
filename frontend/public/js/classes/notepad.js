@@ -52,14 +52,6 @@ export default class Notepad {
 		this.noteTextarea.setIdAndName(noteId, noteId ? this.getNoteById(noteId).title : "");
 	}
 
-	// textarea의 변경이 감지되었을 때 label을 재설정해주는 함수.
-	setMonitorLabel(labelValue, idOfLabel= "textareaLabel") {
-		const label = document.getElementById(idOfLabel);
-		const current = this.getNoteById();
-		if(labelValue) label.innerText = labelValue;
-		else label.innerText = current.isSaved ? "저장됨." : "저장 안됨.";
-	}
-
     // Dropdown에 아이템과 아이템이벤트 추가
 	addDropdownItem(value, currentId) { 
 		const itemInfo = {
@@ -80,12 +72,13 @@ export default class Notepad {
             },
             text: value
         };
+		// 초기화를 위한 변수 전달
 		const dropdownItem = this.dropdownList.initItem(itemInfo, linkInfo);
+
 		// 정상적으로 초기화 했으면 초기화한 아이템에 이벤트추가하고 리스트에 추가.
 		if(dropdownItem) {
 			this.clickDropdownAndLoadValue(dropdownItem);
 			this.dropdownList.addItemAtList(dropdownItem);
-			//dropdownMenu.appendChild(dropdownItem);
 		}
 	}
 
@@ -127,15 +120,7 @@ export default class Notepad {
 		// 클릭한 notepad의 내용을 textarea에 로드.
 		const getAfterValue = this.getNoteIndexById(clickedId);
 		this.noteTextarea.loadValue("saveAsInput", this.#noteNameList[getAfterValue].title, this.#noteNameList[getAfterValue].content);
-		this.setMonitorLabel();
-	}
-
-	// 리스트 클릭 이벤트등록
-	setClickListEvent(list) {
-		const handleList = async (e) => {
-			this.clickListAndSaveLog(parseInt(e.target.dataset.currentid));
-		}
-		list.addEventListener("click", handleList);
+		this.noteTextarea.setMonitorLabel(this.getNoteById().isSaved);
 	}
 
 	// noteName값으로 navBar에 아이템 추가
@@ -161,7 +146,7 @@ export default class Notepad {
             text: value
         };
 		const item = this.navbarList.initItem(itemInfo, linkInfo);
-		this.setClickListEvent(item); // 클릭이벤트
+		item.addEventListener("click", (e) => this.clickListAndSaveLog(parseInt(e.target.dataset.currentid))); // 클릭이벤트
 		this.navbarList.addItemAtList(item);
 	}
 
@@ -184,7 +169,7 @@ export default class Notepad {
 			this.navbarList.toggleItem(`noteId${id}`, "a.notelink");
 			this.clickListAndSaveLog(id);
 			this.noteTextarea.loadValue("saveAsInput", random);
-			this.setMonitorLabel();
+			this.noteTextarea.setMonitorLabel(this.getNoteById().isSaved);
 		}
 		openBtn.addEventListener("click", handleNewFile);
 	}
@@ -222,7 +207,7 @@ export default class Notepad {
 					const noteData = textareaValue();
 					const response = await this.notepadStorage.saveContent(noteData.id, noteData.email, noteData.title, noteData.content);
 					if(response.status !== 201)  {
-						this.setMonitorLabel(`처리오류 - Response status code : ${response.status}`);
+						this.noteTextarea.setMonitorLabel(this.getNoteById().isSaved,`처리오류 - Response status code : ${response.status}`);
 						return;
 					}
 					this.addDropdownItem(noteData.title, noteData.id); // dropdown목록 확인후 추가
@@ -233,7 +218,7 @@ export default class Notepad {
 						this.#noteNameList.push(noteData);
 						this.#openTabs.push(noteData.id);
 					}
-					this.setMonitorLabel("저장됨.");
+					this.noteTextarea.setMonitorLabel(this.getNoteById().isSaved);
 				}
 				break;
 			// 삭제할 때 이벤트. 해당하는 데이터 삭제와 동시에 리스트와 드롭다운 목록에서 제거
@@ -241,7 +226,7 @@ export default class Notepad {
 				actionOfBtn = async (e) => {
 					const response = await this.notepadStorage.deleteContent(this.noteTextarea.noteId, this.#userEmail);
 					if(response.status !== 201)  {
-						this.setMonitorLabel(`처리오류 - Response status code : ${response.status}`);
+						this.noteTextarea.setMonitorLabel(this.getNoteById().isSaved,`처리오류 - Response status code : ${response.status}`);
 						return;
 					}
 					this.dropdownList.deleteDropdownItem(this.noteTextarea.noteId, "dropdownMenu");
@@ -259,7 +244,7 @@ export default class Notepad {
 					noteData.title = document.getElementById("saveAsInput").value;;
 					const response = await this.notepadStorage.saveAsContent(noteData.id, noteData.email, noteData.title, noteData.content);
 					if(response.status === 400)  {
-						this.setMonitorLabel(`처리오류 - Response status code : ${response.status}`);
+						this.noteTextarea.setMonitorLabel(this.getNoteById().isSaved, `처리오류 - Response status code : ${response.status}`);
 						return;
 					}
 					this.addDropdownItem(noteData.title);
@@ -310,7 +295,7 @@ export default class Notepad {
 	}
 
     // textarea와 버튼들을 합치고 보여주는 기능.
-    setNotepadForm(mainSection) {
+    combineComponents(mainSection) {
         const noteForm = document.createElement("div");
         noteForm.className = "form-floating";
 		if(!this.noteTextarea.noteId) noteForm.classList.add("disNone");
