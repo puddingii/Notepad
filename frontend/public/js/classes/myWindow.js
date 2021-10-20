@@ -14,8 +14,8 @@ export class MyWindow {
 		this.myNotepad.combineComponents(mainSection);
 		this.myNotepad.clickNewFile();
 		if(this.myNotepad.openTabs) {
-			this.myNotepad.openTabs.forEach((tab) => {
-				this.myNotepad.addItemAtList(this.myNotepad.getNoteById(parseInt(tab)).title, tab);
+			this.myNotepad.openTabs.forEach((tab) => { 
+				this.myNotepad.addItemAtNavbar(tab, this.myNotepad.getNoteByTitle(tab).id);
 			});
 			this.myNotepad.navbarList.toggleItem(`noteId${lastTabId}`, "a.notelink");
 		}

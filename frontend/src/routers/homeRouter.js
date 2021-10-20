@@ -27,10 +27,10 @@ homeRouter.post("/login", logoutStatus, async(req, res) => {
             return res.redirect("/");
         }
         // 비밀번호가 틀렸을 때
-        return res.render("login", {errorMsg: "Incorrect password"});
+        return res.status(400).render("login", {errorMsg: "Incorrect password"});
     } catch(e) { // DB에서 오류가 났거나 id가 없을시.
         console.log(e)
-        return res.render("login", {errorMsg: "ID is not existed / DB error"});
+        return res.status(400).render("login", {errorMsg: "ID is not existed / DB error"});
     }
 });
 
@@ -57,7 +57,7 @@ homeRouter.post("/join", logoutStatus, async (req, res) => {
             return res.redirect("/");
         } else throw "DB error";
     } catch(e) {
-        return res.render("join",{ errorMsg: e });
+        return res.status(400).render("join",{ errorMsg: e });
     }
 });
 

@@ -14,10 +14,12 @@ apiRouter.post("/save", async(req, res) => {
     try { 
         const user = await Users.findOne({ where: { email } });
         const note = await Notepads.findOne({ where: { email, title }});
-        if(note && user) {
+        if(!user) {
+            throw "User is not existed";
+        } else if(note && user) {
             await Notepads.update({ content: text },{ where: { id } });
         } else {
-            await Notepads.create({ id, email, title, content: text });
+            await Notepads.create({ email, title, content: text });
         }
         return res.sendStatus(201);
     } catch(e) {
@@ -43,7 +45,7 @@ apiRouter.delete("/delete", async(req, res) => {
 // 다른이름으로 저장을 눌렀을 때
 apiRouter.post("/saveAs", async(req, res) => {
     const { 
-        body: { id, email, title, text } 
+        body: { email, title, text } 
     } = req;
 
     try {
@@ -51,7 +53,7 @@ apiRouter.post("/saveAs", async(req, res) => {
         if(item) {
             throw "Notepad is not null";
         }
-        await Notepads.create({ id, email, title, content: text });
+        await Notepads.create({ email, title, content: text });
         return res.sendStatus(201);
     } catch(e) {
         console.log(e);

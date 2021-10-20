@@ -31,10 +31,10 @@ userApi.post("/saveOpenNote", async(req, res) =>{
     try {
         const queryResult = await Notepads.findAll({ where: { email } });
         const notepads = jsonManage.classToTextToJson(queryResult);
-        const opentabArr = opentab.split(',').filter((element) => {
-            return notepads.find((note) => note.id === parseInt(element));
+        const opentabArr = opentab.split(',').filter((tab) => {
+            return notepads.find((note) => note.title === tab);
         });
-        if(!notepads.find((note) => note.id === lasttab)) {
+        if(!notepads.find((note) => note.title === lasttab)) {
             lasttab = "";
         }
 

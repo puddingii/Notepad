@@ -41,13 +41,13 @@ class NotepadStorage {
 		return response;
 	}
 
-	async saveAsContent(id, email, title, text) {
+	async saveAsContent( email, title, text) {
 		const response = await fetch("http://localhost:8000/api/notepad/saveAs", {
 			method: "post",
 			headers: {
 				"Content-type": "application/json"
 			},
-			body: JSON.stringify({ id, email, title, text })
+			body: JSON.stringify({ email, title, text })
 		});
 		return response;
 	}

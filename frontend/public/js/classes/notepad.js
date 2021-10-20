@@ -28,8 +28,17 @@ export default class Notepad {
 	get openTabs() {
 		return this.#openTabs;
 	}
+	/** id로 노트의 얼아 닝리ㅏㅇ */
+	/**
+	 * 
+	 * @param {string} noteId 아싸
+	 * @returns 노트아이디 
+	 */
 	getNoteById(noteId = this.noteTextarea.noteId) {
 		return this.#noteNameList.find((element) => element.id === noteId);
+	}
+	getNoteByTitle(noteTitle = this.noteTextarea.noteName) {
+		return this.#noteNameList.find((element) => element.title === noteTitle);
 	}
 	getNoteIndexById(noteId = this.noteTextarea.noteId) {
 		return this.#noteNameList.findIndex((element) => element.id === noteId);
@@ -37,18 +46,24 @@ export default class Notepad {
 	// DB와 LOCAL의 MAX ID값을 뽑아 비교후 더 큰값 리턴.
 	async getMaxId() {
 		const dbMax = await this.notepadStorage.notepadLastId();
-		const localMax = this.#noteNameList.reduce((max, cur) => cur.id > max ? cur.id : max, this.#noteNameList[0].id);
-		return dbMax > localMax ? dbMax : localMax;
+		if(this.#noteNameList.length) {
+			const localMax = this.#noteNameList.reduce((max, cur) => cur.id > max ? cur.id : max, this.#noteNameList[0].id);
+			const finalMax = dbMax > localMax ? dbMax : localMax;
+			return finalMax ?? 1;
+		}
+		return dbMax ?? 1;
 	}
 	// 데이터 불러오는 초기화함수
+	// Email에 해당하는 Notepad정보들을 모두 불러와서 private 변수에 저장.
+	// 열려있는 tab과 마지막에 바라본 tab을 private변수에 저장.
 	async initNotepad(currentUserId) {
 		const allData = await new NotepadStorage(currentUserId).loadContent();
 		const { endTitle, openTab } = allData.pop();
-		openTab ? this.#openTabs = openTab.split(',').map( Number ) : this.#openTabs = [];
+		this.#openTabs = openTab ? openTab.split(',') : [];
 		this.#userEmail = currentUserId;
 		this.#noteNameList = allData;
 		this.#noteNameList.forEach((list) => list["isSaved"] = true);
-		const noteId = allData.length ? parseInt(endTitle) : 0;
+		const noteId = allData.length ? this.getNoteByTitle(endTitle)?.id : null;
 		this.noteTextarea.setIdAndName(noteId, noteId ? this.getNoteById(noteId).title : "");
 	}
 
@@ -90,7 +105,7 @@ export default class Notepad {
 
 			// navBar에 없을 시 navBar에 추가
 			if(!this.navbarList.isItemInList(items, currentId)) {
-				this.addItemAtList(e.target.innerText, currentId);
+				this.addItemAtNavbar(e.target.innerText, currentId);
 			}
 			this.clickListAndSaveLog(currentId);
 		}
@@ -114,8 +129,9 @@ export default class Notepad {
 
 		this.navbarList.toggleItem(`noteId${clickedId}`, "a.notelink");
 		// 클릭한 notepad를 알려주기 위한 변수 갱신.
-		this.noteTextarea.setIdAndName(clickedId, this.getNoteById(clickedId).title);
-		if(!this.#openTabs.find(element => element === clickedId)) this.#openTabs.push(clickedId);
+		const title = this.getNoteById(clickedId).title;
+		this.noteTextarea.setIdAndName(clickedId, title);
+		if(!this.#openTabs.find(element => element === title)) this.#openTabs.push(title);
 		
 		// 클릭한 notepad의 내용을 textarea에 로드.
 		const getAfterValue = this.getNoteIndexById(clickedId);
@@ -124,7 +140,7 @@ export default class Notepad {
 	}
 
 	// noteName값으로 navBar에 아이템 추가
-	addItemAtList(value, id) {
+	addItemAtNavbar(value, id) {
 		if(!value) return;
 		const itemInfo = {
             className: "nav-item notetab",
@@ -150,14 +166,15 @@ export default class Notepad {
 		this.navbarList.addItemAtList(item);
 	}
 
-	// 파일 만들때 난수 생성해서 이름짓고 리스트추가
-	// id값은 현재 db에 저장되어있는 최대id값을 참고해서 생성함.(max+1)
+	/**
+	 * 파일 만들때 난수 생성해서 이름짓고 리스트추가
+	 * id값은 현재 db에 저장되어있는 최대id값을 참고해서 생성함.(max+1)
+	 */
 	clickNewFile() {
 		const openBtn = document.getElementById("openFile");
 		const handleNewFile = async(e) => {
-			const random = `tmp${Math.floor(Math.random()*1000000+1)}`;
-			const maxId = await this.getMaxId();
-			const id = maxId + 1;
+			const id = await this.getMaxId() + 1;
+			const random = `tmp${id}`;
 			this.#noteNameList.push({
 				id,
 				email: this.#userEmail,
@@ -165,7 +182,7 @@ export default class Notepad {
 				content: "",
 				isSaved: false,
 			});
-			this.addItemAtList(random, id);
+			this.addItemAtNavbar(random, id);
 			this.navbarList.toggleItem(`noteId${id}`, "a.notelink");
 			this.clickListAndSaveLog(id);
 			this.noteTextarea.loadValue("saveAsInput", random);
@@ -216,7 +233,7 @@ export default class Notepad {
 						this.#noteNameList[indexOfItem] = noteData;
 					} else {
 						this.#noteNameList.push(noteData);
-						this.#openTabs.push(noteData.id);
+						this.#openTabs.push(noteData.title);
 					}
 					this.noteTextarea.setMonitorLabel(this.getNoteById().isSaved);
 				}
@@ -231,8 +248,8 @@ export default class Notepad {
 					}
 					this.dropdownList.deleteDropdownItem(this.noteTextarea.noteId, "dropdownMenu");
 					this.closeNotepad();
-					const opentabId = this.#openTabs.findIndex((element) => element === this.noteTextarea.noteId);
-					this.#openTabs.splice(opentabId, 1);
+					const opentabName = this.#openTabs.findIndex((element) => element === this.noteTextarea.noteName);
+					this.#openTabs.splice(opentabName, 1);
 					this.#noteNameList = this.#noteNameList.filter((element) => element.title !== this.noteTextarea.noteId);
 				}
 				break;
@@ -242,22 +259,22 @@ export default class Notepad {
 					const noteData = textareaValue();
 					noteData.id = await this.getMaxId() + 1;
 					noteData.title = document.getElementById("saveAsInput").value;;
-					const response = await this.notepadStorage.saveAsContent(noteData.id, noteData.email, noteData.title, noteData.content);
+					const response = await this.notepadStorage.saveAsContent(noteData.email, noteData.title, noteData.content);
 					if(response.status === 400)  {
 						this.noteTextarea.setMonitorLabel(this.getNoteById().isSaved, `처리오류 - Response status code : ${response.status}`);
 						return;
 					}
 					this.addDropdownItem(noteData.title);
 					this.#noteNameList.push(noteData);
-					this.addItemAtList(noteData.title, noteData.id);
+					this.addItemAtNavbar(noteData.title, noteData.id);
 					this.clickListAndSaveLog(noteData.id);
 				}
 				break;
 			// 닫을 때 이벤트
 			default:
 				actionOfBtn = (e) => {
-					const opentabId = this.#openTabs.findIndex((element) => element === this.noteTextarea.noteId);
-					this.#openTabs.splice(opentabId, 1);
+					const opentabName = this.#openTabs.findIndex((element) => element === this.noteTextarea.noteName);
+					this.#openTabs.splice(opentabName, 1);
 					this.closeNotepad();
 				}
 		}
@@ -266,7 +283,7 @@ export default class Notepad {
 	}
 
 	async saveOpenNote() {
-		await this.userStorage.saveOpenNote(this.#userEmail, this.#openTabs, this.noteTextarea.noteId);
+		await this.userStorage.saveOpenNote(this.#userEmail, this.#openTabs, this.noteTextarea.noteName);
 	}
 
 	// 저장, 다른이름저장, 닫기 버튼 관리, 다른이름저장 input셋팅

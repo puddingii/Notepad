@@ -2,10 +2,12 @@ import express from "express";
 import morgan from "morgan";
 import session from "express-session";
 import MySQLStore from "express-mysql-session";
+import http from "http";
+import https from "https";
+import fs from "fs";
 import homeRouter from "./routers/homeRouter.js";
 
 MySQLStore(session);
-const CLIENTPORT = 3500;
 
 const clientApp = express();
 const MysqlOptions = {
@@ -35,5 +37,16 @@ clientApp.use(session({
 }));
 clientApp.use("/", homeRouter);
 
-const handleListen = () => console.log(`Home Listening: http://localhost:${CLIENTPORT}`);
-clientApp.listen(CLIENTPORT, handleListen);
+const httpsOptions = {
+    key: fs.readFileSync(`${process.cwd()}/authentication/lesstif.com.key`).toString(),
+    cert: fs.readFileSync(`${process.cwd()}/authentication/lesstif.com.crt`).toString(),
+
+};
+
+const HTTPPORT = 3500;
+const HTTPSPORT = 3550;
+const handleHttpListen = () => console.log(`Home Listening: http://localhost:${HTTPPORT}`);
+const handleHttpsListen = () => console.log(`Home Listening: http://localhost:${HTTPSPORT}`);
+
+http.createServer(clientApp).listen(HTTPPORT, handleHttpListen);
+https.createServer(httpsOptions, clientApp).listen(HTTPSPORT, handleHttpsListen);
