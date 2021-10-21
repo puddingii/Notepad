@@ -17,7 +17,7 @@ export class MyWindow {
 		openBtn.addEventListener("click", (e) => this.myNotepad.onClickNewFile(e));
 		if(this.myNotepad.openTabs) {
 			this.myNotepad.openTabs.forEach((tab) => { 
-				this.myNotepad.addItemAtNavbar(tab, this.myNotepad.getNoteByTitle(tab).id);
+				this.myNotepad.setNavigationItem(tab, this.myNotepad.getNoteByTitle(tab).id);
 			});
 			this.myNotepad.navigationBar.toggleItem(`noteId${lastTabId}`, "a.notelink");
 		}

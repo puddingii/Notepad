@@ -12,7 +12,9 @@ export default class Notepad {
 	textareaForm = document.getElementById("textareaForm");
 	noteFormDiv = document.getElementById("noteFormDiv");
 	
-	// 데이터 가져온 뒤 private변수에 저장
+	/**
+	 * DropdownBar, NavigationBar, WriteSection(Textarea) Class를 가져와 Id값으로 셋팅한다.
+	 */
     constructor() { 
 		this.writeSection = new WriteSection("textareaForm", "textareaLabel");
 		this.dropdownBar = new DropdownBar("dropdownMenu");
@@ -36,6 +38,7 @@ export default class Notepad {
 	getNoteById(noteId = this.writeSection.noteId) {
 		return this.#noteNameList.find((element) => element.id === noteId);
 	}
+
 	/**
 	 * 타이틀에 해당하는 노트정보
 	 * @param {String} noteTitle 
@@ -53,6 +56,7 @@ export default class Notepad {
 	getNoteIndexById(noteId = this.writeSection.noteId) {
 		return this.#noteNameList.findIndex((element) => element.id === noteId);
 	}
+
 	/**
 	 * DB와 LOCAL의 MAX ID값을 뽑아 비교후 더 큰값 리턴.
 	 * @returns Max Number
@@ -130,7 +134,7 @@ export default class Notepad {
 		const items = document.querySelectorAll(".notelink");
 
 		if(!this.navigationBar.isItemInList(items, currentId)) {
-			this.addItemAtNavbar(e.target.innerText, currentId);
+			this.setNavigationItem(e.target.innerText, currentId);
 		}
 		this.onClickNavigationBar(currentId);
 	}
@@ -153,6 +157,7 @@ export default class Notepad {
 			this.#noteNameList[getBeforeValue].content = textareaForm.value;
 		}
 
+		// 클릭한 곳을 보여주기 위한 작업
 		this.navigationBar.toggleItem(`noteId${clickedId}`, "a.notelink");
 		const title = this.getNoteById(clickedId).title;
 		this.writeSection.setIdAndName(clickedId, title);
@@ -164,12 +169,17 @@ export default class Notepad {
 		this.writeSection.setMonitorLabel(this.getNoteById().isSaved);
 	}
 
-	// noteName값으로 NavigationBar에 아이템 추가
-	addItemAtNavbar(value, id) {
-		if(!value) return;
+	/**
+	 * noteName값으로 NavigationBar에 아이템 추가
+	 * @param {String} textareaValue 
+	 * @param {Number} currentId 
+	 * @returns undefined
+	 */
+	setNavigationItem(textareaValue, currentId) {
+		if(!textareaValue) return;
 		const itemInfo = {
             className: "nav-item notetab",
-            id: `noteList${id}`,
+            id: `noteList${currentId}`,
 			dataset: {
 				key: "",
 				value: "",
@@ -178,13 +188,13 @@ export default class Notepad {
         };
         const linkInfo = {
             className: "nav-link notelink",
-			id: `noteId${id}`,
+			id: `noteId${currentId}`,
             dataset: {
 				key: "currentid",
-                value: id
+                value: currentId
             },
 			href: "#",
-            text: value
+            text: textareaValue
         };
 		const item = this.navigationBar.initItem(itemInfo, linkInfo);
 		item.addEventListener("click", (e) => this.onClickNavigationBar(parseInt(e.target.dataset.currentid))); // 클릭이벤트
@@ -194,6 +204,7 @@ export default class Notepad {
 	/**
 	 * 파일 만들때 난수 생성해서 이름짓고 리스트추가
 	 * id값은 현재 db에 저장되어있는 최대id값을 참고해서 생성함.(max+1)
+	 * @param {Event} e 
 	 */
 	async onClickNewFile(e) {
 		const id = await this.getMaxId() + 1;
@@ -205,11 +216,13 @@ export default class Notepad {
 			content: "",
 			isSaved: false,
 		});
-		this.addItemAtNavbar(random, id);
+		this.setNavigationItem(random, id);
 		this.onClickNavigationBar(id);
 	}
 
-	// textarea+Button부분을 없앤다.(display: none)
+	/**
+	 * writeSection+Buttons부분을 숨기고 가르키는 id와 name을 리셋한다.
+	 */ 
 	closeNotepad() {
 		noteFormDiv.classList.add("disNone");
 
@@ -218,9 +231,13 @@ export default class Notepad {
 		note.remove();
 	}
 
-	textareaValue() {
+	/**
+	 * DB에 있는 Notepad 테이블의 구조와 같음.
+	 * @returns 현재 사용중인 Notepad정보 반환
+	 */
+	getCurrentNotepadInfo() {
 		const textValue = document.getElementById("textareaForm");
-		return {  //id 부분 다시 나중에 확인할 것 asdf 
+		return { 
 			id: this.writeSection.noteId,
 			email: this.#userEmail,
 			title: this.writeSection.noteName,
@@ -229,26 +246,38 @@ export default class Notepad {
 		};
 	}
 
+	/**
+	 * 저장할 때 이벤트. 가르키고 있는 노트를 저장한 노트의 이름으로 바꾸고 드롭다운목록에 없다면 추가해줌. 
+	 * @param {Event} e 
+	 * @returns undefined
+	 */
 	async onClickSave(e) {
-		const noteData = this.textareaValue();
+		const noteData = this.getCurrentNotepadInfo();
 		const response = await this.notepadStorage.saveContent(noteData.id, noteData.email, noteData.title, noteData.content);
 		if(response.status !== 201)  {
 			this.writeSection.setMonitorLabel(this.getNoteById().isSaved,`처리오류 - Response status code : ${response.status}`);
 			return;
 		}
-		this.setDropdownItem(noteData.title, noteData.id); // dropdown목록 확인후 추가
+		this.setDropdownItem(noteData.title, noteData.id); 
+
+		// Save를 하면 class안의 private 변수안에도 있다는 뜻이므로 확인하는 절차
 		const indexOfItem = this.getNoteIndexById();
-		if(indexOfItem !== -1) {
+		if(indexOfItem !== -1) { // 있다면 갱신해준다.
 			this.#noteNameList[indexOfItem] = noteData;
-		} else {
+		} else { // NewFile -> SAVE시 변수안에 없기 때문에 push 해준다.
 			this.#noteNameList.push(noteData);
 			this.#openTabs.push(noteData.title);
 		}
 		this.writeSection.setMonitorLabel(this.getNoteById().isSaved);
 	}
 
+	/**
+	 * 다른이름저장할 때 이벤트. 다른이름으로 저장 칸을 내용을 토대로 저장.
+	 * @param {Event} e 
+	 * @returns undefined
+	 */
 	async onClickSaveAs(e) {
-		const noteData = this.textareaValue();
+		const noteData = this.getCurrentNotepadInfo();
 		noteData.id = await this.getMaxId() + 1;
 		noteData.title = document.getElementById("saveAsInput").value;;
 		const response = await this.notepadStorage.saveAsContent(noteData.email, noteData.title, noteData.content);
@@ -258,10 +287,15 @@ export default class Notepad {
 		}
 		this.setDropdownItem(noteData.title);
 		this.#noteNameList.push(noteData);
-		this.addItemAtNavbar(noteData.title, noteData.id);
+		this.setNavigationItem(noteData.title, noteData.id);
 		this.onClickNavigationBar(noteData.id);
 	}
 
+	/**
+	 * 삭제할 때 이벤트. 해당하는 데이터 삭제와 동시에 리스트와 드롭다운 목록에서 제거. openTab에서 해당 요소 삭제.
+	 * @param {*} e 
+	 * @returns undefined
+	 */
 	async onClickDelete(e) {
 		const response = await this.notepadStorage.deleteContent(this.writeSection.noteId, this.#userEmail);
 		if(response.status !== 201)  {
@@ -275,43 +309,54 @@ export default class Notepad {
 		this.closeNotepad();
 	}
 
+	/**
+	 * 닫을 때 이벤트로 openTab에서 해당 요소를 지워주고 writeSection쪽을 안보이게 설정한다.
+	 * @param {Event} e 
+	 * @returns undefined
+	 */
 	onClickClose() {
 		const opentabName = this.#openTabs.findIndex((element) => element === this.writeSection.noteName);
 		this.#openTabs.splice(opentabName, 1);
 		this.closeNotepad();
 	}
 
-	// 버튼을 눌렀을 때 버튼기능에 따른 textarea 처리.
-	// save, saveAs, close, delete 기능
+	/**
+	 * 버튼을 눌렀을 때 버튼기능에 따른 Event부여(저장, 다른이름으로 저장, 삭제, 닫기)
+	 * @param {String} type 
+	 * @param {String} classOfBtn 
+	 * @returns Button Element 반환
+	 */
 	getInitButton(type, classOfBtn) {
 		const buttonController = new NoteButton(type);
 		const btn = buttonController.setButton(classOfBtn);
 
 		switch(type) { 
-			// 저장할 때 이벤트. 가르키고 있는 노트를 저장한 노트의 이름으로 바꾸고 드롭다운목록에 없다면 추가해줌. 
 			case "save":
 				btn.addEventListener("click", (e) => this.onClickSave(e));
 				break;
-			// 다른이름저장할 때 이벤트. 다른이름으로 저장 칸을 내용을 토대로 저장.
 			case "saveAs":
 				btn.addEventListener("click", (e) => this.onClickSaveAs(e));
 				break;
-			// 삭제할 때 이벤트. 해당하는 데이터 삭제와 동시에 리스트와 드롭다운 목록에서 제거
 			case "delete":
 				btn.addEventListener("click", (e) => this.onClickDelete(e));
 				break;
-			// 닫을 때 이벤트
 			default:
 				btn.addEventListener("click", (e) => this.onClickClose());
 		}
 		return btn;
 	}
 
+	/**
+	 * 창을 닫거나 주소를 이동하기전에 열어놨던 탭과 마지막에 봤던 탭을 저장할 때 사용
+	 */
 	async saveOpenNote() {
 		await this.userStorage.saveOpenNote(this.#userEmail, this.#openTabs, this.writeSection.noteName);
 	}
 
-	// 저장, 다른이름저장, 닫기 버튼 관리, 다른이름저장 input셋팅
+	/**
+	 * Button들에 대한 셋팅. 저장, 다른이름으로 저장, 닫기, 삭제 버튼, 다른이름으로 저장 Input값 정의
+	 * @returns Button들을 담은 Div Element
+	 */
 	setButtonGroup() {
 		const btnGroup = document.createElement("div");
 		btnGroup.id = "btnGroup";
@@ -336,7 +381,10 @@ export default class Notepad {
 		return btnGroup;
 	}
 
-    // textarea와 버튼들을 합치고 보여주는 기능.
+    /**
+	 * mainSection Element를 가져와서 해당 Element안에 Button, Textarea, Div등의 요소들을 배치한다.
+	 * @param {Element} mainSection 
+	 */
     combineComponents(mainSection) {
         const noteForm = document.createElement("div");
         noteForm.className = "form-floating";
