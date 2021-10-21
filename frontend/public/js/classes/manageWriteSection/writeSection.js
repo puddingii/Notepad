@@ -1,4 +1,4 @@
-export default class NoteTextarea {
+export default class WriteSection {
     #noteId = "";
     #noteName = "";
     #textareaId;

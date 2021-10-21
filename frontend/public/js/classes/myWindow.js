@@ -8,20 +8,22 @@ export class MyWindow {
 
 	async initMyWindow() {
 		await this.myNotepad.initNotepad(this.currentUserId);
-		const lastTabId = this.myNotepad.noteTextarea.noteId;
+		const lastTabId = this.myNotepad.writeSection.noteId;
 		
 		const mainSection = document.querySelector("section.notepad");
 		this.myNotepad.combineComponents(mainSection);
-		this.myNotepad.clickNewFile();
+
+		const openBtn = document.getElementById("openFile");
+		openBtn.addEventListener("click", (e) => this.myNotepad.onClickNewFile(e));
 		if(this.myNotepad.openTabs) {
 			this.myNotepad.openTabs.forEach((tab) => { 
 				this.myNotepad.addItemAtNavbar(tab, this.myNotepad.getNoteByTitle(tab).id);
 			});
-			this.myNotepad.navbarList.toggleItem(`noteId${lastTabId}`, "a.notelink");
+			this.myNotepad.navigationBar.toggleItem(`noteId${lastTabId}`, "a.notelink");
 		}
 		if(this.myNotepad.noteNameList) {
 			this.myNotepad.noteNameList.forEach((note) => {
-				this.myNotepad.addDropdownItem(note.title, note.id);
+				this.myNotepad.setDropdownItem(note.title, note.id);
 			});
 		}
 

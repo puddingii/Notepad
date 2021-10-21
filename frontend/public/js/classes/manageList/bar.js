@@ -1,4 +1,4 @@
-export default class MyList {
+export default class Bar {
     #myList;
     #idOfList;
     constructor(idOfList) {

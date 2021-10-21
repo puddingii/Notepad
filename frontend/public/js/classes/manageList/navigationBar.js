@@ -1,6 +1,6 @@
-import MyList from "./myList.js";
+import Bar from "./bar.js";
 
-export default class NavBar extends MyList {
+export default class NavigationBar extends Bar {
     constructor(idOfList) {
         super(idOfList);
     }
