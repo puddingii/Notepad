@@ -7,22 +7,61 @@ const jsonManage = new JsonManage();
 
 const userApi = express.Router();
 
-userApi.post("/check", async(req, res) => {
+userApi.post("/login", async(req, res) => {
     const { 
         body: { loginId: email, loginPassword: passwd } 
     } = req;
     try {   
-        const storedPasswd =  await (await Users.findOne({ where: { email } })).getPassword();
-        if(storedPasswd) {
-            const isSame = await bcrypt.compare(passwd, storedPasswd);
-            return res.status(200).json({ result: isSame })
+        const userInfo = await Users.findOne({ where: { email } });
+        const storedPasswd = userInfo.getPassword();
+        if(!userInfo) {
+            return res.sendStatus(404);
+        } 
+        const isSame = await bcrypt.compare(passwd, storedPasswd);
+        if(isSame && userInfo.getStatus()) {
+            await Users.update({ loginStatus: 0 }, { where: { email }});
+            return res.status(202).json({ result: false });
         }
-        return res.sendStatus(404);
+        else if(isSame) {
+            await Users.update({ loginStatus: 1 }, { where: { email }});
+        }
+        return res.status(200).json({ result: isSame });
     } catch(e) {
         console.log(e);
         return res.sendStatus(400);
     }
 });
+
+userApi.post("/logout", async(req, res) => {
+    const { 
+        body: { email } 
+    } = req;
+    try {   
+        const userInfo = await Users.findOne({ where: { email } });
+        if(!userInfo) {
+            return res.sendStatus(404);
+        }
+        await Users.update({ loginStatus: 0 }, { where: { email }});
+        return res.sendStatus(201);
+    } catch(e) {
+        console.log(e);
+        return res.sendStatus(400);
+    }
+});
+
+userApi.post("/loginStatus", async(req, res) => {
+    const { body: { email } } = req;
+    try {
+        const userInfo = await Users.findOne({ email });
+        if(!userInfo) {
+            return res.sendStatus(404);
+        }
+        return res.status(200).json({ loginStatus: userInfo.getStatus() });
+    } catch(e) {
+        console.log(e);
+        return res.sendStatus(400);
+    }
+})
 
 userApi.post("/saveOpenNote", async(req, res) =>{
     let { 

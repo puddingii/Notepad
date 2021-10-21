@@ -22,6 +22,9 @@ class Users extends Model {
   getEmail() {
     return this.email;
   }
+  getStatus() {
+    return this.loginStatus;
+  }
   static associate(models) {
     // define association here
   }
@@ -43,7 +46,11 @@ Users.init({
     allowNull: false
   },
   opentab: DataTypes.STRING,
-  lasttab: DataTypes.STRING
+  lasttab: DataTypes.STRING,
+  loginStatus: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  }
 }, {
   sequelize,
   modelName: 'Users',

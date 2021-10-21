@@ -5,15 +5,19 @@ export default class NavBar extends MyList {
         super(idOfList);
     }
 
-    // 리스트에 해당 아이템이 있는지
+    /**
+     * 리스트에 해당 아이템이 있는지
+     * @param {NodeList} items 
+     * @param {Number} id 
+     * @returns true or false
+     */
     isItemInList(items, id) {
-        let isTitleInList = false;
-        items.forEach((element) => {
-            if(parseInt(element.dataset.currentid) === id) {
-                isTitleInList = true;
-                return;
+        const val = items.values();
+        for(let i = 0; i < items.length; i++) {
+            if(parseInt(val.next().value.dataset.currentid) === id) {
+                return true;
             }
-        });
-        return isTitleInList;
+        }
+        return false;
     }
 }

@@ -5,7 +5,25 @@ import { loginStatus, logoutStatus } from "./middleware.js";
 const homeRouter = express.Router();
 
 homeRouter.get("/", loginStatus ,async (req, res) => {
-    return res.render("home", { userId: req.session.userId});
+    try{
+        const response = await fetch("http://localhost:8000/api/users/loginStatus", {
+            method: "post",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify({ email: req.session.userId })
+        });
+        const responseJson = await response.json();
+        if(responseJson.loginStatus) {
+            return res.render("home", { userId: req.session.userId});
+        } else {
+            req.session.userId = false;
+            return res.redirect("/login");
+        }
+    } catch(e) {
+        console.log(e)
+        return res.redirect("/login");
+    }
 });
 
 homeRouter.get("/login", logoutStatus, (req, res) => {
@@ -14,15 +32,15 @@ homeRouter.get("/login", logoutStatus, (req, res) => {
 homeRouter.post("/login", logoutStatus, async(req, res) => {
     const { loginId, loginPassword } = req.body;
     try {
-        const response = await fetch("http://localhost:8000/api/users/check", {
+        const response = await fetch("http://localhost:8000/api/users/login", {
             method: "post",
             headers: {
                 "Content-type": "application/json"
             },
             body: JSON.stringify({ loginId, loginPassword })
         });
-        const resJson = await response.json();
-        if(resJson.result) { // 아이디가 있고 비밀번호가 맞을시
+        const responseJson = await response.json();
+        if(responseJson.result) { // 아이디가 있고 비밀번호가 맞을시
             req.session.userId = loginId;
             return res.redirect("/");
         }
@@ -62,9 +80,26 @@ homeRouter.post("/join", logoutStatus, async (req, res) => {
 });
 
 // Logout을 하면 세션에 사용자아이디 삭제
-homeRouter.get("/logout", loginStatus, (req, res) => {
-    req.session.userId = false;
-    return res.redirect("/login");
+homeRouter.get("/logout", loginStatus, async(req, res) => {
+    try {
+        const response = await fetch("http://localhost:8000/api/users/logout", {
+            method: "post",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify({ email: req.session.userId })
+        });
+        if(response === 201){
+            req.session.userId = false;
+            return res.redirect("/login");
+        } else {
+            return res.redirect("/");
+        }
+
+    } catch(e) {
+        console.log(e);
+    }
+    
 });
 
 export default homeRouter;

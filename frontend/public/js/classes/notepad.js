@@ -28,11 +28,10 @@ export default class Notepad {
 	get openTabs() {
 		return this.#openTabs;
 	}
-	/** id로 노트의 얼아 닝리ㅏㅇ */
 	/**
-	 * 
-	 * @param {string} noteId 아싸
-	 * @returns 노트아이디 
+	 * ID에 해당하는 Notepad 정보를 가지고 온다.
+	 * @param {Number} noteId 찾고자 하는 ID
+	 * @returns {Object} 노트정보 
 	 */
 	getNoteById(noteId = this.noteTextarea.noteId) {
 		return this.#noteNameList.find((element) => element.id === noteId);
@@ -49,9 +48,9 @@ export default class Notepad {
 		if(this.#noteNameList.length) {
 			const localMax = this.#noteNameList.reduce((max, cur) => cur.id > max ? cur.id : max, this.#noteNameList[0].id);
 			const finalMax = dbMax > localMax ? dbMax : localMax;
-			return finalMax ?? 1;
+			return finalMax ?? 0;
 		}
-		return dbMax ?? 1;
+		return dbMax ?? 0;
 	}
 	// 데이터 불러오는 초기화함수
 	// Email에 해당하는 Notepad정보들을 모두 불러와서 private 변수에 저장.
