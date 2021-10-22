@@ -13,7 +13,7 @@ const corsOptions = {
 
 const appSetting = (app) => {
     app.use(morgan("dev"));
-    app.use(express.urlencoded({extended: false}));
+    app.use(express.urlencoded({ extended: false }));
     app.use(express.json());
     app.use("/node_modules", express.static("node_modules"));
 };
@@ -24,4 +24,4 @@ apiApp.use("/api/notepad", cors(corsOptions), apiRouter);
 apiApp.use("/api/users", cors(corsOptions), userApi);
 
 const handleApiListen = () => console.log(`Api Listening: http://localhost:${APIPORT}`);
-apiApp.listen(APIPORT,handleApiListen);
+apiApp.listen(APIPORT, handleApiListen);

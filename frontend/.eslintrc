@@ -1,0 +1,36 @@
+{
+    "parser": "babel-eslint",
+    "env": {
+        "browser": true,
+        "es2021": true,
+        "node": true
+    },
+    "plugins": [
+        "jsdoc"
+    ],
+    "extends": [
+        "eslint:recommended",
+        "plugin:jsdoc/recommended"
+    ],
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "modules": true
+        }
+    },
+    "rules": {
+        "semi": [
+            "error",
+            "always"
+        ],
+        "keyword-spacing": 0,
+        "no-unused-vars": 1,
+        "space-before-function-paren": 0,
+        "linebreak-style": [
+            "error",
+            "windows"
+        ],
+        "no-tabs": 0
+    }
+}

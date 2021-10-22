@@ -3,7 +3,7 @@ export default class WriteSection {
     #noteName = "";
     #textareaId;
     #labelId;
-	constructor(textareaId, labelId) {
+    constructor(textareaId, labelId) {
         this.#textareaId = textareaId;
         this.#labelId = labelId;
     }
@@ -22,8 +22,9 @@ export default class WriteSection {
 
     /**
      * 현재 보고있는 Notepad가 무엇인지 셋팅
-     * @param {Number} id 
-     * @param {String} name 
+     *
+     * @param {number} id 
+     * @param {string} name 
      */
     setIdAndName(id, name) {
         this.#noteId = id;
@@ -32,7 +33,8 @@ export default class WriteSection {
 
     /**
      * Textarea부분의 Value 설정
-     * @param {String} text 
+     *
+     * @param {string} text 
      */
     setTextarea(text) {
         document.getElementById(this.#labelId).innerText = text;
@@ -40,42 +42,45 @@ export default class WriteSection {
 
     /**
      * textarea의 변경이 감지되었을 때 label을 재설정해주는 함수.
-     * @param {Boolean} isSaved 
-     * @param {String} labelValue 
-     * @param {String} idOfLabel 
+     *
+     * @param {boolean} isSaved 
+     * @param {string} labelValue 
+     * @param {string} idOfLabel 
      */
-	setMonitorLabel(isSaved, labelValue = undefined, idOfLabel= "textareaLabel") {
-		const label = document.getElementById(idOfLabel);
-		if(labelValue) label.innerText = labelValue;
-		else label.innerText = isSaved ? "저장됨." : "저장 안됨.";
-	}
+    setMonitorLabel(isSaved, labelValue = undefined, idOfLabel = "textareaLabel") {
+        const label = document.getElementById(idOfLabel);
+        if (labelValue) label.innerText = labelValue;
+        else label.innerText = isSaved ? "저장됨." : "저장 안됨.";
+    }
 
     /**
      * 텍스트 적을곳 생성
-     * @param {String} value 
+     *
+     * @param {string} value 
      * @returns Textarea Element
      */
-	createTextarea(value = "") {
-		const noteArea = document.createElement("textarea");
-		noteArea.className = "form-control";
+    createTextarea(value = "") {
+        const noteArea = document.createElement("textarea");
+        noteArea.className = "form-control";
         noteArea.id = this.#textareaId;
         noteArea.value = value;
         noteArea.addEventListener("input", () => this.setTextarea("저장 안됨."));
 
-		return noteArea;
-	}
+        return noteArea;
+    }
 
     /**
      * textarea 와 saveAs input의 value 설정
-     * @param {String} inputId 
-     * @param {String} inputValue 
-     * @param {String} textareaValue 
+     *
+     * @param {string} inputId 
+     * @param {string} inputValue 
+     * @param {string} textareaValue 
      */
-	setWriteSectionValue(inputId, inputValue, textareaValue = "") {
-		const noteArea = document.getElementById(this.#textareaId);
-		noteArea.value = textareaValue;
+    setWriteSectionValue(inputId, inputValue, textareaValue = "") {
+        const noteArea = document.getElementById(this.#textareaId);
+        noteArea.value = textareaValue;
 
-		const saveAsInput = document.getElementById(inputId);
-		saveAsInput.value = inputValue;
-	}
+        const saveAsInput = document.getElementById(inputId);
+        saveAsInput.value = inputValue;
+    }
 }

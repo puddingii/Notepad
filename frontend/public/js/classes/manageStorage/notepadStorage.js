@@ -1,6 +1,8 @@
 class NotepadStorage {
 	/**
 	 * email에 해당하는 Notepad정보를 가져온다
+	 *
+	 * @param email
 	 * @returns JSON type (Notepad 정보들)
 	 */
 	async load(email) {
@@ -17,6 +19,7 @@ class NotepadStorage {
 
 	/**
 	 * 저장된 Notepad의 가장 큰 id값 반환
+	 *
 	 * @returns Number (Notepad의 Max number)
 	 */
 	async getLastId() {
@@ -31,8 +34,9 @@ class NotepadStorage {
 
 	/**
 	 * 유저의 특정 Notepad정보 삭제
-	 * @param {Number} noteId 
-	 * @param {String} email 
+	 *
+	 * @param {number} noteId 
+	 * @param {string} email 
 	 * @returns Promise (성공여부)
 	 */
 	async delete(noteId, email) {
@@ -48,10 +52,11 @@ class NotepadStorage {
 
 	/**
 	 * 유저의 특정 Notepad정보 저장
-	 * @param {Number} id 
-	 * @param {String} email 
-	 * @param {String} title 
-	 * @param {String} text 
+	 *
+	 * @param {number} id 
+	 * @param {string} email 
+	 * @param {string} title 
+	 * @param {string} text 
 	 * @returns Promise (성공여부)
 	 */
 	async save(id, email, title, text) {
@@ -67,12 +72,13 @@ class NotepadStorage {
 
 	/**
 	 * 유저의 특정 Notepad정보 다른이름으로 저장
-	 * @param {String} email 
-	 * @param {String} title 
-	 * @param {String} text 
+	 *
+	 * @param {string} email 
+	 * @param {string} title 
+	 * @param {string} text 
 	 * @returns Promise (성공여부)
 	 */
-	async saveAs( email, title, text) {
+	async saveAs(email, title, text) {
 		const response = await fetch("http://localhost:8000/api/notepad/saveAs", {
 			method: "post",
 			headers: {

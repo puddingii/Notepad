@@ -1,5 +1,5 @@
 export default class JsonManage {
-    constructor() {}
+    constructor() { }
 
     classToTextToJson(data) {
         return JSON.parse(JSON.stringify(data));

@@ -1,12 +1,12 @@
-import { MyWindow }  from "./classes/myWindow.js";
+import { MyWindow } from "./classes/myWindow.js";
 
-(async() =>{
+(async () => {
     const currentUserId = document.getElementById("currentUserId").innerText;
     const testWindow = new MyWindow(currentUserId);
     await testWindow.initMyWindow();
     testWindow.logout("logout");
 })();
-$( function() {
+$(function () {
     $(".sortable").sortable({
         items: "li.notetab"
     });

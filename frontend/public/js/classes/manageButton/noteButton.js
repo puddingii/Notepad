@@ -1,15 +1,16 @@
 export default class NoteButton {
-    #type;
+	#type;
 	constructor(type) {
-        this.#type = type;
-    }
-    get type() {
-        return this.#type;
-    }
+		this.#type = type;
+	}
+	get type() {
+		return this.#type;
+	}
 
-    /**
+	/**
 	 * 버튼 생성후 생성한 버튼 반환
-	 * @param {String} className 
+	 *
+	 * @param {string} className 
 	 * @returns Element
 	 */
 	create(className) {
