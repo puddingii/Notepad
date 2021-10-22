@@ -1,8 +1,9 @@
 export default class NoteButton {
-	#type;
 	constructor(type) {
 		this.#type = type;
 	}
+	#type;
+
 	get type() {
 		return this.#type;
 	}
@@ -10,8 +11,8 @@ export default class NoteButton {
 	/**
 	 * 버튼 생성후 생성한 버튼 반환
 	 *
-	 * @param {string} className 
-	 * @returns Element
+	 * @param {string} className 버튼 클래스 이름
+	 * @returns {Element} HTML의 버튼요소
 	 */
 	create(className) {
 		const submitBtn = document.createElement("button");

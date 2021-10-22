@@ -8,9 +8,9 @@ export default class NavigationBar extends Bar {
     /**
      * 리스트에 해당 아이템이 있는지
      *
-     * @param {NodeList} items 
-     * @param {number} id 
-     * @returns true or false
+     * @param {NodeList} items NavigationBar안의 모든 요소
+     * @param {number} id NavigationBar안의 확인할 요소 아이디
+     * @returns {boolean} true or false
      */
     isItemInList(items, id) {
         const val = items.values();

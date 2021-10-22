@@ -1,12 +1,13 @@
 export default class WriteSection {
-    #noteId = "";
-    #noteName = "";
-    #textareaId;
-    #labelId;
     constructor(textareaId, labelId) {
         this.#textareaId = textareaId;
         this.#labelId = labelId;
     }
+    #noteId = "";
+    #noteName = "";
+    #textareaId;
+    #labelId;
+
     get noteId() {
         return this.#noteId;
     }
@@ -23,8 +24,8 @@ export default class WriteSection {
     /**
      * 현재 보고있는 Notepad가 무엇인지 셋팅
      *
-     * @param {number} id 
-     * @param {string} name 
+     * @param {number} id 현재 사용중인 Notepad 아이디
+     * @param {string} name 현재 사용중인 Notepad 제목
      */
     setIdAndName(id, name) {
         this.#noteId = id;
@@ -32,9 +33,9 @@ export default class WriteSection {
     }
 
     /**
-     * Textarea부분의 Value 설정
+     * Textarea부분의 값 설정
      *
-     * @param {string} text 
+     * @param {string} text Textarea의 내용에 들어갈 값
      */
     setTextarea(text) {
         document.getElementById(this.#labelId).innerText = text;
@@ -43,9 +44,9 @@ export default class WriteSection {
     /**
      * textarea의 변경이 감지되었을 때 label을 재설정해주는 함수.
      *
-     * @param {boolean} isSaved 
-     * @param {string} labelValue 
-     * @param {string} idOfLabel 
+     * @param {boolean} isSaved 해당 Notepad가 DB에 저장이 되었는지
+     * @param {string} labelValue 저장과 저장이 안된 상태외의 에러, 예외 처리를 위한 string값
+     * @param {string} idOfLabel 상태메시지가 보여질 곳의 레이블 id
      */
     setMonitorLabel(isSaved, labelValue = undefined, idOfLabel = "textareaLabel") {
         const label = document.getElementById(idOfLabel);
@@ -56,8 +57,8 @@ export default class WriteSection {
     /**
      * 텍스트 적을곳 생성
      *
-     * @param {string} value 
-     * @returns Textarea Element
+     * @param {string} value Textarea의 내용에 들어갈 값
+     * @returns {Element}Textarea Element
      */
     createTextarea(value = "") {
         const noteArea = document.createElement("textarea");
@@ -72,9 +73,9 @@ export default class WriteSection {
     /**
      * textarea 와 saveAs input의 value 설정
      *
-     * @param {string} inputId 
-     * @param {string} inputValue 
-     * @param {string} textareaValue 
+     * @param {string} inputId saveAs를 할때 다른 제목을 적기 위한 input의 id
+     * @param {string} inputValue 현재 가르키고 있는 Notepad의 제목
+     * @param {string} textareaValue 현재 가르키고 있는 Notepad의 내용
      */
     setWriteSectionValue(inputId, inputValue, textareaValue = "") {
         const noteArea = document.getElementById(this.#textareaId);

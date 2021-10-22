@@ -1,7 +1,7 @@
 import express from "express";
-import Users from "../models/user";
-import Notepads from "../models/notepad";
-import JsonManage from "./util/jsonManage";
+import Users from "../models/user.js";
+import Notepads from "../models/notepad.js";
+import JsonManage from "./util/jsonManage.js";
 const apiRouter = express.Router();
 const jsonManage = new JsonManage();
 

@@ -1,8 +1,8 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
-import apiRouter from "./routers/noteController";
-import userApi from "./routers/userController";
+import apiRouter from "./routers/noteController.js";
+import userApi from "./routers/userController.js";
 
 const APIPORT = 8000;
 

@@ -9,9 +9,9 @@ export default class DropdownBar extends Bar {
 	 * Dropdown Bar의 아이템 셋팅을 위한 추가적인 초기화
 	 *
 	 * @override
-	 * @param {object} itemInfo 
-	 * @param {object} linkInfo 
-	 * @returns 
+	 * @param {object} itemInfo HTML li element 정보(id, className 등)
+	 * @param {object} linkInfo HTML a element 정보(id, className 등)
+	 * @returns {Element} li element 반환
 	 */
 	createItem(itemInfo, linkInfo) {
 		const dropdownItems = this.myList.querySelectorAll("a");
@@ -27,7 +27,7 @@ export default class DropdownBar extends Bar {
 	/**
 	 * Dropdown에 있는 아이템 삭제
 	 *
-	 * @param {number} id 
+	 * @param {number} id Dropdown안의 삭제할 요소 아이디
 	 */
 	deleteItem(id) {
 		const dropdownItems = this.myList.querySelectorAll("li");

@@ -1,8 +1,8 @@
 import express from "express";
 import bcrypt from "bcrypt";
-import Users from "../models/user";
-import Notepads from "../models/notepad";
-import JsonManage from "./util/jsonManage";
+import Users from "../models/user.js";
+import Notepads from "../models/notepad.js";
+import JsonManage from "./util/jsonManage.js";
 const jsonManage = new JsonManage();
 
 const userApi = express.Router();

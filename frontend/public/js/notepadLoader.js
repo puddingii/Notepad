@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { MyWindow } from "./classes/myWindow.js";
 
 (async () => {

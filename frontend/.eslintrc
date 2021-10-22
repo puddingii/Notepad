@@ -6,7 +6,8 @@
         "node": true
     },
     "plugins": [
-        "jsdoc"
+        "jsdoc",
+        "sort-class-members"
     ],
     "extends": [
         "eslint:recommended",
@@ -19,10 +20,29 @@
             "modules": true
         }
     },
+    "globals": {
+        "globalThis": false,
+        "*": false
+    },
     "rules": {
         "semi": [
             "error",
             "always"
+        ],
+        "sort-class-members/sort-class-members": [
+            2,
+            {
+                "order": [
+                    "[static-properties]",
+                    "[static-methods]",
+                    "[properties]",
+                    "[conventional-private-properties]",
+                    "constructor",
+                    "[methods]",
+                    "[conventional-private-methods]"
+                ],
+                "accessorPairPositioning": "getThenSet"
+            }
         ],
         "keyword-spacing": 0,
         "no-unused-vars": 1,

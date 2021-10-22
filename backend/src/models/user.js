@@ -1,5 +1,6 @@
-import { Model, DataTypes } from "sequelize";
-import { sequelize } from "./dbInit";
+import pkg from 'sequelize';
+import { sequelize } from "./dbInit.js";
+const { Model, DataTypes } = pkg;
 
 class Users extends Model {
   /**

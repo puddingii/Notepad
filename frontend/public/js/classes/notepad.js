@@ -1,19 +1,14 @@
+/*global NotepadStorage, UserStorage*/
 import DropdownBar from './manageList/dropdownBar.js';
 import NavigationBar from "./manageList/navigationBar.js";
 import NoteButton from "./manageButton/noteButton.js";
 import WriteSection from "./manageWriteSection/writeSection.js";
 
 export default class Notepad {
-	#noteNameList = [];
-	#userEmail = '';
-	#openTabs;
-
 	notepadStorage = new NotepadStorage();
 	userStorage = new UserStorage();
-
 	textareaForm = document.getElementById('textareaForm');
 	noteFormDiv = document.getElementById("noteFormDiv");
-
 	/**
 	 * DropdownBar, NavigationBar, WriteSection(Textarea) Class를 가져와 Id값으로 셋팅한다.
 	 */
@@ -22,13 +17,15 @@ export default class Notepad {
 		this.dropdownBar = new DropdownBar("dropdownMenu");
 		this.navigationBar = new NavigationBar("navContainer");
 	}
-
-	set noteNameList(noteNameList) {
-		this.#noteNameList = noteNameList;
-	}
+	#noteNameList = [];
+	#userEmail = '';
+	#openTabs;
 
 	get noteNameList() {
 		return this.#noteNameList;
+	}
+	set noteNameList(noteNameList) {
+		this.#noteNameList = noteNameList;
 	}
 
 	get openTabs() {
@@ -59,7 +56,7 @@ export default class Notepad {
 	 * ID에 해당하는 노트정보 인덱스
 	 *
 	 * @param {number} noteId 노트 아이디
-	 * @returns Note Index
+	 * @returns {object} 해당 Notepad의 인덱스
 	 */
 	getNoteIndexById(noteId = this.writeSection.noteId) {
 		return this.#noteNameList.findIndex((element) => element.id === noteId);
@@ -68,7 +65,7 @@ export default class Notepad {
 	/**
 	 * DB와 LOCAL의 MAX ID값을 뽑아 비교후 더 큰값 리턴.
 	 *
-	 * @returns Max Number
+	 * @returns {number} 최대값
 	 */
 	async getMaxId() {
 		const dbMaxId = await this.notepadStorage.getLastId();
@@ -85,7 +82,7 @@ export default class Notepad {
 	 * Email에 해당하는 Notepad정보들을 모두 불러와서 private 변수에 저장.
 	 * 열려있는 tab과 마지막에 바라본 tab을 private변수에 저장.
 	 *
-	 * @param {string} currentUserEmail 
+	 * @param {string} currentUserEmail 로그인한 유저 이메일
 	 */
 	async initNotepad(currentUserEmail) {
 		const allData = await this.notepadStorage.load(currentUserEmail);
@@ -102,9 +99,9 @@ export default class Notepad {
 	 * Dropdown에 넣을 아이템초기화와 아이템이벤트를 추가해서
 	 * Dropdown목록에 추가
 	 *
-	 * @param {string} textareaValue 
-	 * @param {number} currentId 
-	 * @returns li Element
+	 * @param {string} textareaValue Dropdown Bar안에 들어갈 요소의 제목
+	 * @param {number} currentId Dropdown Bar안에 들어갈 요소의 아이디
+	 * @returns {Element}li Element
 	 */
 	createDropdownItem(textareaValue, currentId) {
 		const itemInfo = {
@@ -140,7 +137,7 @@ export default class Notepad {
 	 * navigationBar에 없으면 추가하고 이동하기 전에 값들을 임시저장한다.
 	 * 그 다음은 onClickNavigationBar기능을 수행한다.
 	 *
-	 * @param {Event} e 
+	 * @param {Event} e Dropdown Bar에서 요소를 클릭한 이벤트
 	 */
 	async onClickDropdown(e) {
 		const currentId = parseInt(e.target.dataset.currentid);
@@ -157,7 +154,7 @@ export default class Notepad {
 	 * 리스트에 있는 아이템 클릭시 기존에 적어둔 값 저장, 클릭한 리스트의 값 표시.
 	 * 현재 가르키고 있는 note갱신
 	 *
-	 * @param {number} clickedId 
+	 * @param {number} clickedId Navigation Bar에서 클릭한 요소의 아이디 값
 	 */
 	onClickNavigationBar(clickedId) {
 		const getBeforeValue = this.getNoteIndexById();
@@ -187,9 +184,9 @@ export default class Notepad {
 	/**
 	 * noteName값으로 NavigationBar에 아이템 추가
 	 *
-	 * @param {string} textareaValue 
-	 * @param {number} currentId 
-	 * @returns li Element 
+	 * @param {string} textareaValue Navigation Bar안에 들어갈 요소의 제목
+	 * @param {number} currentId Navigation Bar안에 들어갈 요소의 아이디
+	 * @returns {Element}li Element 
 	 */
 	createNavigationItem(textareaValue, currentId) {
 		if (!textareaValue) return;
@@ -357,7 +354,7 @@ export default class Notepad {
 				btn.addEventListener("click", (e) => this.onClickDelete(e));
 				break;
 			default:
-				btn.addEventListener("click", (e) => this.onClickClose());
+				btn.addEventListener("click", () => this.onClickClose());
 		}
 		return btn;
 	}
@@ -372,7 +369,7 @@ export default class Notepad {
 	/**
 	 * Button들에 대한 셋팅. 저장, 다른이름으로 저장, 닫기, 삭제 버튼, 다른이름으로 저장 Input값 정의
 	 *
-	 * @returns Button들을 담은 Div Element
+	 * @returns {Element} Button들을 담은 Div Element
 	 */
 	setButtonGroup() {
 		const btnGroup = document.createElement("div");
@@ -401,7 +398,7 @@ export default class Notepad {
 	/**
 	 * mainSection Element를 가져와서 해당 Element안에 Button, Textarea, Div등의 요소들을 배치한다.
 	 *
-	 * @param {Element} mainSection 
+	 * @param {Element} mainSection Notepad들의 정보들을 붙여줄 Element
 	 */
 	combineComponents(mainSection) {
 		const noteForm = document.createElement("div");

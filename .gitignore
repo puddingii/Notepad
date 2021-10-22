@@ -4,3 +4,4 @@ scratch
 config/*
 authentication
 package-lock.json
+config

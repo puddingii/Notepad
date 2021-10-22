@@ -1,11 +1,12 @@
+// eslint-disable-next-line no-unused-vars
 class UserStorage {
     /**
      * 유저db에 열려있는 노트패드들을 저장
      *
-     * @param {string} email 
-     * @param {Array} opentab 
-     * @param {string} lasttab 
-     * @returns Promise (성공여부)
+     * @param {string} email 유저의 이메일
+     * @param {Array} opentab 열려있는 탭들의 제목이 담겨있는 배열
+     * @param {string} lasttab 맨 마지막으로 봤던 탭의 제목
+     * @returns {Promise} fetch의 결과물인 response의 status(성공여부)
      */
     async saveOpenNote(email, opentab, lasttab) {
         const response = await fetch("http://localhost:8000/api/users/saveOpenNote", {
