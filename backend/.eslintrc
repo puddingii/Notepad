@@ -13,6 +13,7 @@
         "eslint:recommended",
         "plugin:jsdoc/recommended"
     ],
+    "requireConfigFile": false,
     "parserOptions": {
         "ecmaVersion": 6,
         "sourceType": "module",

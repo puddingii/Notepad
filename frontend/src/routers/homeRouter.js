@@ -4,8 +4,8 @@ import { loginStatus, logoutStatus } from "./middleware.js";
 
 const homeRouter = express.Router();
 
-homeRouter.get("/", loginStatus ,async (req, res) => {
-    try{
+homeRouter.get("/", loginStatus, async (req, res) => {
+    try {
         const response = await fetch("http://localhost:8000/api/users/loginStatus", {
             method: "post",
             headers: {
@@ -14,14 +14,14 @@ homeRouter.get("/", loginStatus ,async (req, res) => {
             body: JSON.stringify({ email: req.session.userId })
         });
         const responseJson = await response.json();
-        if(responseJson.loginStatus) {
-            return res.render("home", { userId: req.session.userId});
+        if (responseJson.loginStatus) {
+            return res.render("home", { userId: req.session.userId });
         } else {
             req.session.userId = false;
             return res.redirect("/login");
         }
-    } catch(e) {
-        console.log(e)
+    } catch (e) {
+        console.log(e);
         return res.redirect("/login");
     }
 });
@@ -29,7 +29,7 @@ homeRouter.get("/", loginStatus ,async (req, res) => {
 homeRouter.get("/login", logoutStatus, (req, res) => {
     return res.render("login");
 });
-homeRouter.post("/login", logoutStatus, async(req, res) => {
+homeRouter.post("/login", logoutStatus, async (req, res) => {
     const { loginId, loginPassword } = req.body;
     try {
         const response = await fetch("http://localhost:8000/api/users/login", {
@@ -40,15 +40,15 @@ homeRouter.post("/login", logoutStatus, async(req, res) => {
             body: JSON.stringify({ loginId, loginPassword })
         });
         const responseJson = await response.json();
-        if(responseJson.result) { // 아이디가 있고 비밀번호가 맞을시
+        if (responseJson.result) { // 아이디가 있고 비밀번호가 맞을시
             req.session.userId = loginId;
             return res.redirect("/");
         }
         // 비밀번호가 틀렸을 때
-        return res.status(400).render("login", {errorMsg: "Incorrect password"});
-    } catch(e) { // DB에서 오류가 났거나 id가 없을시.
-        console.log(e)
-        return res.status(400).render("login", {errorMsg: "ID is not existed / DB error"});
+        return res.status(400).render("login", { errorMsg: "Incorrect password" });
+    } catch (e) { // DB에서 오류가 났거나 id가 없을시.
+        console.log(e);
+        return res.status(400).render("login", { errorMsg: "ID is not existed / DB error" });
     }
 });
 
@@ -61,7 +61,7 @@ homeRouter.post("/join", logoutStatus, async (req, res) => {
         body: { loginId, password, chkPassword }
     } = req;
     try {
-        if(password !== chkPassword) {
+        if (password !== chkPassword) {
             throw "비밀번호가 서로 다릅니다.";
         }
         const response = await fetch("http://localhost:8000/api/users/join", {
@@ -71,16 +71,16 @@ homeRouter.post("/join", logoutStatus, async (req, res) => {
             },
             body: JSON.stringify({ loginId, password, chkPassword })
         });
-        if(response.status === 201) {
+        if (response.status === 201) {
             return res.redirect("/");
         } else throw "DB error";
-    } catch(e) {
-        return res.status(400).render("join",{ errorMsg: e });
+    } catch (e) {
+        return res.status(400).render("join", { errorMsg: e });
     }
 });
 
 // Logout을 하면 세션에 사용자아이디 삭제
-homeRouter.get("/logout", loginStatus, async(req, res) => {
+homeRouter.get("/logout", loginStatus, async (req, res) => {
     try {
         const response = await fetch("http://localhost:8000/api/users/logout", {
             method: "post",
@@ -89,17 +89,17 @@ homeRouter.get("/logout", loginStatus, async(req, res) => {
             },
             body: JSON.stringify({ email: req.session.userId })
         });
-        if(response === 201){
+        if (response === 201) {
             req.session.userId = false;
             return res.redirect("/login");
         } else {
             return res.redirect("/");
         }
 
-    } catch(e) {
+    } catch (e) {
         console.log(e);
     }
-    
+
 });
 
 export default homeRouter;
