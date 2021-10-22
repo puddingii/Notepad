@@ -12,7 +12,13 @@ export default class Bar {
         return this.#myList;
     }
 
-    initItem(itemInfo, linkInfo) {
+    /**
+     * Bar안에 넣을 아이템 생성
+     * @param {Object} itemInfo 
+     * @param {Object} linkInfo 
+     * @returns li Element반환
+     */
+    createItem(itemInfo, linkInfo) {
         if(!itemInfo) return;
         const item = document.createElement("li");
         item.className = itemInfo.className;
@@ -30,7 +36,11 @@ export default class Bar {
         return item;
     }
 
-    // list 토글 기능만 있음.
+    /**
+     * CSS 스타일 적용을 위한 class 처리
+     * @param {Number} eventTarget 
+     * @param {String} classOfItems 
+     */
 	toggleItem(eventTarget, classOfItems) {
 		const noteLinks = document.querySelectorAll(classOfItems); 
 		noteLinks.forEach((notelink) => {
@@ -42,7 +52,11 @@ export default class Bar {
 		})
     }
 
-    addItemAtList(item) {
+    /**
+     * Bar에 가져온 아이템 추가
+     * @param {Element} item 
+     */
+    addItem(item) {
         this.#myList.appendChild(item);
     }
 }

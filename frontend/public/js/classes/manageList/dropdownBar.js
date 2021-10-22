@@ -5,7 +5,14 @@ export default class DropdownBar extends Bar {
         super(idOfList);
     }
 
-	initItem(itemInfo, linkInfo) { 
+	/**
+	 * Dropdown Bar의 아이템 셋팅을 위한 추가적인 초기화
+	 * @override
+	 * @param {Object} itemInfo 
+	 * @param {Object} linkInfo 
+	 * @returns 
+	 */
+	createItem(itemInfo, linkInfo) { 
 		const dropdownItems = this.myList.querySelectorAll("a");
 		let isExisted = false;
 		dropdownItems.forEach((item) => { 
@@ -13,11 +20,14 @@ export default class DropdownBar extends Bar {
 		});
 		if(isExisted) return;
 
-		return super.initItem(itemInfo, linkInfo);
+		return super.createItem(itemInfo, linkInfo);
 	}
 
-	// Dropdown에 있는 아이템 삭제 *
-	deleteDropdownItem(id) {
+	/**
+	 * Dropdown에 있는 아이템 삭제
+	 * @param {Number} id 
+	 */
+	deleteItem(id) {
 		const dropdownItems = this.myList.querySelectorAll("li");
 		dropdownItems.forEach((item) => { 
 			if(parseInt(item.dataset.currentid) === id) item.remove();

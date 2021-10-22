@@ -6,6 +6,9 @@ export class MyWindow {
 		this.currentUserId = id;
 	}
 
+	/**
+	 * DB의 정보로 notepad들 셋팅(dropdown, navigation, button, textarea etc..)
+	 */
 	async initMyWindow() {
 		await this.myNotepad.initNotepad(this.currentUserId);
 		const lastTabId = this.myNotepad.writeSection.noteId;
@@ -17,13 +20,15 @@ export class MyWindow {
 		openBtn.addEventListener("click", (e) => this.myNotepad.onClickNewFile(e));
 		if(this.myNotepad.openTabs) {
 			this.myNotepad.openTabs.forEach((tab) => { 
-				this.myNotepad.setNavigationItem(tab, this.myNotepad.getNoteByTitle(tab).id);
+				const navigationItem = this.myNotepad.createNavigationItem(tab, this.myNotepad.getNoteByTitle(tab).id);
+				this.myNotepad.navigationBar.addItem(navigationItem);
 			});
 			this.myNotepad.navigationBar.toggleItem(`noteId${lastTabId}`, "a.notelink");
 		}
 		if(this.myNotepad.noteNameList) {
 			this.myNotepad.noteNameList.forEach((note) => {
-				this.myNotepad.setDropdownItem(note.title, note.id);
+				const dropdownItem = this.myNotepad.createDropdownItem(note.title, note.id);
+				this.myNotepad.dropdownBar.addItem(dropdownItem);
 			});
 		}
 
@@ -34,6 +39,10 @@ export class MyWindow {
 		});
 	}
 
+	/**
+	 * Logout을 눌렀을 때의 기능
+	 * @param {String} btnId 
+	 */
 	logout(btnId) {
 		const logoutBtn = document.getElementById(btnId);
 		const clickLogout = () => {

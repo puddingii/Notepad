@@ -7,8 +7,12 @@ export default class NoteButton {
         return this.#type;
     }
 
-    // 버튼을 생성후 반환.
-	setButton(className) {
+    /**
+	 * 버튼 생성후 생성한 버튼 반환
+	 * @param {String} className 
+	 * @returns Element
+	 */
+	create(className) {
 		const submitBtn = document.createElement("button");
 		submitBtn.type = "button";
 		submitBtn.className = className;

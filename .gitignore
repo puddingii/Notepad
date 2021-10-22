@@ -3,3 +3,4 @@ scratch
 .env
 config/*
 authentication
+package-lock.json

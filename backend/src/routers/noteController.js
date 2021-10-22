@@ -62,10 +62,10 @@ apiRouter.post("/saveAs", async(req, res) => {
 });
 
 // 모든 데이터 불러오기
-apiRouter.get("/loadAllData", async(req, res) => {
+apiRouter.post("/loadAllData", async(req, res) => {
     try {
         const { 
-            query: { email }
+            body: { email }
         } = req;
         const userInfo = await Users.findOne({ where: { email }});
         const notepadInfo = await Notepads.findAll({ where: { email }});
