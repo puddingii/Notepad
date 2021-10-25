@@ -1,8 +1,4 @@
 node_modules
-scratch
-.env
-config/*
+test_auth/
+config
 authentication
-package-lock.json
-config/env.js
-test_auth
