@@ -7,7 +7,7 @@ class NotepadStorage {
 	 * @returns {JSON} JSON type (Notepad 정보들)
 	 */
 	async load(email) {
-		const response = await fetch("http://localhost:8000/api/notepad/loadAllData", {
+		const response = await fetch("https://localhost:8050/api/notepad/loadAllData", {
 			method: "post",
 			headers: {
 				"Content-type": "application/json"
@@ -24,7 +24,7 @@ class NotepadStorage {
 	 * @returns {number} Notepad의 Max number
 	 */
 	async getLastId() {
-		const response = await fetch("http://localhost:8000/api/notepad/getLastId", {
+		const response = await fetch("https://localhost:8050/api/notepad/getLastId", {
 			headers: {
 				"Content-type": "application/json"
 			}
@@ -41,7 +41,7 @@ class NotepadStorage {
 	 * @returns {Promise} fetch의 결과물인 response의 status(성공여부)
 	 */
 	async delete(noteId, email) {
-		const response = await fetch("http://localhost:8000/api/notepad/delete", {
+		const response = await fetch("https://localhost:8050/api/notepad/delete", {
 			method: "delete",
 			headers: {
 				"Content-type": "application/json"
@@ -61,7 +61,7 @@ class NotepadStorage {
 	 * @returns {Promise} fetch의 결과물인 response의 status(성공여부)
 	 */
 	async save(id, email, title, text) {
-		const response = await fetch("http://localhost:8000/api/notepad/save", {
+		const response = await fetch("https://localhost:8050/api/notepad/save", {
 			method: "post",
 			headers: {
 				"Content-type": "application/json"
@@ -80,7 +80,7 @@ class NotepadStorage {
 	 * @returns {Promise} fetch의 결과물인 response의 status(성공여부)
 	 */
 	async saveAs(email, title, text) {
-		const response = await fetch("http://localhost:8000/api/notepad/saveAs", {
+		const response = await fetch("https://localhost:8050/api/notepad/saveAs", {
 			method: "post",
 			headers: {
 				"Content-type": "application/json"

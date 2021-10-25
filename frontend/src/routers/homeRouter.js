@@ -1,12 +1,14 @@
 import express from "express";
 import fetch from "node-fetch";
 import { loginStatus, logoutStatus } from "./middleware.js";
+import axios from 'axios';
+import https from 'https';
 
 const homeRouter = express.Router();
 
 homeRouter.get("/", loginStatus, async (req, res) => {
     try {
-        const response = await fetch("http://localhost:8000/api/users/loginStatus", {
+        const response = await fetch("https://localhost:8050/api/users/loginStatus", {
             method: "post",
             headers: {
                 "Content-type": "application/json"
@@ -29,16 +31,21 @@ homeRouter.get("/", loginStatus, async (req, res) => {
 homeRouter.get("/login", logoutStatus, (req, res) => {
     return res.render("login");
 });
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 homeRouter.post("/login", logoutStatus, async (req, res) => {
     const { loginId, loginPassword } = req.body;
     try {
-        const response = await fetch("http://localhost:8000/api/users/login", {
-            method: "post",
+        const agent = new https.Agent({
+            rejectUnauthorized: false
+        });
+        const response = await axios.post("https://localhost:8050/api/users/login", {
             headers: {
                 "Content-type": "application/json"
             },
-            body: JSON.stringify({ loginId, loginPassword })
+            data: JSON.stringify({ loginId, loginPassword }),
+            httpsAgent: agent
         });
+        console.log(response);
         const responseJson = await response.json();
         if (responseJson.result) { // 아이디가 있고 비밀번호가 맞을시
             req.session.userId = loginId;
@@ -64,7 +71,7 @@ homeRouter.post("/join", logoutStatus, async (req, res) => {
         if (password !== chkPassword) {
             throw "비밀번호가 서로 다릅니다.";
         }
-        const response = await fetch("http://localhost:8000/api/users/join", {
+        const response = await fetch("https://localhost:8050/api/users/join", {
             method: "post",
             headers: {
                 "Content-type": "application/json"
@@ -82,7 +89,7 @@ homeRouter.post("/join", logoutStatus, async (req, res) => {
 // Logout을 하면 세션에 사용자아이디 삭제
 homeRouter.get("/logout", loginStatus, async (req, res) => {
     try {
-        const response = await fetch("http://localhost:8000/api/users/logout", {
+        const response = await fetch("https://localhost:8050/api/users/logout", {
             method: "post",
             headers: {
                 "Content-type": "application/json"

@@ -19,5 +19,8 @@ block content
           label(for='floatingPassword2') Check Password
 
         button.w-100.btn.btn-lg.btn-primary(type='submit') Submit
-      button.w-100.btn.btn-lg.btn-primary(type='button' onclick="location.href='/login'") Login
+      button.w-100.btn.btn-lg.btn-primary#login(type='button') Login
       p.mt-5.mb-3.text-muted &copy; 2021&ndash;2021
+
+block scripts 
+  script(src='/static/js/button.js')

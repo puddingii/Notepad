@@ -270,7 +270,7 @@ export default class Notepad {
 			return;
 		}
 		const dropdownItem = this.createDropdownItem(noteData.title, noteData.id);
-		this.dropdownBar.addItem(dropdownItem);
+		if (dropdownItem) this.dropdownBar.addItem(dropdownItem);
 
 		// Save를 하면 class안의 private 변수안에도 있다는 뜻이므로 확인하는 절차
 		const indexOfItem = this.getNoteIndexById();

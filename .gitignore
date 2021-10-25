@@ -4,4 +4,5 @@ scratch
 config/*
 authentication
 package-lock.json
-config
+config/env.js
+test_auth

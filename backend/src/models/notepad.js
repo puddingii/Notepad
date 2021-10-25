@@ -1,6 +1,6 @@
-import pkg from "sequelize";
+import sequelizePkg from "sequelize";
 import { sequelize } from "./dbInit.js";
-const { Model, DataTypes } = pkg;
+const { Model, DataTypes } = sequelizePkg;
 
 class Notepads extends Model {
   /**

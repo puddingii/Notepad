@@ -2,6 +2,7 @@ import express from "express";
 import Users from "../models/user.js";
 import Notepads from "../models/notepad.js";
 import JsonManage from "./util/jsonManage.js";
+import validator from "validator";
 const apiRouter = express.Router();
 const jsonManage = new JsonManage();
 
@@ -12,6 +13,9 @@ apiRouter.post("/save", async (req, res) => {
     } = req;
 
     try {
+        if (!validator.isEmail(email)) {
+            throw "This email is not validated";
+        }
         const user = await Users.findOne({ where: { email } });
         const note = await Notepads.findOne({ where: { email, title } });
         if (!user) {
@@ -34,6 +38,9 @@ apiRouter.delete("/delete", async (req, res) => {
         body: { noteId, email }
     } = req;
     try {
+        if (!validator.isEmail(email)) {
+            throw "This email is not validated";
+        }
         await Notepads.destroy({ where: { id: noteId, email } });
         return res.sendStatus(201);
     } catch (e) {
@@ -49,6 +56,9 @@ apiRouter.post("/saveAs", async (req, res) => {
     } = req;
 
     try {
+        if (!validator.isEmail(email)) {
+            throw "This email is not validated";
+        }
         const item = await Notepads.findOne({ where: { email, title } });
         if (item) {
             throw "Notepad is not null";
@@ -67,6 +77,9 @@ apiRouter.post("/loadAllData", async (req, res) => {
         const {
             body: { email }
         } = req;
+        if (!validator.isEmail(email)) {
+            throw "This email is not validated";
+        }
         const userInfo = await Users.findOne({ where: { email } });
         const notepadInfo = await Notepads.findAll({ where: { email } });
         notepadInfo.push({ endTitle: userInfo.getLasttab(), openTab: userInfo.getOpentab() });

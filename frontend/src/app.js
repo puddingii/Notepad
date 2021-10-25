@@ -1,24 +1,36 @@
 import express from "express";
 import morgan from "morgan";
+import helmet from "helmet";
+import csurf from "csurf";
 import session from "express-session";
 import MySQLStore from "express-mysql-session";
-import http from "http";
 import https from "https";
-import fs from "fs";
+// import test from "ssl-root-cas/latest"
+// https.globalAgent.options.ca =.create();
+
+import { DB_INFO, SECURE_INFO } from "../config/env.js";
 import homeRouter from "./routers/homeRouter.js";
 
 MySQLStore(session);
 
 const clientApp = express();
 const MysqlOptions = {
-    host: "localhost",
-    port: 3306,
-    user: "root",
-    password: "12345678",
+    host: DB_INFO.HOSTNAME,
+    port: DB_INFO.PORT,
+    user: DB_INFO.USER,
+    password: DB_INFO.PASSWD,
     database: "notepad"
+};
+const cspOptioins = {
+    directives: {
+        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        "script-src": ["'self'", "*.jsdelivr.net", "*.jquery.com"],
+        "default-src": ["'self'", "localhost:8050"],
+    }
 };
 
 const appSetting = (app) => {
+    app.use(helmet({ contentSecurityPolicy: cspOptioins })); // XSS 공격, 교차 사이트 인젝션 등의 예방
     app.use("/static", express.static("public"));
     app.use(morgan("dev"));
     app.use(express.urlencoded({ extended: true }));
@@ -30,7 +42,8 @@ appSetting(clientApp);
 clientApp.set("views", `${process.cwd()}/public/views`);
 clientApp.set("view engine", "pug");
 clientApp.use(session({
-    secret: "lksajdf3a3wporn3pinoflasd",
+    cookie: { secure: true },
+    secret: SECURE_INFO.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store: new MySQLStore(MysqlOptions)
@@ -38,15 +51,10 @@ clientApp.use(session({
 clientApp.use("/", homeRouter);
 
 const httpsOptions = {
-    key: fs.readFileSync(`${process.cwd()}/authentication/lesstif.com.key`).toString(),
-    cert: fs.readFileSync(`${process.cwd()}/authentication/lesstif.com.crt`).toString(),
-
+    rejectedUnauthorized: false,
+    key: SECURE_INFO.HTTPS_KEY,
+    cert: SECURE_INFO.HTTPS_CERT,
 };
 
-const HTTPPORT = 3500;
-const HTTPSPORT = 3550;
-const handleHttpListen = () => console.log(`Home Listening: http://localhost:${HTTPPORT}`);
-const handleHttpsListen = () => console.log(`Home Listening: http://localhost:${HTTPSPORT}`);
-
-http.createServer(clientApp).listen(HTTPPORT, handleHttpListen);
-https.createServer(httpsOptions, clientApp).listen(HTTPSPORT, handleHttpsListen);
+const handleHttpsListen = () => console.log(`Home Listening: https://localhost:${SECURE_INFO.HTTPSPORT}`);
+https.createServer(httpsOptions, clientApp).listen(SECURE_INFO.HTTPSPORT, handleHttpsListen);

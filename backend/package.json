@@ -14,9 +14,11 @@
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "helmet": "^4.6.0",
     "morgan": "^1.10.0",
     "mysql2": "^2.3.0",
-    "sequelize": "^6.7.0"
+    "sequelize": "^6.7.0",
+    "validator": "^13.6.0"
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",
