@@ -1,7 +1,6 @@
 import express from "express";
 import morgan from "morgan";
 import helmet from "helmet";
-import csurf from "csurf";
 import session from "express-session";
 import MySQLStore from "express-mysql-session";
 import https from "https";
@@ -29,7 +28,7 @@ const cspOptioins = {
 };
 
 const appSetting = (app) => {
-    app.use(helmet({ contentSecurityPolicy: cspOptioins })); // XSS 공격, 교차 사이트 인젝션 등의 예방
+    app.use(helmet({ contentSecurityPolicy: cspOptioins })); // XSS 공격, 교차 사이트 인젝션 등의 예방,안전한(SSL/TLS를 통한 HTTP) 연결을 적용하는 Strict-Transport-Security 헤더를 설정
     app.use("/static", express.static("frontend"));
     app.use(morgan("dev"));
     app.use(express.urlencoded({ extended: true }));

@@ -24,10 +24,10 @@ userApi.post("/login", async (req, res) => {
             await Users.update({ loginStatus: 0 }, { where: { email } });
             return res.status(202).json({ result: false, msg: "Log out another browser" });
         }
-        else if (isSame) {
-            await Users.update({ loginStatus: 1 }, { where: { email } });
-        } else {
+        else if (!isSame) {
             return res.status(400).json({ result: isSame, msg: "Incorrect password" });
+        } else {
+            await Users.update({ loginStatus: 1 }, { where: { email } });
         }
         jwt.sign({ _id: userInfo.getId(), email }, SECURE_INFO.JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
             return res.status(201).json({ token, result: isSame });
