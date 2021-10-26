@@ -5,8 +5,7 @@ import csurf from "csurf";
 import session from "express-session";
 import MySQLStore from "express-mysql-session";
 import https from "https";
-// import test from "ssl-root-cas/latest"
-// https.globalAgent.options.ca =.create();
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 import { DB_INFO, SECURE_INFO } from "../config/env.js";
 import homeRouter from "./routers/homeRouter.js";
@@ -31,7 +30,7 @@ const cspOptioins = {
 
 const appSetting = (app) => {
     app.use(helmet({ contentSecurityPolicy: cspOptioins })); // XSS 공격, 교차 사이트 인젝션 등의 예방
-    app.use("/static", express.static("public"));
+    app.use("/static", express.static("frontend"));
     app.use(morgan("dev"));
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
@@ -39,7 +38,7 @@ const appSetting = (app) => {
 };
 
 appSetting(clientApp);
-clientApp.set("views", `${process.cwd()}/public/views`);
+clientApp.set("views", `${process.cwd()}/frontend/views`);
 clientApp.set("view engine", "pug");
 clientApp.use(session({
     cookie: { secure: true },

@@ -1,8 +1,6 @@
 import express from "express";
 import fetch from "node-fetch";
 import { loginStatus, logoutStatus } from "./middleware.js";
-import axios from 'axios';
-import https from 'https';
 
 const homeRouter = express.Router();
 
@@ -31,21 +29,18 @@ homeRouter.get("/", loginStatus, async (req, res) => {
 homeRouter.get("/login", logoutStatus, (req, res) => {
     return res.render("login");
 });
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 homeRouter.post("/login", logoutStatus, async (req, res) => {
     const { loginId, loginPassword } = req.body;
+    console.log(loginId);
     try {
-        const agent = new https.Agent({
-            rejectUnauthorized: false
-        });
-        const response = await axios.post("https://localhost:8050/api/users/login", {
+        const response = await fetch("https://localhost:8050/api/users/login", {
+            method: "post",
             headers: {
                 "Content-type": "application/json"
             },
-            data: JSON.stringify({ loginId, loginPassword }),
-            httpsAgent: agent
+            body: JSON.stringify({ loginId, loginPassword })
         });
-        console.log(response);
         const responseJson = await response.json();
         if (responseJson.result) { // 아이디가 있고 비밀번호가 맞을시
             req.session.userId = loginId;
