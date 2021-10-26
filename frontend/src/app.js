@@ -29,7 +29,7 @@ const cspOptioins = {
 
 const appSetting = (app) => {
     app.use(helmet({ contentSecurityPolicy: cspOptioins })); // XSS 공격, 교차 사이트 인젝션 등의 예방,안전한(SSL/TLS를 통한 HTTP) 연결을 적용하는 Strict-Transport-Security 헤더를 설정
-    app.use("/static", express.static("frontend"));
+    app.use("/static", express.static("public"));
     app.use(morgan("dev"));
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
@@ -37,7 +37,7 @@ const appSetting = (app) => {
 };
 
 appSetting(clientApp);
-clientApp.set("views", `${process.cwd()}/frontend/views`);
+clientApp.set("views", `${process.cwd()}/public/views`);
 clientApp.set("view engine", "pug");
 clientApp.use(session({
     cookie: { secure: true },
