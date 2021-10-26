@@ -1,8 +1,10 @@
 import express from "express";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import Users from "../models/user.js";
 import Notepads from "../models/notepad.js";
 import JsonManage from "./util/jsonManage.js";
+import { SECURE_INFO } from "../../config/env.js";
 const jsonManage = new JsonManage();
 
 const userApi = express.Router();
@@ -20,12 +22,16 @@ userApi.post("/login", async (req, res) => {
         const isSame = await bcrypt.compare(passwd, storedPasswd);
         if (isSame && userInfo.getStatus()) {
             await Users.update({ loginStatus: 0 }, { where: { email } });
-            return res.status(202).json({ result: false });
+            return res.status(202).json({ result: false, msg: "Log out another browser" });
         }
         else if (isSame) {
             await Users.update({ loginStatus: 1 }, { where: { email } });
+        } else {
+            return res.status(400).json({ result: isSame, msg: "Incorrect password" });
         }
-        return res.status(200).json({ result: isSame });
+        jwt.sign({ _id: userInfo.getId(), email }, SECURE_INFO.JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
+            return res.status(201).json({ token, result: isSame });
+        });
     } catch (e) {
         console.log(e);
         return res.sendStatus(400);

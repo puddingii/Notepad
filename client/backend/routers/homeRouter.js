@@ -32,7 +32,6 @@ homeRouter.get("/login", logoutStatus, (req, res) => {
 
 homeRouter.post("/login", logoutStatus, async (req, res) => {
     const { loginId, loginPassword } = req.body;
-    console.log(loginId);
     try {
         const response = await fetch("https://localhost:8050/api/users/login", {
             method: "post",
@@ -43,11 +42,11 @@ homeRouter.post("/login", logoutStatus, async (req, res) => {
         });
         const responseJson = await response.json();
         if (responseJson.result) { // 아이디가 있고 비밀번호가 맞을시
-            req.session.userId = loginId;
+            req.session.userToken = responseJson.token;
             return res.redirect("/");
         }
         // 비밀번호가 틀렸을 때
-        return res.status(400).render("login", { errorMsg: "Incorrect password" });
+        return res.status(400).render("login", { errorMsg: responseJson.msg });
     } catch (e) { // DB에서 오류가 났거나 id가 없을시.
         console.log(e);
         return res.status(400).render("login", { errorMsg: "ID is not existed / DB error" });

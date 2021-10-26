@@ -15,6 +15,7 @@
     "express-mysql-session": "^2.1.7",
     "express-session": "^1.17.2",
     "helmet": "^4.6.0",
+    "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
     "node-fetch": "^3.0.0",
     "ohmyfetch": "^0.4.2",
