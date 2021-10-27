@@ -62,9 +62,6 @@ homeRouter.post("/join", logoutStatus, async (req, res) => {
         body: { loginId, password, chkPassword }
     } = req;
     try {
-        if (password !== chkPassword) {
-            throw "비밀번호가 서로 다릅니다.";
-        }
         const response = await fetch("https://localhost:8050/api/users/join", {
             method: "post",
             headers: {

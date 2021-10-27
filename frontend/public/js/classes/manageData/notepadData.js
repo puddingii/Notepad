@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-class NotepadStorage {
+class NotepadData {
 	/**
 	 * email에 해당하는 Notepad정보를 가져온다
 	 *

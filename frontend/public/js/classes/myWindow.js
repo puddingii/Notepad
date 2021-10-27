@@ -1,4 +1,5 @@
 import Notepad from "./notepad.js";
+import ManageArray from "./util/manageArray.js";
 
 export class MyWindow {
 	myNotepad = new Notepad();
@@ -9,8 +10,8 @@ export class MyWindow {
 	/**
 	 * DB의 정보로 notepad들 셋팅(dropdown, navigation, button, textarea etc..)
 	 */
-	async initMyWindow() {
-		await this.myNotepad.initNotepad(this.currentUserId);
+	async init() {
+		await this.myNotepad.init(this.currentUserId);
 		const lastTabId = this.myNotepad.writeSection.noteId;
 
 		const mainSection = document.querySelector("section.notepad");
@@ -20,15 +21,15 @@ export class MyWindow {
 		openBtn.addEventListener("click", (e) => this.myNotepad.onClickNewFile(e));
 		if (this.myNotepad.openTabs) {
 			this.myNotepad.openTabs.forEach((tab) => {
-				const navigationItem = this.myNotepad.createNavigationItem(tab, this.myNotepad.getNoteByTitle(tab).id);
-				this.myNotepad.navigationBar.addItem(navigationItem);
+				const navigationItem = this.myNotepad.createNavigationItem(tab, new ManageArray().getObjectByTitle(this.myNotepad.noteInfoList, tab).id);
+				this.myNotepad.navigationBar.addItemToBar(navigationItem);
 			});
 			this.myNotepad.navigationBar.toggleItem(`noteId${lastTabId}`, "a.notelink");
 		}
-		if (this.myNotepad.noteNameList) {
-			this.myNotepad.noteNameList.forEach((note) => {
+		if (this.myNotepad.noteInfoList) {
+			this.myNotepad.noteInfoList.forEach((note) => {
 				const dropdownItem = this.myNotepad.createDropdownItem(note.title, note.id);
-				this.myNotepad.dropdownBar.addItem(dropdownItem);
+				this.myNotepad.dropdownBar.addItemToBar(dropdownItem);
 			});
 		}
 

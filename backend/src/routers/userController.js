@@ -93,9 +93,12 @@ userApi.post("/saveOpenNote", async (req, res) => {
 
 userApi.post("/join", async (req, res) => {
     let {
-        body: { loginId, password }
+        body: { loginId, password, chkPassword }
     } = req;
     try {
+        if (password !== chkPassword) {
+            throw "Passwords are not the same";
+        }
         const isExisted = await Users.findOne({ where: { email: loginId } });
         if (isExisted) {
             return res.sendStatus(400);

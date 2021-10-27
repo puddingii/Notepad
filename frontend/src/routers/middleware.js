@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import fetch from "node-fetch";
 import { SECURE_INFO } from "../../config/env.js";
 
 export const loginStatus = (req, res, next) => {
@@ -8,6 +9,13 @@ export const loginStatus = (req, res, next) => {
                 req.session.userId = decoded.email;
                 next();
             } else {
+                fetch("https://localhost:8050/api/users/logout", {
+                    method: "post",
+                    headers: {
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify({ email: req.session.userId })
+                });
                 req.session.userId = false;
                 return res.redirect("/login");
             }

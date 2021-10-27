@@ -1,4 +1,10 @@
 export default class WriteSection {
+    /**
+     * textarea id값과 labelid값을 처음에 설정한다.
+     * 
+     * @param {string} textareaId HTML의 textarea안에 들어갈 id값
+     * @param {string} labelId HTML의 label안에 들어갈 id값
+     */
     constructor(textareaId, labelId) {
         this.#textareaId = textareaId;
         this.#labelId = labelId;
@@ -20,6 +26,12 @@ export default class WriteSection {
     set noteName(noteName) {
         this.#noteName = noteName;
     }
+    get textareaId() {
+        return this.#textareaId;
+    }
+    get labelId() {
+        return this.#labelId;
+    }
 
     /**
      * 현재 보고있는 Notepad가 무엇인지 셋팅
@@ -33,23 +45,13 @@ export default class WriteSection {
     }
 
     /**
-     * Textarea부분의 값 설정
-     *
-     * @param {string} text Textarea의 내용에 들어갈 값
-     */
-    setTextarea(text) {
-        document.getElementById(this.#labelId).innerText = text;
-    }
-
-    /**
      * textarea의 변경이 감지되었을 때 label을 재설정해주는 함수.
      *
      * @param {boolean} isSaved 해당 Notepad가 DB에 저장이 되었는지
      * @param {string} labelValue 저장과 저장이 안된 상태외의 에러, 예외 처리를 위한 string값
-     * @param {string} idOfLabel 상태메시지가 보여질 곳의 레이블 id
      */
-    setMonitorLabel(isSaved, labelValue = undefined, idOfLabel = "textareaLabel") {
-        const label = document.getElementById(idOfLabel);
+    setMonitorLabel(isSaved, labelValue = undefined) {
+        const label = document.getElementById(this.#labelId);
         if (labelValue) label.innerText = labelValue;
         else label.innerText = isSaved ? "저장됨." : "저장 안됨.";
     }
@@ -65,7 +67,7 @@ export default class WriteSection {
         noteArea.className = "form-control";
         noteArea.id = this.#textareaId;
         noteArea.value = value;
-        noteArea.addEventListener("input", () => this.setTextarea("저장 안됨."));
+        noteArea.addEventListener("input", () => this.setMonitorLabel(false));
 
         return noteArea;
     }

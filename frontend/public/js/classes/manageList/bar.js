@@ -1,13 +1,13 @@
 export default class Bar {
-    constructor(idOfList) {
-        this.#idOfList = idOfList;
-        this.#myList = document.getElementById(idOfList);
+    constructor(idList) {
+        this.#idList = idList;
+        this.#myList = document.getElementById(idList);
     }
     #myList;
-    #idOfList;
+    #idList;
 
-    get idOfList() {
-        return this.#idOfList;
+    get idList() {
+        return this.#idList;
     }
 
     get myList() {
@@ -61,7 +61,7 @@ export default class Bar {
      *
      * @param {Element} item Bar안에 추가될 아이템
      */
-    addItem(item) {
+    addItemToBar(item) {
         this.#myList.appendChild(item);
     }
 }

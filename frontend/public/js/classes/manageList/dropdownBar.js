@@ -1,8 +1,8 @@
 import Bar from "./bar.js";
 
 export default class DropdownBar extends Bar {
-	constructor(idOfList) {
-		super(idOfList);
+	constructor(idList) {
+		super(idList);
 	}
 
 	/**
