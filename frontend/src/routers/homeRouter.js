@@ -5,25 +5,7 @@ import { loginStatus, logoutStatus } from "./middleware.js";
 const homeRouter = express.Router();
 
 homeRouter.get("/", loginStatus, async (req, res) => {
-    try {
-        const response = await fetch("https://localhost:8050/api/users/loginStatus", {
-            method: "post",
-            headers: {
-                "Content-type": "application/json"
-            },
-            body: JSON.stringify({ email: req.session.userId })
-        });
-        const responseJson = await response.json();
-        if (responseJson.loginStatus) {
-            return res.render("home", { userId: req.session.userId });
-        } else {
-            req.session.userId = false;
-            return res.redirect("/login");
-        }
-    } catch (e) {
-        console.log(e);
-        return res.redirect("/login");
-    }
+    return res.render("home", { userId: req.session.userId });
 });
 
 homeRouter.get("/login", logoutStatus, (req, res) => {

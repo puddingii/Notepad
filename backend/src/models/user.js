@@ -49,7 +49,7 @@ Users.init({
   opentab: DataTypes.STRING,
   lasttab: DataTypes.STRING,
   loginStatus: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
     defaultValue: 0
   }
 }, {

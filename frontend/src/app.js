@@ -37,7 +37,7 @@ const appSetting = (app) => {
 };
 
 appSetting(clientApp);
-clientApp.set("views", `${process.cwd()}/public/views`);
+clientApp.set("views", `${process.cwd()}/src/views`);
 clientApp.set("view engine", "pug");
 clientApp.use(session({
     cookie: { secure: true },

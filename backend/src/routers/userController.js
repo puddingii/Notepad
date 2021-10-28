@@ -13,23 +13,24 @@ userApi.post("/login", async (req, res) => {
     const {
         body: { loginId: email, loginPassword: passwd }
     } = req;
+    console.log(req.body);
     try {
         const userInfo = await Users.findOne({ where: { email } });
         const storedPasswd = userInfo.getPassword();
         if (!userInfo) {
             return res.sendStatus(404);
         }
+
         const isSame = await bcrypt.compare(passwd, storedPasswd);
-        if (isSame && userInfo.getStatus()) {
-            await Users.update({ loginStatus: 0 }, { where: { email } });
+        if (isSame && userInfo.getStatus() !== "0") {
+            await Users.update({ loginStatus: "0" }, { where: { email } });
             return res.status(202).json({ result: false, msg: "Log out another browser" });
         }
         else if (!isSame) {
             return res.status(400).json({ result: isSame, msg: "Incorrect password" });
-        } else {
-            await Users.update({ loginStatus: 1 }, { where: { email } });
         }
-        jwt.sign({ _id: userInfo.getId(), email }, SECURE_INFO.JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
+        jwt.sign({ _id: userInfo.getId(), email }, SECURE_INFO.JWT_SECRET, { expiresIn: '1h' }, async (err, token) => {
+            await Users.update({ loginStatus: token }, { where: { email } })
             return res.status(201).json({ token, result: isSame });
         });
     } catch (e) {
@@ -58,7 +59,7 @@ userApi.post("/logout", async (req, res) => {
 userApi.post("/loginStatus", async (req, res) => {
     const { body: { email } } = req;
     try {
-        const userInfo = await Users.findOne({ email });
+        const userInfo = await Users.findOne({ where: { email } });
         if (!userInfo) {
             return res.sendStatus(404);
         }

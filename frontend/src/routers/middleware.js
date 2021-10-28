@@ -2,24 +2,32 @@ import jwt from "jsonwebtoken";
 import fetch from "node-fetch";
 import { SECURE_INFO } from "../../config/env.js";
 
-export const loginStatus = (req, res, next) => {
+export const loginStatus = async (req, res, next) => {
     if (req.session.userToken) {
-        jwt.verify(req.session.userToken, SECURE_INFO.JWT_SECRET, (err, decoded) => {
-            if (decoded) {
-                req.session.userId = decoded.email;
-                next();
-            } else {
-                fetch("https://localhost:8050/api/users/logout", {
-                    method: "post",
-                    headers: {
-                        "Content-type": "application/json"
-                    },
-                    body: JSON.stringify({ email: req.session.userId })
-                });
-                req.session.userId = false;
-                return res.redirect("/login");
+        try {
+            const response = await fetch("https://localhost:8050/api/users/loginStatus", {
+                method: "post",
+                headers: {
+                    "Content-type": "application/json"
+                },
+                body: JSON.stringify({ email: req.session.userId })
+            });
+            const responseJson = await response.json();
+            if (responseJson.loginStatus !== req.session.userToken) {
+                throw "Log out another browser";
             }
-        });
+
+            jwt.verify(req.session.userToken, SECURE_INFO.JWT_SECRET, async (err, decoded) => {
+                if (decoded) {
+                    req.session.userId = decoded.email;
+                    next();
+                }
+            });
+        } catch (e) {
+            console.log(e);
+            req.session.userId = false;
+            return res.redirect("/login");
+        }
     } else {
         return res.redirect("/login");
     }
