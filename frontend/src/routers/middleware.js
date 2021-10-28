@@ -22,6 +22,16 @@ export const loginStatus = async (req, res, next) => {
                     req.session.userId = decoded.email;
                     next();
                 }
+                if (err) {
+                    await fetch("https://localhost:8050/api/users/logout", {
+                        method: "post",
+                        headers: {
+                            "Content-type": "application/json"
+                        },
+                        body: JSON.stringify({ email: req.session.userId })
+                    });
+                    throw "JWT Session Verify Error";
+                }
             });
         } catch (e) {
             console.log(e);

@@ -33,8 +33,31 @@ input#difBtn {
 	font-weight: bold;
 }
 .leftCard {
-	height: 150px;
+	min-width: 120px;
+	max-width: 230px;
+	height: 734px;
+	margin-left: 30px;
+	word-break:break-all;
 }
+.userInfo {
+	height: 145px;
+}
+.chat {
+	height: 530px;
+	align-items: unset;
+}
+ul {
+	padding-left: 15px;
+}
+li {
+	list-style-type: none;
+}
+.chatInputDiv {
+	position: absolute;
+	bottom: 0px;
+	margin-bottom: 0px !important;
+}
+
 @keyframes goAway {
 	from {
 		transform: none;

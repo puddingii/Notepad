@@ -7,7 +7,9 @@ import https from "https";
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 import { DB_INFO, SECURE_INFO } from "../config/env.js";
+import { Server } from "socket.io";
 import homeRouter from "./routers/homeRouter.js";
+import socketController from "./routers/socketController.js";
 
 MySQLStore(session);
 
@@ -22,7 +24,7 @@ const MysqlOptions = {
 const cspOptioins = {
     directives: {
         ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-        "script-src": ["'self'", "*.jsdelivr.net", "*.jquery.com"],
+        "script-src": ["'self'", "*.jsdelivr.net", "*.jquery.com", "cdn.socket.io"],
         "default-src": ["'self'", "localhost:8050"],
     }
 };
@@ -55,4 +57,16 @@ const httpsOptions = {
 };
 
 const handleHttpsListen = () => console.log(`Home Listening: https://localhost:${SECURE_INFO.HTTPSPORT}`);
-https.createServer(httpsOptions, clientApp).listen(SECURE_INFO.HTTPSPORT, handleHttpsListen);
+const server = https.createServer(httpsOptions, clientApp);
+
+// const io = new Server(server);
+// io.on("connection", (socket) => {
+//     console.log("test");
+//     socket.on("clientHello", () => console.log("serverHello"));
+//     console.log("test2");
+// });
+
+const io = new Server(server);
+io.on("connection", socketController);
+
+server.listen(SECURE_INFO.HTTPSPORT, handleHttpsListen);
