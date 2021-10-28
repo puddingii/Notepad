@@ -25,6 +25,7 @@ homeRouter.post("/login", logoutStatus, async (req, res) => {
         const responseJson = await response.json();
         if (responseJson.result) { // 아이디가 있고 비밀번호가 맞을시
             req.session.userToken = responseJson.token;
+            req.session.userId = loginId;
             return res.redirect("/");
         }
         // 비밀번호가 틀렸을 때

@@ -17,23 +17,24 @@ export const loginStatus = async (req, res, next) => {
                 throw "Log out another browser";
             }
 
-            jwt.verify(req.session.userToken, SECURE_INFO.JWT_SECRET, async (err, decoded) => {
+            jwt.verify(req.session.userToken, SECURE_INFO.JWT_SECRET, (err, decoded) => {
                 if (decoded) {
-                    req.session.userId = decoded.email;
                     next();
                 }
                 if (err) {
-                    await fetch("https://localhost:8050/api/users/logout", {
-                        method: "post",
-                        headers: {
-                            "Content-type": "application/json"
-                        },
-                        body: JSON.stringify({ email: req.session.userId })
-                    });
                     throw "JWT Session Verify Error";
                 }
             });
         } catch (e) {
+            if (e === "JWT Session Verify Error") {
+                await fetch("https://localhost:8050/api/users/logout", {
+                    method: "post",
+                    headers: {
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify({ email: req.session.userId })
+                });
+            }
             console.log(e);
             req.session.userId = false;
             return res.redirect("/login");

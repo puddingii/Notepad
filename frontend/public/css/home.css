@@ -45,8 +45,10 @@ input#difBtn {
 .chat {
 	height: 530px;
 	align-items: unset;
+	
 }
 ul {
+	overflow: scroll;
 	padding-left: 15px;
 }
 li {

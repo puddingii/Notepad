@@ -15,11 +15,11 @@ block content
         p.card-text#currentUserId=userId
         button.btn.btn-danger#logout(type="button") Log out
       div.card.chat
-        ul.chatRecord
+        ul.chatRecord#chatRecordBoard
           li hi
         .input-group.mb-3.chatInputDiv
-          input.form-control#chatInput(type='text' placeholder="Chat" aria-describedby='basic-addon2')
-          button#basic-addon2.input-group-text >
+          input.form-control#chatInput(type='text' placeholder="Chat" aria-describedby='chatInputButton')
+          button#chatInputButton.input-group-text >
     .col.col-md-9
       .container.childContainer
         header
