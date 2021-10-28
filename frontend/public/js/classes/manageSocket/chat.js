@@ -17,18 +17,31 @@ export default class Chat {
         this.#socket.emit("clientHello", "clientHello11");
     }
 
+    renameUserId(userId) {
+        userId = userId.split("@")[0];
+        userId = userId.length > 3 ? `*${userId.slice(-3)}` : `*${userId}`;
+        return userId;
+    }
+
+    autoScroll() {
+        this.recordBoard.scrollTop = this.recordBoard.scrollHeight - this.recordBoard.clientHeight;
+    }
+
     clientWrite() {
         this.#socket.emit("clientWrite", this.#userId, this.inputForm.value);
         const newChat = this.createItem();
         this.recordBoard.appendChild(newChat);
         this.inputForm.value = "";
+        this.autoScroll();
     }
 
     serverWrite() {
         this.#socket.on("serverWrite", (chatInfo) => {
-            const { user, text } = chatInfo;
-            const newChat = this.createItem(user, text);
+            let { user, text } = chatInfo;
+            const renamedId = this.renameUserId(user);
+            const newChat = this.createItem(renamedId, text);
             this.recordBoard.appendChild(newChat);
+            this.autoScroll();
         });
     }
 

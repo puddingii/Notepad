@@ -13,7 +13,6 @@ userApi.post("/login", async (req, res) => {
     const {
         body: { loginId: email, loginPassword: passwd }
     } = req;
-    console.log(req.body);
     try {
         const userInfo = await Users.findOne({ where: { email } });
         const storedPasswd = userInfo.getPassword();

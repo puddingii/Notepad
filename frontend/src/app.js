@@ -59,13 +59,6 @@ const httpsOptions = {
 const handleHttpsListen = () => console.log(`Home Listening: https://localhost:${SECURE_INFO.HTTPSPORT}`);
 const server = https.createServer(httpsOptions, clientApp);
 
-// const io = new Server(server);
-// io.on("connection", (socket) => {
-//     console.log("test");
-//     socket.on("clientHello", () => console.log("serverHello"));
-//     console.log("test2");
-// });
-
 const io = new Server(server);
 io.on("connection", socketController);
 

@@ -76,11 +76,10 @@ homeRouter.get("/logout", loginStatus, async (req, res) => {
         } else {
             return res.redirect("/");
         }
-
     } catch (e) {
         console.log(e);
+        return res.sendStatus(400);
     }
-
 });
 
 export default homeRouter;

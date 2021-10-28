@@ -47,8 +47,11 @@ input#difBtn {
 	align-items: unset;
 	
 }
-ul {
+.chatRecord {
 	overflow: scroll;
+	height:510px;
+}
+ul {
 	padding-left: 15px;
 }
 li {
