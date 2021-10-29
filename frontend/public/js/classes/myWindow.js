@@ -1,5 +1,6 @@
 import Notepad from "./notepad.js";
 import ManageArray from "./util/manageArray.js";
+import Modal from "./util/modal.js";
 
 export class MyWindow {
 	myNotepad = new Notepad();
@@ -38,6 +39,8 @@ export class MyWindow {
 				await this.myNotepad.saveOpenNote();
 			}
 		});
+		const controllModal = new Modal("exampleModal");
+		controllModal.init();
 	}
 
 	/**

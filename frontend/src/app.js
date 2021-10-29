@@ -9,7 +9,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 import { DB_INFO, SECURE_INFO } from "../config/env.js";
 import { Server } from "socket.io";
 import homeRouter from "./routers/homeRouter.js";
-import socketController from "./routers/socketController.js";
+import SocketController from "./routers/socketController.js";
 
 MySQLStore(session);
 
@@ -56,10 +56,15 @@ const httpsOptions = {
     cert: SECURE_INFO.HTTPS_CERT,
 };
 
-const handleHttpsListen = () => console.log(`Home Listening: https://localhost:${SECURE_INFO.HTTPSPORT}`);
 const server = https.createServer(httpsOptions, clientApp);
 
 const io = new Server(server);
-io.on("connection", socketController);
+const onConnection = (socket) => {
+    const socketController = new SocketController(io, socket);
+    socketController.joinRoom("testRoom");
+    socketController.clientChat();
+};
+io.on("connection", onConnection);
 
+const handleHttpsListen = () => console.log(`Home Listening: https://localhost:${SECURE_INFO.HTTPSPORT}`);
 server.listen(SECURE_INFO.HTTPSPORT, handleHttpsListen);

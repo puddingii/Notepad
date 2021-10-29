@@ -2,7 +2,7 @@
 	margin-bottom: 10px;
 }
 
-textarea {
+.notepad > div > textarea {
 	height: 500px !important;
 }
 
@@ -49,7 +49,7 @@ input#difBtn {
 }
 .chatRecord {
 	overflow: scroll;
-	height:510px;
+	height:470px;
 }
 ul {
 	padding-left: 15px;
@@ -61,6 +61,11 @@ li {
 	position: absolute;
 	bottom: 0px;
 	margin-bottom: 0px !important;
+}
+.chatInputForm {
+	bottom: 0px;
+	margin-bottom: 0px !important;
+	margin-left: 0px !important;
 }
 
 @keyframes goAway {

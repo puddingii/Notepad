@@ -17,9 +17,29 @@ block content
       div.card.chat
         ul.chatRecord#chatRecordBoard
           li hi
-        .input-group.mb-3.chatInputDiv
-          input.form-control#chatInput(type='text' placeholder="Chat" aria-describedby='chatInputButton')
-          button#chatInputButton.input-group-text >
+        .chatInputDiv
+          .input-group.mb-3.chatInputForm
+            input.form-control#chatInput(type='text' placeholder="Chat" aria-describedby='chatInputButton')
+            button#chatInputButton.input-group-text >
+          .input-group.row.mb-3.chatInputForm
+            button.btn.btn-outline-secondary.col.input-group-text New
+            button.btn.btn-outline-secondary.col.input-group-text(data-bs-toggle="modal" data-bs-target="#exampleModal") Join
+            button.btn.btn-outline-secondary.col.input-group-text Leave
+          #exampleModal.modal.fade(tabindex='-1' aria-labelledby='exampleModalLabel' aria-hidden='true')
+            .modal-dialog.modal-dialog-centered
+              .modal-content
+                .modal-header
+                  h5#exampleModalLabel.modal-title Input room number
+                  button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
+                .modal-body
+                  form 
+                    .mb-3
+                      label.col-form-label(for='recipient-name') Number
+                      input#recipient-name.form-control(type='text')
+                .modal-footer
+                  button.btn.btn-secondary(type='button' data-bs-dismiss='modal') Close
+                  button.btn.btn-primary(type='button') Join
+
     .col.col-md-9
       .container.childContainer
         header

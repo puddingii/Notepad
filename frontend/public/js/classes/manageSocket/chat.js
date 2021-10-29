@@ -22,6 +22,7 @@ export default class Chat {
     initActions() {
         this.inputButton.addEventListener("click", () => this.clientWrite());
         this.serverWrite();
+        this.serverEnterRoom();
     }
 
     /**
@@ -81,5 +82,11 @@ export default class Chat {
         chatting.innerHTML = `<span style=${style}>${user}:</span> <span>${text}</span>`;
 
         return chatting;
+    }
+
+    serverEnterRoom() {
+        this.#socket.on("enterRoom", () => {
+            console.log("Someone enters this room.");
+        });
     }
 }
