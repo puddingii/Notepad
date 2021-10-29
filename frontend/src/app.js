@@ -62,8 +62,6 @@ const io = new Server(server);
 const onConnection = (socket) => {
     const socketController = new SocketController(io, socket);
     socketController.init();
-    socketController.join("TEST", "eefas");
-    console.log(socket.rooms);
 };
 io.on("connection", onConnection);
 

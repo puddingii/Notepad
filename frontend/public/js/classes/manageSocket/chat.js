@@ -28,8 +28,9 @@ export default class Chat {
         this.inputButton.addEventListener("click", () => this.sendClientMessage());
         this.newButton.addEventListener("click", () => this.joinNewRoom());
         this.joinButton.addEventListener("click", () => this.joinRoom());
+        this.exitButton.addEventListener("click", () => this.exitRoom());
+        this.#socket.on("roomName", (text) => this.roomName.innerText = text);
         this.receiveClientMessage();
-        this.serverEnterRoom();
     }
 
     deleteRecords() {
@@ -47,7 +48,12 @@ export default class Chat {
     joinNewRoom() {
         this.#socket.emit("joinNewRoom", this.#userId);
         this.deleteRecords();
-        this.#socket.on("roomName", (text) => this.roomName.innerText = text);
+    }
+
+    exitRoom() {
+        this.#socket.emit("exitRoom");
+        this.deleteRecords();
+        this.roomName.innerText = "NULL";
     }
 
     /**
@@ -111,11 +117,5 @@ export default class Chat {
         chatting.innerHTML = `<span style=${style}>${user}:</span> <span>${text}</span>`;
 
         return chatting;
-    }
-
-    serverEnterRoom() {
-        this.#socket.on("enterRoom", () => {
-            console.log("Someone enters this room.");
-        });
     }
 }
