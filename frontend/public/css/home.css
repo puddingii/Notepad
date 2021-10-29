@@ -33,7 +33,7 @@ input#difBtn {
 	font-weight: bold;
 }
 .leftCard {
-	min-width: 120px;
+	min-width: 191px;
 	max-width: 230px;
 	height: 734px;
 	margin-left: 30px;
@@ -41,6 +41,7 @@ input#difBtn {
 }
 .userInfo {
 	height: 145px;
+	padding: 5px;
 }
 .chat {
 	height: 530px;
@@ -49,7 +50,7 @@ input#difBtn {
 }
 .chatRecord {
 	overflow: scroll;
-	height:470px;
+	height:450px;
 }
 ul {
 	padding-left: 15px;

@@ -41,6 +41,9 @@ export class MyWindow {
 		});
 		const controllModal = new Modal("exampleModal");
 		controllModal.init();
+		const copyRoomName = document.getElementById("roomName");
+		navigator.clipboard.writeText(copyRoomName.innerText);
+
 	}
 
 	/**

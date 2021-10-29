@@ -4,6 +4,7 @@ export default class Modal {
     }
     #modal;
     init() {
+        // 모달이 보여질 때 이벤트
         this.#modal.addEventListener("show.bs.modal", (event) => {
             // Button that triggered the modal
             const button = event.relatedTarget;

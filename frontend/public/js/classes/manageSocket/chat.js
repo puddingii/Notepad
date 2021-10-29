@@ -4,6 +4,10 @@ export default class Chat {
     recordBoard = document.getElementById("chatRecordBoard");
     inputForm = document.getElementById("chatInput");
     inputButton = document.getElementById("chatInputButton");
+    newButton = document.getElementById("chatNewBtn");
+    joinButton = document.getElementById("chatJoinBtn");
+    exitButton = document.getElementById("chatExitBtn");
+    roomName = document.getElementById("roomName");
     /**
      * socket을 사용하기 위한 io함수 가져오기, 현재 사용중인 user의 id
      * 
@@ -20,9 +24,17 @@ export default class Chat {
      * 채팅내용을 채팅방에 적어주기 위한 이벤트 설정.
      */
     initActions() {
-        this.inputButton.addEventListener("click", () => this.clientWrite());
-        this.serverWrite();
+        this.inputButton.addEventListener("click", () => this.sendClientMessage());
+        this.newButton.addEventListener("click", () => this.joinNewRoom());
+        this.receiveClientMessage();
         this.serverEnterRoom();
+    }
+
+    joinNewRoom() {
+        this.#socket.emit("joinNewRoom", this.#userId);
+        const records = this.recordBoard.querySelectorAll("li");
+        records.forEach((record) => record.remove());
+        this.#socket.on("roomName", (text) => this.roomName.innerText = text);
     }
 
     /**
@@ -47,8 +59,8 @@ export default class Chat {
     /**
      * 클라이언트가 채팅을 하면 채팅내용을 다른 사람에게 전달하는 함수
      */
-    clientWrite() {
-        this.#socket.emit("clientWrite", this.#userId, this.inputForm.value);
+    sendClientMessage() {
+        this.#socket.emit("clientMessage", this.#userId, this.inputForm.value);
         const newChat = this.createItem();
         this.recordBoard.appendChild(newChat);
         this.inputForm.value = "";
@@ -58,11 +70,15 @@ export default class Chat {
     /**
      * 클라이언트가 채팅한 내용을 접속한 사람들에게 뿌려주는 함수
      */
-    serverWrite() {
-        this.#socket.on("serverWrite", (chatInfo) => {
+    receiveClientMessage() {
+        this.#socket.on("serverMessage", (chatInfo) => {
             let { user, text } = chatInfo;
-            const renamedId = this.renameUserId(user);
-            const newChat = this.createItem(renamedId, text);
+            if (user === "SYSTEM") {
+                text = `${this.renameUserId(text)} entered!`;
+            } else {
+                user = this.renameUserId(user);
+            }
+            const newChat = this.createItem(user, text);
             this.recordBoard.appendChild(newChat);
             this.autoScroll();
         });

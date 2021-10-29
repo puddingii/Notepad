@@ -61,8 +61,9 @@ const server = https.createServer(httpsOptions, clientApp);
 const io = new Server(server);
 const onConnection = (socket) => {
     const socketController = new SocketController(io, socket);
-    socketController.joinRoom("testRoom");
-    socketController.clientChat();
+    socketController.init();
+    socketController.join("TEST", "eefas");
+    console.log(socket.rooms);
 };
 io.on("connection", onConnection);
 

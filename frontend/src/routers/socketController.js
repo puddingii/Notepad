@@ -5,15 +5,36 @@ export default class SocketController {
     }
     #io;
     #socket;
+    #currentRoom;
 
-    joinRoom(roomName) {
+    init() {
+        this.#socket.on("clientMessage", (user, text) => this.sendBroadcastMessage(user, text));
+        this.#socket.on("joinNewRoom", (userId) => this.joinNewRoom(userId));
+    }
+
+    leave() {
+        this.#socket.leave(this.#currentRoom);
+    }
+
+    join(roomName, userId) {
+        if (this.#currentRoom) this.leave();
+        this.#currentRoom = roomName;
         this.#socket.join(roomName);
-        this.#socket.to(roomName).emit("enterRoom");
+        this.sendBroadcastMessage("SYSTEM", userId);
     }
 
-    clientChat() {
-        this.#socket.on("clientWrite", (user, text) => {
-            this.#socket.broadcast.emit("serverWrite", { user, text });
-        });
+    joinNewRoom(userId) {
+        const randomString = Math.random().toString(36);
+        this.join(randomString, userId);
+        this.sendRoomName(randomString);
     }
+
+    sendRoomName(text) {
+        this.#socket.emit("roomName", text);
+    }
+
+    sendBroadcastMessage(user, text) {
+        this.#socket.broadcast.to(this.#currentRoom).emit("serverMessage", { user, text });
+    }
+
 }

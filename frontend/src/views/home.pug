@@ -7,7 +7,6 @@ block headScriptAndCss
   script(src="https://cdn.socket.io/4.3.2/socket.io.min.js" integrity="sha384-KAZ4DtjNhLChOB/hxXuKqhMLYvx3b5MlT55xPEiNmREKRzeEm+RVPlTnAn0ajQNs" crossorigin="anonymous")
 
 block content 
-  .container
   .row.align-items-md-stretch 
     .col.col-md-2.leftCard
       div.card.userInfo
@@ -15,16 +14,19 @@ block content
         p.card-text#currentUserId=userId
         button.btn.btn-danger#logout(type="button") Log out
       div.card.chat
+        button.btn.btn-outline-secondary#roomName(type='button') Secondary
+        .row 
+          button.btn.btn-light.col#chatNewBtn(style="margin-left:12px;") New
+          button.btn.btn-light.col#chatJoinBtn(data-bs-toggle="modal" data-bs-target="#exampleModal") Join
+          button.btn.btn-light.col#chatExitBtn(style="margin-right:12px;") Exit
+
+
         ul.chatRecord#chatRecordBoard
-          li hi
         .chatInputDiv
           .input-group.mb-3.chatInputForm
             input.form-control#chatInput(type='text' placeholder="Chat" aria-describedby='chatInputButton')
             button#chatInputButton.input-group-text >
-          .input-group.row.mb-3.chatInputForm
-            button.btn.btn-outline-secondary.col.input-group-text New
-            button.btn.btn-outline-secondary.col.input-group-text(data-bs-toggle="modal" data-bs-target="#exampleModal") Join
-            button.btn.btn-outline-secondary.col.input-group-text Leave
+          
           #exampleModal.modal.fade(tabindex='-1' aria-labelledby='exampleModalLabel' aria-hidden='true')
             .modal-dialog.modal-dialog-centered
               .modal-content
