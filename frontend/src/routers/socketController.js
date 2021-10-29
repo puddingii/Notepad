@@ -10,13 +10,14 @@ export default class SocketController {
     init() {
         this.#socket.on("clientMessage", (user, text) => this.sendBroadcastMessage(user, text));
         this.#socket.on("joinNewRoom", (userId) => this.joinNewRoom(userId));
+        this.#socket.on("joinRoom", (data) => this.join(data.userId, data.name));
     }
 
     leave() {
         this.#socket.leave(this.#currentRoom);
     }
 
-    join(roomName, userId) {
+    join(userId, roomName) {
         if (this.#currentRoom) this.leave();
         this.#currentRoom = roomName;
         this.#socket.join(roomName);
@@ -25,7 +26,7 @@ export default class SocketController {
 
     joinNewRoom(userId) {
         const randomString = Math.random().toString(36);
-        this.join(randomString, userId);
+        this.join(userId, randomString);
         this.sendRoomName(randomString);
     }
 

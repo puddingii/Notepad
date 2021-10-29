@@ -4,8 +4,9 @@ export default class Chat {
     recordBoard = document.getElementById("chatRecordBoard");
     inputForm = document.getElementById("chatInput");
     inputButton = document.getElementById("chatInputButton");
+    inputRoomName = document.getElementById("inputRoomName");
     newButton = document.getElementById("chatNewBtn");
-    joinButton = document.getElementById("chatJoinBtn");
+    joinButton = document.getElementById("joinRoomButton");
     exitButton = document.getElementById("chatExitBtn");
     roomName = document.getElementById("roomName");
     /**
@@ -26,14 +27,26 @@ export default class Chat {
     initActions() {
         this.inputButton.addEventListener("click", () => this.sendClientMessage());
         this.newButton.addEventListener("click", () => this.joinNewRoom());
+        this.joinButton.addEventListener("click", () => this.joinRoom());
         this.receiveClientMessage();
         this.serverEnterRoom();
     }
 
-    joinNewRoom() {
-        this.#socket.emit("joinNewRoom", this.#userId);
+    deleteRecords() {
         const records = this.recordBoard.querySelectorAll("li");
         records.forEach((record) => record.remove());
+    }
+
+    joinRoom() {
+        const name = this.inputRoomName.value;
+        this.#socket.emit("joinRoom", { userId: this.#userId, name });
+        this.deleteRecords();
+        this.roomName.innerText = name;
+    }
+
+    joinNewRoom() {
+        this.#socket.emit("joinNewRoom", this.#userId);
+        this.deleteRecords();
         this.#socket.on("roomName", (text) => this.roomName.innerText = text);
     }
 

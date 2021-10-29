@@ -17,7 +17,7 @@ block content
         button.btn.btn-outline-secondary#roomName(type='button') Secondary
         .row 
           button.btn.btn-light.col#chatNewBtn(style="margin-left:12px;") New
-          button.btn.btn-light.col#chatJoinBtn(data-bs-toggle="modal" data-bs-target="#exampleModal") Join
+          button.btn.btn-light.col(data-bs-toggle="modal" data-bs-target="#joinRoomModal") Join
           button.btn.btn-light.col#chatExitBtn(style="margin-right:12px;") Exit
 
 
@@ -27,20 +27,20 @@ block content
             input.form-control#chatInput(type='text' placeholder="Chat" aria-describedby='chatInputButton')
             button#chatInputButton.input-group-text >
           
-          #exampleModal.modal.fade(tabindex='-1' aria-labelledby='exampleModalLabel' aria-hidden='true')
+          #joinRoomModal.modal.fade(tabindex='-1' aria-labelledby='joinRoomModalLabel' aria-hidden='true')
             .modal-dialog.modal-dialog-centered
               .modal-content
                 .modal-header
-                  h5#exampleModalLabel.modal-title Input room number
+                  h5#joinRoomModalLabel.modal-title Input room name
                   button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
                 .modal-body
                   form 
                     .mb-3
-                      label.col-form-label(for='recipient-name') Number
-                      input#recipient-name.form-control(type='text')
+                      label.col-form-label(for='inputRoomName') Room Name
+                      input#inputRoomName.form-control(type='text')
                 .modal-footer
                   button.btn.btn-secondary(type='button' data-bs-dismiss='modal') Close
-                  button.btn.btn-primary(type='button') Join
+                  button.btn.btn-primary#joinRoomButton(type='button' data-bs-dismiss='modal') Join
 
     .col.col-md-9
       .container.childContainer
