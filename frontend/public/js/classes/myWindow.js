@@ -39,8 +39,7 @@ export class MyWindow {
 			}
 		});
 		const copyRoomName = document.getElementById("roomName");
-		navigator.clipboard.writeText(copyRoomName.innerText);
-
+		copyRoomName.addEventListener("click", async () => await navigator.clipboard.writeText(copyRoomName.innerText));
 	}
 
 	/**

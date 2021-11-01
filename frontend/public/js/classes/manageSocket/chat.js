@@ -26,6 +26,7 @@ export default class Chat {
      */
     initActions() {
         this.inputButton.addEventListener("click", () => this.sendClientMessage());
+        this.inputForm.addEventListener("keydown", (e) => { if (e.key === "Enter") this.sendClientMessage(); });
         this.newButton.addEventListener("click", () => this.joinNewRoom());
         this.joinButton.addEventListener("click", () => this.joinRoom());
         this.exitButton.addEventListener("click", () => this.exitRoom());
@@ -83,6 +84,7 @@ export default class Chat {
         const newChat = this.createItem();
         this.recordBoard.appendChild(newChat);
         this.inputForm.value = "";
+        this.inputForm.focus();
         this.autoScroll();
     }
 
@@ -113,7 +115,7 @@ export default class Chat {
     createItem(userName, text = this.inputForm.value) {
         const chatting = document.createElement("li");
         const user = userName ?? "You";
-        const style = userName ? "" : "'color:orange;'";
+        const style = userName ? "'color:rgb(88, 88, 230);'" : "'color:orange;'";
         chatting.innerHTML = `<span style=${style}>${user}:</span> <span>${text}</span>`;
 
         return chatting;

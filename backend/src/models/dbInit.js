@@ -1,7 +1,8 @@
 import { Sequelize } from "sequelize";
+import { DB_INFO } from "../../config/env.js"
 
-export const sequelize = new Sequelize("notepad", "root", "12345678", {
-    "host": "127.0.0.1",
+export const sequelize = new Sequelize("notepad", DB_INFO.USER, DB_INFO.PASSWD, {
+    "host": DB_INFO.HOSTNAME,
     "dialect": "mysql",
-    "port": "3306"
+    "port": DB_INFO.PORT
 });
