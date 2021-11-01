@@ -30,6 +30,7 @@ export default class Chat {
         this.newButton.addEventListener("click", () => this.joinNewRoom());
         this.joinButton.addEventListener("click", () => this.joinRoom());
         this.exitButton.addEventListener("click", () => this.exitRoom());
+        this.#socket.on("roomName", (text) => this.roomName.innerText = text);
         this.#socket.on("serverMessage", (chatInfo) => this.receiveClientMessage(chatInfo));
     }
 
@@ -45,19 +46,17 @@ export default class Chat {
      * 특정 방에 들어갔을 때의 기능으로 채팅방 기록들을 삭제한다.
      */
     joinRoom() {
-        const name = this.inputRoomName.value;
-        this.#socket.emit("joinRoom", { userId: this.#userId, name });
+        const roomName = this.inputRoomName.value;
+        this.#socket.emit("joinRoom", { userId: this.#userId, roomName });
         this.deleteRecords();
-        this.roomName.innerText = name;
+        this.roomName.innerText = roomName;
     }
 
     /**
      * 랜덤 string을 생성해서 해당 방으로 들어간다.
      */
     joinNewRoom() {
-        const randomString = Math.random().toString(36).substr(2, 11);
-        this.#socket.emit("joinNewRoom", { userId: this.#userId, randomString });
-        this.roomName.innerText = randomString;
+        this.#socket.emit("joinNewRoom", this.#userId);
         this.deleteRecords();
     }
 
