@@ -15,22 +15,22 @@ userApi.post("/login", async (req, res) => {
     } = req;
     try {
         const userInfo = await Users.findOne({ where: { email } });
-        const storedPasswd = userInfo.getPassword();
         if (!userInfo) {
-            return res.sendStatus(404);
+            return res.status(404).json({ result: false, msg: "User is not existed" });
         }
 
+        const storedPasswd = userInfo.getPassword();
         const isSame = await bcrypt.compare(passwd, storedPasswd);
         if (isSame && userInfo.getStatus() !== "0") {
             await Users.update({ loginStatus: "0" }, { where: { email } });
-            return res.status(202).json({ result: false, msg: "Log out another browser" });
+            return res.status(403).json({ result: false, msg: "Log out another browser" });
         }
         else if (!isSame) {
-            return res.status(400).json({ result: isSame, msg: "Incorrect password" });
+            return res.status(400).json({ result: false, msg: "Incorrect password" });
         }
         jwt.sign({ _id: userInfo.getId(), email }, SECURE_INFO.JWT_SECRET, { expiresIn: '1h' }, async (err, token) => {
             await Users.update({ loginStatus: token }, { where: { email } })
-            return res.status(201).json({ token, result: isSame });
+            return res.status(201).json({ token, result: true });
         });
     } catch (e) {
         console.log(e);

@@ -8,7 +8,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 import { DB_INFO, SECURE_INFO } from "../config/env.js";
 import { Server } from "socket.io";
-import homeRouter from "./routers/homeRouter.js";
+import homeRouter from "./routers/homeController.js";
 import SocketController from "./routers/socketController.js";
 
 MySQLStore(session);

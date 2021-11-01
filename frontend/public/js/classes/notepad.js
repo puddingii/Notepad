@@ -27,7 +27,6 @@ export default class Notepad {
 	set noteInfoList(noteInfoList) {
 		this.#noteInfoList = noteInfoList;
 	}
-
 	get openTabs() {
 		return this.#openTabs;
 	}
@@ -191,16 +190,20 @@ export default class Notepad {
 	 * id값은 현재 db에 저장되어있는 최대id값을 참고해서 생성함.(max+1)
 	 */
 	async onClickNewFile() {
-		const id = await this.getMaxId() + 1;
-		const random = `tmp${id}`;
+		let id = await this.getMaxId() + 1;
+		let title = `tmp${id}`;
+		while (this.#openTabs.find((tab) => tab === title)) {
+			id += 1;
+			title = `tmp${id}`;
+		}
 		this.#noteInfoList.push({
 			id,
 			email: this.#userEmail,
-			title: random,
+			title,
 			content: "",
 			isSaved: false,
 		});
-		const navigationItem = this.createNavigationItem(random, id);
+		const navigationItem = this.createNavigationItem(title, id);
 		this.navigationBar.addItemToBar(navigationItem);
 		this.onClickNavigationBar(id);
 	}

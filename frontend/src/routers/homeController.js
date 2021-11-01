@@ -28,11 +28,11 @@ homeRouter.post("/login", logoutStatus, async (req, res) => {
             req.session.userId = loginId;
             return res.redirect("/");
         }
-        // 비밀번호가 틀렸을 때
+        // 조건이 맞지 않아 로그인 실패가 됬을시
         return res.status(400).render("login", { errorMsg: responseJson.msg });
     } catch (e) { // DB에서 오류가 났거나 id가 없을시.
         console.log(e);
-        return res.status(400).render("login", { errorMsg: "ID is not existed / DB error" });
+        return res.status(400).render("login", { errorMsg: "DB error" });
     }
 });
 

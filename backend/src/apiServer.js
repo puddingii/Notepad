@@ -9,7 +9,7 @@ import { SECURE_INFO } from "../config/env.js";
 
 const apiApp = express();
 const corsOptions = {
-    origin: [/localhost:3500/, /localhost:3550/],
+    origin: [/localhost:3550/],
 };
 
 const appSetting = (app) => {

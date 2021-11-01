@@ -30,15 +30,20 @@ export default class Chat {
         this.newButton.addEventListener("click", () => this.joinNewRoom());
         this.joinButton.addEventListener("click", () => this.joinRoom());
         this.exitButton.addEventListener("click", () => this.exitRoom());
-        this.#socket.on("roomName", (text) => this.roomName.innerText = text);
-        this.receiveClientMessage();
+        this.#socket.on("serverMessage", (chatInfo) => this.receiveClientMessage(chatInfo));
     }
 
+    /**
+     * 채팅방 기록을 지우는 기능
+     */
     deleteRecords() {
         const records = this.recordBoard.querySelectorAll("li");
         records.forEach((record) => record.remove());
     }
 
+    /**
+     * 특정 방에 들어갔을 때의 기능으로 채팅방 기록들을 삭제한다.
+     */
     joinRoom() {
         const name = this.inputRoomName.value;
         this.#socket.emit("joinRoom", { userId: this.#userId, name });
@@ -46,11 +51,19 @@ export default class Chat {
         this.roomName.innerText = name;
     }
 
+    /**
+     * 랜덤 string을 생성해서 해당 방으로 들어간다.
+     */
     joinNewRoom() {
-        this.#socket.emit("joinNewRoom", this.#userId);
+        const randomString = Math.random().toString(36).substr(2, 11);
+        this.#socket.emit("joinNewRoom", { userId: this.#userId, randomString });
+        this.roomName.innerText = randomString;
         this.deleteRecords();
     }
 
+    /**
+     * 현재 속해있는 방에서 나간다.
+     */
     exitRoom() {
         this.#socket.emit("exitRoom");
         this.deleteRecords();
@@ -90,19 +103,19 @@ export default class Chat {
 
     /**
      * 클라이언트가 채팅한 내용을 접속한 사람들에게 뿌려주는 함수
+     * 
+     * @param {object} chatInfo 채팅정보 
      */
-    receiveClientMessage() {
-        this.#socket.on("serverMessage", (chatInfo) => {
-            let { user, text } = chatInfo;
-            if (user === "SYSTEM") {
-                text = `${this.renameUserId(text)} entered!`;
-            } else {
-                user = this.renameUserId(user);
-            }
-            const newChat = this.createItem(user, text);
-            this.recordBoard.appendChild(newChat);
-            this.autoScroll();
-        });
+    receiveClientMessage(chatInfo) {
+        let { user, text } = chatInfo;
+        if (user === "SYSTEM") {
+            text = `${this.renameUserId(text)} entered!`;
+        } else {
+            user = this.renameUserId(user);
+        }
+        const newChat = this.createItem(user, text);
+        this.recordBoard.appendChild(newChat);
+        this.autoScroll();
     }
 
     /**
