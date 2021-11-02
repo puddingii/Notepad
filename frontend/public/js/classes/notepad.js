@@ -1,4 +1,4 @@
-/*global NotepadData, UserData*/
+/*global ManageNotepadData, ManageUserData*/
 import DropdownBar from './manageList/dropdownBar.js';
 import NavigationBar from "./manageList/navigationBar.js";
 import NoteButton from "./manageButton/noteButton.js";
@@ -10,8 +10,8 @@ export default class Notepad {
 	 * DropdownBar, NavigationBar, WriteSection(Textarea) Class를 가져와 Id값으로 셋팅한다.
 	 */
 	constructor() {
-		this.notepadData = new NotepadData();
-		this.userData = new UserData();
+		this.manageNotepadData = new ManageNotepadData();
+		this.manageUserData = new ManageUserData();
 		this.writeSection = new WriteSection("textareaForm", "textareaLabel");
 		this.dropdownBar = new DropdownBar("dropdownMenu");
 		this.navigationBar = new NavigationBar("navContainer");
@@ -37,7 +37,7 @@ export default class Notepad {
 	 * @returns {number} 최대값
 	 */
 	async getMaxId() {
-		const dbMaxId = await this.notepadData.getLastId();
+		const dbMaxId = await this.manageNotepadData.getLastId();
 		if (this.#noteInfoList.length) {
 			const localMax = this.manageArray.getMaxId(this.#noteInfoList);
 			const finalMax = Math.max(dbMaxId, localMax);
@@ -54,7 +54,7 @@ export default class Notepad {
 	 * @param {string} currentUserEmail 로그인한 유저 이메일
 	 */
 	async init(currentUserEmail) {
-		const allData = await this.notepadData.load(currentUserEmail);
+		const allData = await this.manageNotepadData.load(currentUserEmail);
 		const { endTitle, openTab } = allData.pop();
 		this.#openTabs = openTab ? openTab.split(',') : [];
 		this.#userEmail = currentUserEmail;
@@ -241,7 +241,7 @@ export default class Notepad {
 	 */
 	async onClickSave() {
 		const noteData = this.getCurrentInfo();
-		const response = await this.notepadData.save(noteData.id, noteData.email, noteData.title, noteData.content);
+		const response = await this.manageNotepadData.save(noteData.id, noteData.email, noteData.title, noteData.content);
 		if (response.status !== 201) {
 			const targetData = this.manageArray.getObjectById(this.#noteInfoList, this.writeSection.noteId);
 			this.writeSection.setMonitorLabel(targetData.isSaved, `처리오류 - Response status code : ${response.status}`);
@@ -272,7 +272,7 @@ export default class Notepad {
 		noteData.id = await this.getMaxId() + 1;
 		noteData.title = document.getElementById("saveAsInput").value;
 
-		const response = await this.notepadData.saveAs(noteData.email, noteData.title, noteData.content);
+		const response = await this.manageNotepadData.saveAs(noteData.email, noteData.title, noteData.content);
 		if (response.status === 400) {
 			const targetData = this.manageArray.getObjectById(this.#noteInfoList, this.writeSection.noteId);
 			this.writeSection.setMonitorLabel(targetData.isSaved, `처리오류 - Response status code : ${response.status}`);
@@ -293,7 +293,7 @@ export default class Notepad {
 	 * @returns {undefined} 
 	 */
 	async onClickDelete() {
-		const response = await this.notepadData.delete(this.writeSection.noteId, this.#userEmail);
+		const response = await this.manageNotepadData.delete(this.writeSection.noteId, this.#userEmail);
 		if (response.status !== 201) {
 			const targetData = this.manageArray.getObjectById(this.#noteInfoList, this.writeSection.noteId);
 			this.writeSection.setMonitorLabel(targetData.isSaved, `처리오류 - Response status code : ${response.status}`);
@@ -346,7 +346,7 @@ export default class Notepad {
 	 * 창을 닫거나 주소를 이동하기전에 열어놨던 탭과 마지막에 봤던 탭을 저장할 때 사용
 	 */
 	async saveOpenNote() {
-		await this.userData.saveOpenNote(this.#userEmail, this.#openTabs, this.writeSection.noteName);
+		await this.manageUserData.saveOpenNote(this.#userEmail, this.#openTabs, this.writeSection.noteName);
 	}
 
 	/**

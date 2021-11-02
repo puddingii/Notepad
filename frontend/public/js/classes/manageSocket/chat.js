@@ -17,9 +17,11 @@ export default class Chat {
     constructor(userId) {
         this.#socket = io();
         this.#userId = userId;
+        this.#userList = [];
     }
     #socket;
     #userId;
+    #userList;
 
     /**
      * 채팅내용을 채팅방에 적어주기 위한 이벤트 설정.
@@ -33,6 +35,7 @@ export default class Chat {
         this.#socket.on("roomName", (text) => this.roomName.innerText = text);
         this.#socket.on("serverSendMessage", (chatInfo) => this.receiveClientMessage(chatInfo));
         this.#socket.on("serverSendFile", (data) => this.receiveClientFile(data));
+        this.#socket.on("updateUser", (userId) => this.#userList.push(userId));
     }
 
     /**

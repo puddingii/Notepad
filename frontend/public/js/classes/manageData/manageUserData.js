@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-class UserData {
+class ManageUserData {
     /**
      * 유저db에 열려있는 노트패드들을 저장
      *

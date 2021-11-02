@@ -4,10 +4,11 @@ import helmet from "helmet";
 import session from "express-session";
 import MySQLStore from "express-mysql-session";
 import https from "https";
+import { Server } from "socket.io";
+import { instrument } from "@socket.io/admin-ui";
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 import { DB_INFO, SECURE_INFO } from "../config/env.js";
-import { Server } from "socket.io";
 import homeRouter from "./routers/homeController.js";
 import SocketController from "./routers/socketController.js";
 
@@ -58,10 +59,17 @@ const httpsOptions = {
 
 const server = https.createServer(httpsOptions, clientApp);
 
-const io = new Server(server);
+const io = new Server(server, {
+    cors: {
+        origin: ["https://admin.socket.io"],
+        credentials: true
+    }
+});
+instrument(io, { auth: false });
+const roomInfo = {};
 const onConnection = (socket) => {
     const socketController = new SocketController(io, socket);
-    socketController.init();
+    socketController.init(roomInfo);
 };
 io.on("connection", onConnection);
 
