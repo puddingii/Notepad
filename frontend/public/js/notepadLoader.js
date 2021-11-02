@@ -7,6 +7,7 @@ import { MyWindow } from "./classes/myWindow.js";
     await myWindow.initNotepad();
     myWindow.initChat();
     myWindow.setLogout("logout");
+    myWindow.setShare();
 })();
 $(function () {
     $(".sortable").sortable({

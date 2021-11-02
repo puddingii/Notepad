@@ -31,7 +31,20 @@ export default class Chat {
         this.joinButton.addEventListener("click", () => this.joinRoom());
         this.exitButton.addEventListener("click", () => this.exitRoom());
         this.#socket.on("roomName", (text) => this.roomName.innerText = text);
-        this.#socket.on("serverMessage", (chatInfo) => this.receiveClientMessage(chatInfo));
+        this.#socket.on("serverSendMessage", (chatInfo) => this.receiveClientMessage(chatInfo));
+        this.#socket.on("serverSendFile", (data) => this.receiveClientFile(data));
+    }
+
+    /**
+     * 공유할 파일을 방에 있는 사람들에게 뿌려주기 위한 함수(Emit함)
+     * 
+     * @param {object} fileInfo title, value, userId를 담은 객체
+     */
+    shareFile(fileInfo) {
+        this.#socket.emit("clientSendFile", fileInfo);
+        const newChat = this.createItem(null, `Share file- ${fileInfo.title}.txt`);
+        this.recordBoard.appendChild(newChat);
+        this.autoScroll();
     }
 
     /**
@@ -114,6 +127,24 @@ export default class Chat {
         }
         const newChat = this.createItem(user, text);
         this.recordBoard.appendChild(newChat);
+        this.autoScroll();
+    }
+
+    /**
+     * 브로드캐스트한 파일을 받으면 해당 파일을 보여주는 함수
+     * 
+     * @param {object} data title, value, userId를 담은 객체
+     */
+    receiveClientFile(data) {
+        const { userId, textValue, title } = data;
+        const blob = new Blob([textValue], { type: "text/plain;charset=utf8" });
+        const blobUrl = URL.createObjectURL(blob);
+        const downlaodLink = `<a href=${blobUrl} download=${title}.txt>${title}.txt</a>`;
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        link.download = `${title}.txt`;
+        const newFile = this.createItem(this.renameUserId(userId), downlaodLink);
+        this.recordBoard.appendChild(newFile);
         this.autoScroll();
     }
 

@@ -13,9 +13,14 @@ export default class SocketController {
     init() {
         this.#socket.on("clientMessage", (user, text) => this.sendBroadcastMessage(user, text));
         this.#socket.on("joinNewRoom", (userId) => this.joinNewRoom(userId));
-        this.#socket.on("joinRoom", (data) => this.join(data.userId, data.name));
+        this.#socket.on("joinRoom", (data) => this.join(data.userId, data.roomName));
         this.#socket.on("exitRoom", () => this.exit());
         this.#socket.on("disconnect", () => this.disconnectRoom());
+        this.#socket.on("clientSendFile", (data) => this.sendBroadcastFile(data));
+    }
+
+    sendBroadcastFile(data) {
+        this.#socket.broadcast.to(this.#currentRoom).emit("serverSendFile", data);
     }
 
     /**
@@ -66,6 +71,6 @@ export default class SocketController {
      * @param {string} text 넘길 메시지
      */
     sendBroadcastMessage(user, text) {
-        this.#socket.broadcast.to(this.#currentRoom).emit("serverMessage", { user, text });
+        this.#socket.broadcast.to(this.#currentRoom).emit("serverSendMessage", { user, text });
     }
 }

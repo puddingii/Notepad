@@ -36,8 +36,8 @@ export class MyWindow {
 			});
 		}
 
-		const openBtn = document.getElementById("openFile");
-		openBtn.addEventListener("click", (e) => this.myNotepad.onClickNewFile(e));
+		const openBtn = document.getElementById("newButton");
+		openBtn.addEventListener("click", () => this.myNotepad.onClickNewFile());
 
 		window.addEventListener("beforeunload", async () => {
 			if (location.pathname === "/") {
@@ -53,6 +53,19 @@ export class MyWindow {
 		this.myChat.initActions();
 		const copyRoomName = document.getElementById("roomName");
 		copyRoomName.addEventListener("click", async () => await navigator.clipboard.writeText(copyRoomName.innerText));
+	}
+
+	/**
+	 * 노트패드에 적은 내용을 txt파일로 공유하는 버튼
+	 */
+	setShare() {
+		const shareBtn = document.getElementById("shareButton");
+		shareBtn.addEventListener("click", () => {
+			const textValue = document.getElementById(this.myNotepad.writeSection.textareaId).value;
+			const title = this.myNotepad.writeSection.noteName;
+			const fileInfo = { userId: this.currentUserId, textValue, title };
+			this.myChat.shareFile(fileInfo);
+		});
 	}
 
 	/**
