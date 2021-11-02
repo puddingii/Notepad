@@ -5,6 +5,7 @@ import ManageArray from "./util/manageArray.js";
 export class MyWindow {
 	myNotepad;
 	myChat;
+	manageArray = new ManageArray();
 	constructor(id) {
 		this.currentUserId = id;
 		this.myNotepad = new Notepad();
@@ -23,7 +24,7 @@ export class MyWindow {
 
 		if (this.myNotepad.openTabs) {
 			this.myNotepad.openTabs.forEach((tabName) => {
-				const tabId = new ManageArray().getObjectByTitle(this.myNotepad.noteInfoList, tabName).id;
+				const tabId = this.manageArray.getObjectByTitle(this.myNotepad.noteInfoList, tabName).id;
 				const navigationItem = this.myNotepad.createNavigationItem(tabName, tabId);
 				this.myNotepad.navigationBar.addItemToBar(navigationItem);
 			});
@@ -60,12 +61,17 @@ export class MyWindow {
 	 */
 	setShare() {
 		const shareBtn = document.getElementById("shareButton");
-		shareBtn.addEventListener("click", () => {
-			const textValue = document.getElementById(this.myNotepad.writeSection.textareaId).value;
-			const title = this.myNotepad.writeSection.noteName;
-			const fileInfo = { userId: this.currentUserId, textValue, title };
-			this.myChat.shareFile(fileInfo);
-		});
+		shareBtn.addEventListener("click", () => this.sendFile(this.myNotepad.writeSection.noteName));
+	}
+
+	sendFile(title) {
+		const noteInfo = this.manageArray.getObjectByTitle(this.myNotepad.noteInfoList, title);
+		const fileInfo = {
+			userId: this.currentUserId,
+			textValue: noteInfo.content,
+			title
+		};
+		this.myChat.shareFile(fileInfo);
 	}
 
 	/**

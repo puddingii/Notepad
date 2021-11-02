@@ -8,9 +8,15 @@ import { MyWindow } from "./classes/myWindow.js";
     myWindow.initChat();
     myWindow.setLogout("logout");
     myWindow.setShare();
-})();
-$(function () {
-    $(".sortable").sortable({
-        items: "li.notetab"
+    $(function () {
+        $(".sortable").sortable({
+            items: "li.notetab"
+        });
+        $("#chatRecordBoard").droppable({
+            drop: function (event, ui) {
+                const eventTitle = ui.draggable[0].querySelector(".notelink").innerText;
+                myWindow.sendFile(eventTitle);
+            }
+        });
     });
-});
+})();
