@@ -20,7 +20,7 @@ export default class SocketController {
         this.#socket.on("clientSendFile", (data) => this.sendBroadcastFile(data));
         this.#socket.on("joinNewRoom", (userId) => this.joinNewRoom(userId));
         this.#socket.on("joinRoom", (data) => this.join(data.userId, data.roomName));
-        this.#socket.on("exitRoom", (userId) => this.exit(userId));
+        this.#socket.on("exitRoom", () => this.exit());
         this.#socket.on("disconnect", () => this.exit());
     }
 
@@ -45,29 +45,24 @@ export default class SocketController {
 
     /**
      * exit를 눌렀을 때 해당방에서 나가기. userList에서도 속해있던 방의 나간 유저의 이름 삭제
-     *
-     * @param {string} userId 삭제할 유저 아이디
      */
-    exit(userId = this.#userId) {
-        const index = this.#roomInfo[this.#currentRoom]?.indexOf(userId);
+    exit() {
+        const index = this.#roomInfo[this.#currentRoom]?.indexOf(this.#userId);
         if (index > -1) {
             this.#roomInfo[this.#currentRoom].splice(index, 1);
             if (this.#roomInfo[this.#currentRoom].length === 0) delete this.#roomInfo[this.#currentRoom];
         }
         this.#socket.leave(this.#currentRoom);
-        this.broadcastEmit("deleteUserId", userId);
+        this.broadcastEmit("deleteUserId", this.#userId);
         this.#currentRoom = null;
     }
 
     /**
      * 기존에 Room에 참여하고 있는 사람들에게 New user정보를 전달하는 함수
      */
-    updateUsers() {
-        if (this.#roomInfo[this.#currentRoom])
-            this.#roomInfo[this.#currentRoom].push(this.#userId);
-        else
-            this.#roomInfo[this.#currentRoom] = [this.#userId];
-        this.broadcastEmit("updateUser", this.#userId);
+    informAddedUser() {
+        this.broadcastEmit("addUser", this.#userId); // 새로운 유저가 들어왔다는 것을 방에 있던 사람들에게 알림
+        this.sendBroadcastMessage("SYSTEM", this.#userId);
     }
 
     /**
@@ -81,9 +76,14 @@ export default class SocketController {
         if (this.#currentRoom) this.exit(this.#userId);
         this.#currentRoom = roomName;
         this.#socket.join(roomName);
-        this.updateUsers();
-        this.#socket.emit("roomUserList", this.#roomInfo[roomName]);
-        this.sendBroadcastMessage("SYSTEM", this.#userId);
+
+        if (this.#roomInfo[this.#currentRoom])
+            this.#roomInfo[this.#currentRoom].push(this.#userId);
+        else
+            this.#roomInfo[this.#currentRoom] = [this.#userId];
+
+        this.#socket.emit("getUsersInRoom", this.#roomInfo[roomName]); // 방에 참여한 유저에게 방에 있는 사람들의 목록전달
+        this.informAddedUser();
     }
 
     /**
@@ -98,7 +98,7 @@ export default class SocketController {
             randomString = Math.random().toString(36).substr(2, 11);
         } while (this.#io.sockets.adapter.rooms.get(randomString));
         this.join(this.#userId, randomString);
-        this.#socket.emit("roomName", randomString);
+        this.#socket.emit("getRoomName", randomString);
     }
 
     /**

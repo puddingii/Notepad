@@ -34,11 +34,11 @@ export default class Chat {
         this.newButton.addEventListener("click", () => this.joinNewRoom());
         this.joinButton.addEventListener("click", () => this.joinRoom());
         this.exitButton.addEventListener("click", () => this.exitRoom());
-        this.#socket.on("roomName", (text) => this.roomName.innerText = text);
+        this.#socket.on("getRoomName", (text) => this.roomName.innerText = text);
         this.#socket.on("serverSendMessage", (chatInfo) => this.receiveClientMessage(chatInfo));
         this.#socket.on("serverSendFile", (data) => this.receiveClientFile(data));
-        this.#socket.on("updateUser", (userId) => this.updateUser(userId));
-        this.#socket.on("roomUserList", (list) => {
+        this.#socket.on("addUser", (userId) => this.addUser(userId));
+        this.#socket.on("getUsersInRoom", (list) => {
             this.#userList = list;
             this.setUserList(list);
         });
@@ -83,9 +83,9 @@ export default class Chat {
     /**
      * 유저아이디를 list안에 넣어두고 유저목록을 리셋한다.
      * 
-     * @param {string} userId 업데이트할 유저아이디
+     * @param {string} userId 추가할 유저아이디
      */
-    updateUser(userId) {
+    addUser(userId) {
         this.#userList.push(userId);
         this.setUserList();
     }
@@ -129,10 +129,10 @@ export default class Chat {
     }
 
     /**
-     * 현재 속해있는 방에서 나간다.
+     * 현재 속해있는 방에서 나간다. 유저리스트와 방이름을 초기화함.
      */
     exitRoom() {
-        this.#socket.emit("exitRoom", this.#userId);
+        this.#socket.emit("exitRoom");
         this.deleteRecords();
         this.#userList = [this.#userId];
         this.setUserList();
