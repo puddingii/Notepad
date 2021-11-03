@@ -20,42 +20,54 @@ export default class SocketController {
         this.#socket.on("clientSendFile", (data) => this.sendBroadcastFile(data));
         this.#socket.on("joinNewRoom", (userId) => this.joinNewRoom(userId));
         this.#socket.on("joinRoom", (data) => this.join(data.userId, data.roomName));
-        this.#socket.on("exitRoom", () => this.exit());
-        this.#socket.on("disconnect", () => this.disconnectRoom());
-    }
-
-    sendBroadcastFile(data) {
-        this.#socket.broadcast.to(this.#currentRoom).emit("serverSendFile", data);
+        this.#socket.on("exitRoom", (userId) => this.exit(userId));
+        this.#socket.on("disconnect", () => this.exit());
     }
 
     /**
-     * exit를 눌렀을 때 해당방에서 나가기
+     * broadcast emit을 관리하는 함수
+     * 
+     * @param {string} event emit event
+     * @param {object | string} data broadcast해서 emit할 때 같이 보낼 데이터
      */
-    exit() {
-        const index = this.#roomInfo[this.#currentRoom]?.indexOf(this.#userId);
+    broadcastEmit(event, data) {
+        this.#socket.broadcast.to(this.#currentRoom).emit(event, data);
+    }
+
+    /**
+     * client가 보낸 파일을 broacast해서 룸안의 전체 사람에게 보여준다
+     * 
+     * @param {object} data notepad 제목과 내용이 담겨있는 object
+     */
+    sendBroadcastFile(data) {
+        this.broadcastEmit("serverSendFile", data);
+    }
+
+    /**
+     * exit를 눌렀을 때 해당방에서 나가기. userList에서도 속해있던 방의 나간 유저의 이름 삭제
+     *
+     * @param {string} userId 삭제할 유저 아이디
+     */
+    exit(userId = this.#userId) {
+        const index = this.#roomInfo[this.#currentRoom]?.indexOf(userId);
         if (index > -1) {
             this.#roomInfo[this.#currentRoom].splice(index, 1);
             if (this.#roomInfo[this.#currentRoom].length === 0) delete this.#roomInfo[this.#currentRoom];
         }
         this.#socket.leave(this.#currentRoom);
-        this.#socket.broadcast.to(this.#currentRoom).emit("deleteUserId", this.#userId);
+        this.broadcastEmit("deleteUserId", userId);
         this.#currentRoom = null;
     }
 
     /**
-     * 연결이 끊겼을때 함수
+     * 기존에 Room에 참여하고 있는 사람들에게 New user정보를 전달하는 함수
      */
-    disconnectRoom() {
-        this.exit();
-        console.log(`disconnect`);
-    }
-
     updateUsers() {
         if (this.#roomInfo[this.#currentRoom])
             this.#roomInfo[this.#currentRoom].push(this.#userId);
         else
             this.#roomInfo[this.#currentRoom] = [this.#userId];
-        this.#socket.broadcast.to(this.#currentRoom).emit("updateUser", this.#userId);
+        this.broadcastEmit("updateUser", this.#userId);
     }
 
     /**
@@ -81,10 +93,10 @@ export default class SocketController {
      */
     joinNewRoom(userId) {
         this.#userId = userId;
-        let randomString = Math.random().toString(36).substr(2, 11);
-        while (this.#io.sockets.adapter.rooms.get(randomString)) {
+        let randomString;
+        do {
             randomString = Math.random().toString(36).substr(2, 11);
-        }
+        } while (this.#io.sockets.adapter.rooms.get(randomString));
         this.join(this.#userId, randomString);
         this.#socket.emit("roomName", randomString);
     }
@@ -96,6 +108,6 @@ export default class SocketController {
      * @param {string} text 넘길 메시지
      */
     sendBroadcastMessage(user, text) {
-        this.#socket.broadcast.to(this.#currentRoom).emit("serverSendMessage", { user, text });
+        this.broadcastEmit("serverSendMessage", { user, text });
     }
 }

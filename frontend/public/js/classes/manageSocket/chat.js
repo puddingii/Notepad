@@ -28,7 +28,9 @@ export default class Chat {
      */
     initActions() {
         this.inputButton.addEventListener("click", () => this.sendClientMessage());
-        this.inputForm.addEventListener("keydown", (e) => { if (e.key === "Enter") this.sendClientMessage(); });
+        this.inputForm.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") this.sendClientMessage();
+        });
         this.newButton.addEventListener("click", () => this.joinNewRoom());
         this.joinButton.addEventListener("click", () => this.joinRoom());
         this.exitButton.addEventListener("click", () => this.exitRoom());
@@ -36,7 +38,10 @@ export default class Chat {
         this.#socket.on("serverSendMessage", (chatInfo) => this.receiveClientMessage(chatInfo));
         this.#socket.on("serverSendFile", (data) => this.receiveClientFile(data));
         this.#socket.on("updateUser", (userId) => this.updateUser(userId));
-        this.#socket.on("roomUserList", (list) => this.setUserList(list));
+        this.#socket.on("roomUserList", (list) => {
+            this.#userList = list;
+            this.setUserList(list);
+        });
         this.#socket.on("deleteUserId", (userId) => this.deleteUserId(userId));
     }
 
@@ -60,7 +65,8 @@ export default class Chat {
      * @returns {string} HTML표기법으로 합친 list값들
      */
     listToHtml(list) {
-        return list.reduce((pre, cur) => `${pre}<br>${cur}`);
+        const renamedList = list.map((item) => this.renameUserId(item));
+        return renamedList.reduce((pre, cur) => `${pre}<br>${cur}`);
     }
 
     /**
@@ -126,7 +132,7 @@ export default class Chat {
      * 현재 속해있는 방에서 나간다.
      */
     exitRoom() {
-        this.#socket.emit("exitRoom");
+        this.#socket.emit("exitRoom", this.#userId);
         this.deleteRecords();
         this.#userList = [this.#userId];
         this.setUserList();
