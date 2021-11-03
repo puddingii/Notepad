@@ -1,4 +1,4 @@
-/*global io*/
+/*global io, bootstrap*/
 
 export default class Chat {
     recordBoard = document.getElementById("chatRecordBoard");
@@ -17,7 +17,7 @@ export default class Chat {
     constructor(userId) {
         this.#socket = io();
         this.#userId = userId;
-        this.#userList = [];
+        this.#userList = [userId];
     }
     #socket;
     #userId;
@@ -35,7 +35,53 @@ export default class Chat {
         this.#socket.on("roomName", (text) => this.roomName.innerText = text);
         this.#socket.on("serverSendMessage", (chatInfo) => this.receiveClientMessage(chatInfo));
         this.#socket.on("serverSendFile", (data) => this.receiveClientFile(data));
-        this.#socket.on("updateUser", (userId) => this.#userList.push(userId));
+        this.#socket.on("updateUser", (userId) => this.updateUser(userId));
+        this.#socket.on("roomUserList", (list) => this.setUserList(list));
+        this.#socket.on("deleteUserId", (userId) => this.deleteUserId(userId));
+    }
+
+    /**
+     * userList에서 userId에 해당하는 것 삭제
+     * 
+     * @param {string} userId 방에서 나간 유저 아이디
+     */
+    deleteUserId(userId) {
+        const index = this.#userList.indexOf(userId);
+        if (index > -1) {
+            this.#userList.splice(index, 1);
+            this.setUserList();
+        }
+    }
+
+    /**
+     * List안의 내용물들을 html로 표시해주기 위한 변환과정
+     * 
+     * @param {Array} list html으로 합치기 위한 리스트목록
+     * @returns {string} HTML표기법으로 합친 list값들
+     */
+    listToHtml(list) {
+        return list.reduce((pre, cur) => `${pre}<br>${cur}`);
+    }
+
+    /**
+     * 유저정보의 리스트들을 가지고 방의 참여자를 표시해주는 함수
+     * 
+     * @param {Array} list 유저정보를 가지고 있는 리스트 
+     */
+    setUserList(list = this.#userList) {
+        const convertedList = this.listToHtml(list);
+        this.roomName.dataset.bsContent = convertedList;
+        new bootstrap.Popover(this.roomName, { html: true });
+    }
+
+    /**
+     * 유저아이디를 list안에 넣어두고 유저목록을 리셋한다.
+     * 
+     * @param {string} userId 업데이트할 유저아이디
+     */
+    updateUser(userId) {
+        this.#userList.push(userId);
+        this.setUserList();
     }
 
     /**
@@ -82,6 +128,8 @@ export default class Chat {
     exitRoom() {
         this.#socket.emit("exitRoom");
         this.deleteRecords();
+        this.#userList = [this.#userId];
+        this.setUserList();
         this.roomName.innerText = "NULL";
     }
 
@@ -93,7 +141,7 @@ export default class Chat {
      */
     renameUserId(userId) {
         userId = userId.split("@")[0];
-        userId = userId.length > 3 ? `*${userId.slice(-3)}` : `*${userId}`;
+        userId = userId.length > 4 ? `*${userId.slice(-4)}` : `*${userId}`;
         return userId;
     }
 

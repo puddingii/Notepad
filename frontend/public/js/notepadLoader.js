@@ -8,10 +8,6 @@ import { MyWindow } from "./classes/myWindow.js";
     myWindow.initChat();
     myWindow.setLogout("logout");
     myWindow.setShare();
-    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-    popoverTriggerList.map(function (popoverTriggerEl) {
-        return new bootstrap.Popover(popoverTriggerEl);
-    });
     $(function () {
         $(".sortable").sortable({
             items: "li.notetab"

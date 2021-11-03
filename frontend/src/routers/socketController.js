@@ -17,11 +17,11 @@ export default class SocketController {
     init(roomInfo) {
         this.#roomInfo = roomInfo;
         this.#socket.on("clientMessage", (user, text) => this.sendBroadcastMessage(user, text));
+        this.#socket.on("clientSendFile", (data) => this.sendBroadcastFile(data));
         this.#socket.on("joinNewRoom", (userId) => this.joinNewRoom(userId));
         this.#socket.on("joinRoom", (data) => this.join(data.userId, data.roomName));
         this.#socket.on("exitRoom", () => this.exit());
         this.#socket.on("disconnect", () => this.disconnectRoom());
-        this.#socket.on("clientSendFile", (data) => this.sendBroadcastFile(data));
     }
 
     sendBroadcastFile(data) {
@@ -38,6 +38,7 @@ export default class SocketController {
             if (this.#roomInfo[this.#currentRoom].length === 0) delete this.#roomInfo[this.#currentRoom];
         }
         this.#socket.leave(this.#currentRoom);
+        this.#socket.broadcast.to(this.#currentRoom).emit("deleteUserId", this.#userId);
         this.#currentRoom = null;
     }
 
@@ -55,7 +56,6 @@ export default class SocketController {
         else
             this.#roomInfo[this.#currentRoom] = [this.#userId];
         this.#socket.broadcast.to(this.#currentRoom).emit("updateUser", this.#userId);
-        console.log(this.#roomInfo);
     }
 
     /**
@@ -70,6 +70,7 @@ export default class SocketController {
         this.#currentRoom = roomName;
         this.#socket.join(roomName);
         this.updateUsers();
+        this.#socket.emit("roomUserList", this.#roomInfo[roomName]);
         this.sendBroadcastMessage("SYSTEM", this.#userId);
     }
 

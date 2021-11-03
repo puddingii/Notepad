@@ -26,7 +26,6 @@ input#difBtn {
 }
 
 .card {
-	margin-top: 30px !important;
 	align-items: center;
 }
 .card-text {
@@ -40,10 +39,12 @@ input#difBtn {
 	word-break:break-all;
 }
 .userInfo {
+	margin-top: 30px !important;
 	height: 145px;
 	padding: 5px;
 }
 .chat {
+	margin-top: 30px !important;
 	height: 530px;
 	align-items: unset;
 	
