@@ -31,7 +31,9 @@ const cspOptioins = {
 };
 
 const appSetting = (app) => {
-    app.use(helmet({ contentSecurityPolicy: cspOptioins })); // XSS 공격, 교차 사이트 인젝션 등의 예방,안전한(SSL/TLS를 통한 HTTP) 연결을 적용하는 Strict-Transport-Security 헤더를 설정
+    // CSP설정으로 XSS 공격, 교차 사이트 인젝션 등의 예방, CSP는 신뢰할 수 있는 컨텐츠 소스의 화이트리스트 설정을 함.
+    // 안전한(SSL/TLS를 통한 HTTP) 연결을 적용하는 Strict-Transport-Security 헤더를 설정, HSTS는 프로토콜 다운그레이드 공격, 쿠키 하이재킹을 막는데 도움줌.
+    app.use(helmet({ contentSecurityPolicy: cspOptioins }));
     app.use("/static", express.static("public"));
     app.use(morgan("dev"));
     app.use(express.urlencoded({ extended: true }));

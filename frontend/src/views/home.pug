@@ -14,7 +14,7 @@ block content
         p.card-text#currentUserId=userId
         button.btn.btn-danger#logout(type="button") Log out
       div.card.chat
-        button.btn.btn-outline-secondary#roomName(type='button' tabindex='0' data-bs-toggle='popover' data-bs-trigger='hover focus' data-bs-content='Disabled popover<br>as') NULL
+        button.btn.btn-outline-secondary#roomName(type='button' tabindex='0' data-bs-toggle='popover' data-bs-trigger='hover focus' title="User List" data-bs-content='') NULL
         .row 
           button.btn.btn-light.col#chatNewBtn(style="margin-left:12px;") New
           button.btn.btn-light.col(data-bs-toggle="modal" data-bs-target="#joinRoomModal") Join
