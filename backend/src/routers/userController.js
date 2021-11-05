@@ -13,6 +13,7 @@ userApi.post("/login", async (req, res) => {
     const {
         body: { loginId: email, loginPassword: passwd }
     } = req;
+    const LOGOUT = "0";
     try {
         const userInfo = await Users.findOne({ where: { email } });
         if (!userInfo) {
@@ -21,8 +22,8 @@ userApi.post("/login", async (req, res) => {
 
         const storedPasswd = userInfo.getPassword();
         const isSame = await bcrypt.compare(passwd, storedPasswd);
-        if (isSame && userInfo.getStatus() !== "0") {
-            await Users.update({ loginStatus: "0" }, { where: { email } });
+        if (isSame && userInfo.getStatus() !== LOGOUT) {
+            await Users.update({ loginStatus: LOGOUT }, { where: { email } });
             return res.status(403).json({ result: false, msg: "Log out another browser" });
         }
         else if (!isSame) {
@@ -97,7 +98,7 @@ userApi.post("/join", async (req, res) => {
     } = req;
     try {
         if (password !== chkPassword) {
-            throw "Passwords are not the same";
+            throw new Error("Passwords are not the same");
         }
         const isExisted = await Users.findOne({ where: { email: loginId } });
         if (isExisted) {

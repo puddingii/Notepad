@@ -54,7 +54,7 @@ homeRouter.post("/join", logoutStatus, async (req, res) => {
         });
         if (response.status === 201) {
             return res.redirect("/");
-        } else throw "DB error";
+        } else throw new Error("DB error");
     } catch (e) {
         return res.status(400).render("join", { errorMsg: e });
     }

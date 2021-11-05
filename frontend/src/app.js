@@ -8,20 +8,14 @@ import { Server } from "socket.io";
 import { instrument } from "@socket.io/admin-ui";
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-import { DB_INFO, SECURE_INFO } from "../config/env.js";
+import { SECURE_INFO } from "../config/env.js";
 import homeRouter from "./routers/homeController.js";
 import SocketController from "./routers/socketController.js";
+import Singleton from "./singleton.js";
 
 MySQLStore(session);
 
 const clientApp = express();
-const MysqlOptions = {
-    host: DB_INFO.HOSTNAME,
-    port: DB_INFO.PORT,
-    user: DB_INFO.USER,
-    password: DB_INFO.PASSWD,
-    database: "notepad"
-};
 const cspOptioins = {
     directives: {
         ...helmet.contentSecurityPolicy.getDefaultDirectives(),
@@ -49,7 +43,6 @@ clientApp.use(session({
     secret: SECURE_INFO.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    store: new MySQLStore(MysqlOptions)
 }));
 clientApp.use("/", homeRouter);
 
@@ -68,10 +61,9 @@ const io = new Server(server, {
     }
 });
 instrument(io, { auth: false });
-const roomInfo = {};
 const onConnection = (socket) => {
     const socketController = new SocketController(io, socket);
-    socketController.init(roomInfo);
+    socketController.init(Singleton.roomInfo);
 };
 io.on("connection", onConnection);
 

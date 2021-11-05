@@ -14,7 +14,7 @@ export const loginStatus = async (req, res, next) => {
             });
             const responseJson = await response.json();
             if (responseJson.loginStatus !== req.session.userToken) {
-                throw "Log out another browser";
+                throw new Error("Log out another browser");
             }
 
             jwt.verify(req.session.userToken, SECURE_INFO.JWT_SECRET, (err, decoded) => {
@@ -22,11 +22,11 @@ export const loginStatus = async (req, res, next) => {
                     next();
                 }
                 if (err) {
-                    throw "JWT Session Verify Error";
+                    throw new Error("JWT Session Verify Error");
                 }
             });
         } catch (e) {
-            if (e === "JWT Session Verify Error") {
+            if (e.message === "JWT Session Verify Error") {
                 await fetch("https://localhost:8050/api/users/logout", {
                     method: "post",
                     headers: {

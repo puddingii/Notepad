@@ -14,12 +14,12 @@ apiRouter.post("/save", async (req, res) => {
 
     try {
         if (!validator.isEmail(email)) {
-            throw "This email is not validated";
+            throw new Error("This email is not validated");
         }
         const user = await Users.findOne({ where: { email } });
         const note = await Notepads.findOne({ where: { email, title } });
         if (!user) {
-            throw "User is not existed";
+            throw new Error("User is not existed");
         } else if (note && user) {
             await Notepads.update({ content: text }, { where: { id } });
         } else {
@@ -39,7 +39,7 @@ apiRouter.delete("/delete", async (req, res) => {
     } = req;
     try {
         if (!validator.isEmail(email)) {
-            throw "This email is not validated";
+            throw new Error("This email is not validated");
         }
         await Notepads.destroy({ where: { id: noteId, email } });
         return res.sendStatus(201);
@@ -57,11 +57,11 @@ apiRouter.post("/saveAs", async (req, res) => {
 
     try {
         if (!validator.isEmail(email)) {
-            throw "This email is not validated";
+            throw new Error("This email is not validated");
         }
         const item = await Notepads.findOne({ where: { email, title } });
         if (item) {
-            throw "Notepad is not null";
+            throw new Error("Notepad is not null");
         }
         await Notepads.create({ email, title, content: text });
         return res.sendStatus(201);
@@ -78,7 +78,7 @@ apiRouter.post("/loadAllData", async (req, res) => {
             body: { email }
         } = req;
         if (!validator.isEmail(email)) {
-            throw "This email is not validated";
+            throw new Error("This email is not validated");
         }
         const userInfo = await Users.findOne({ where: { email } });
         const notepadInfo = await Notepads.findAll({ where: { email } });
