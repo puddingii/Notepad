@@ -8,7 +8,7 @@ import { SECURE_INFO } from "../config/env.js";
 
 const apiApp = express();
 const corsOptions = {
-    origin: [/localhost:3500/]
+    origin: [/localhost:3500/, /localhost:3000/]
 };
 
 const appSetting = (app) => {

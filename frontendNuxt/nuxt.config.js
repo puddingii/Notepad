@@ -2,7 +2,7 @@ export default {
   buildModules: [
     '@nuxtjs/dotenv'
   ],
-  modules: [],
+  modules: ['@nuxtjs/axios'],
   head: {
     meta: [
       { charset: 'utf-8' },

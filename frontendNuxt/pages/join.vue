@@ -1,6 +1,6 @@
 <template>
   <main class="form-signin">
-    <form method="post" @submit.prevent="handleSubmit">
+    <form @submit.prevent="handleSubmit">
       <h1 class="h3 mb-3 fw-normal">Join</h1>
       <h3 class="mb-3 errorMsg">{{ errorMessage }}</h3>
       <div class="form-floating">
@@ -35,7 +35,12 @@ export default {
   },
   methods: {
     handleSubmit () {
-
+      this.$store.dispatch('sign/signIn', {
+        email: this.email,
+        password: this.password,
+        passwordCheck: this.passwordCheck
+      });
+      this.router.push('/login');
     }
   }
 };
