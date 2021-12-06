@@ -17,7 +17,7 @@
       </div>
       <button class="w-100 btn btn-lg btn-primary signBtn" type="submit">Submit</button>
     </form>
-    <button id="login" class="w-100 btn btn-lg btn-primary signBtn" type="button">Login</button>
+    <NuxtLink id="login" tag="button" to="/login" class="w-100 btn btn-lg btn-primary signBtn" type="button">Login</NuxtLink>
     <p class="mt-5 mb-3 text-muted">&copy; 2021&ndash;2021</p>
   </main>
 </template>
@@ -27,20 +27,30 @@ export default {
   layout: 'sign',
   data () {
     return {
-      errorMessage: '',
       email: '',
       password: '',
       passwordCheck: ''
     };
   },
+  computed: {
+    errorMessage () {
+      return this.$store.state.sign.errorMessage;
+    }
+  },
+  watch: {
+    errorMessage (newValue) {
+      if (newValue === '') {
+        this.$router.push('/login');
+      }
+    }
+  },
   methods: {
-    handleSubmit () {
-      this.$store.dispatch('sign/signIn', {
+    async handleSubmit () {
+      await this.$store.dispatch('sign/signUp', {
         email: this.email,
         password: this.password,
         passwordCheck: this.passwordCheck
       });
-      this.router.push('/login');
     }
   }
 };

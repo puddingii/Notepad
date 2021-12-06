@@ -40,7 +40,10 @@ const actions = {
   },
   async signUp ({ commit }, userInfo) {
     try {
-      const response = await this.$axios.post('http://localhost:8050/api/users/join', userInfo);
+      const {
+        email: loginId, password, passwordCheck: chkPassword
+      } = userInfo;
+      const response = await this.$axios.post('http://localhost:8050/api/users/join', { loginId, password, chkPassword });
       const {
         data: {
           result,
@@ -50,6 +53,7 @@ const actions = {
       if (!result) {
         throw new Error(responseMessage);
       }
+      commit('setErrorMessage', '');
     } catch (e) {
       commit('setErrorMessage', e);
     }

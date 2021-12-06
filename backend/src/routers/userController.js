@@ -98,7 +98,7 @@ userApi.post("/join", async (req, res) => {
     } = req;
     try {
         if (password !== chkPassword) {
-            throw new Error("Passwords are not the same");
+            return res.status(201).json({ result: false, msg: "Passwords are not the same" });
         }
         const isExisted = await Users.findOne({ where: { email: loginId } });
         if (isExisted) {
