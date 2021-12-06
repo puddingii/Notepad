@@ -1,0 +1,36 @@
+.form-signin {
+  width: 100%;
+  width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+  
+}
+
+.form-signin .checkbox {
+  font-weight: 400;
+}
+
+.form-signin .form-floating:focus-within {
+  z-index: 2;
+}
+
+.form-signin input[type="email"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.form-signin input[name="loginPassword2"] {
+
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.errorMsg {
+  font-size: 15px;
+  color: red;
+}
+
+.signBtn{
+  margin-top: 10px;
+}

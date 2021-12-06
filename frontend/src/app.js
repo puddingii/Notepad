@@ -2,18 +2,14 @@ import express from "express";
 import morgan from "morgan";
 import helmet from "helmet";
 import session from "express-session";
-import MySQLStore from "express-mysql-session";
-import https from "https";
+import http from "http";
 import { Server } from "socket.io";
 import { instrument } from "@socket.io/admin-ui";
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 import { SECURE_INFO } from "../config/env.js";
 import homeRouter from "./routers/homeController.js";
 import SocketController from "./routers/socketController.js";
 import Singleton from "./singleton.js";
-
-MySQLStore(session);
 
 const clientApp = express();
 const cspOptioins = {
@@ -39,21 +35,13 @@ appSetting(clientApp);
 clientApp.set("views", `${process.cwd()}/src/views`);
 clientApp.set("view engine", "pug");
 clientApp.use(session({
-    cookie: { secure: true },
     secret: SECURE_INFO.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
 }));
 clientApp.use("/", homeRouter);
 
-const httpsOptions = {
-    rejectedUnauthorized: false,
-    key: SECURE_INFO.HTTPS_KEY,
-    cert: SECURE_INFO.HTTPS_CERT,
-};
-
-const server = https.createServer(httpsOptions, clientApp);
-
+const server = http.createServer(clientApp);
 const io = new Server(server, {
     cors: {
         origin: ["https://admin.socket.io"],
@@ -67,5 +55,5 @@ const onConnection = (socket) => {
 };
 io.on("connection", onConnection);
 
-const handleHttpsListen = () => console.log(`Home Listening: https://localhost:${SECURE_INFO.HTTPSPORT}`);
-server.listen(SECURE_INFO.HTTPSPORT, handleHttpsListen);
+const handleHttpListen = () => console.log(`Home Listening: http://localhost:${SECURE_INFO.HTTPPORT}`);
+server.listen(SECURE_INFO.HTTPPORT, handleHttpListen);

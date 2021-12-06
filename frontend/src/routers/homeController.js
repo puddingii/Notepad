@@ -15,7 +15,7 @@ homeRouter.get("/login", logoutStatus, (req, res) => {
 homeRouter.post("/login", logoutStatus, async (req, res) => {
     const { loginId, loginPassword } = req.body;
     try {
-        const response = await fetch("https://localhost:8050/api/users/login", {
+        const response = await fetch("http://localhost:8050/api/users/login", {
             method: "post",
             headers: {
                 "Content-type": "application/json"
@@ -45,7 +45,7 @@ homeRouter.post("/join", logoutStatus, async (req, res) => {
         body: { loginId, password, chkPassword }
     } = req;
     try {
-        const response = await fetch("https://localhost:8050/api/users/join", {
+        const response = await fetch("http://localhost:8050/api/users/join", {
             method: "post",
             headers: {
                 "Content-type": "application/json"
@@ -63,7 +63,7 @@ homeRouter.post("/join", logoutStatus, async (req, res) => {
 // Logout을 하면 세션에 사용자아이디 삭제
 homeRouter.get("/logout", loginStatus, async (req, res) => {
     try {
-        const response = await fetch("https://localhost:8050/api/users/logout", {
+        const response = await fetch("http://localhost:8050/api/users/logout", {
             method: "post",
             headers: {
                 "Content-type": "application/json"

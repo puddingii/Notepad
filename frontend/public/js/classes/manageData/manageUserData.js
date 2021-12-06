@@ -9,7 +9,7 @@ class ManageUserData {
      * @returns {Promise} fetch의 결과물인 response의 status(성공여부)
      */
     async saveOpenNote(email, opentab, lasttab) {
-        const response = await fetch("https://localhost:8050/api/users/saveOpenNote", {
+        const response = await fetch("http://localhost:8050/api/users/saveOpenNote", {
             method: "post",
             headers: {
                 "Content-type": "application/json"

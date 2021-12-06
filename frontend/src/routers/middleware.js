@@ -5,7 +5,7 @@ import { SECURE_INFO } from "../../config/env.js";
 export const loginStatus = async (req, res, next) => {
     if (req.session.userToken) {
         try {
-            const response = await fetch("https://localhost:8050/api/users/loginStatus", {
+            const response = await fetch("http://localhost:8050/api/users/loginStatus", {
                 method: "post",
                 headers: {
                     "Content-type": "application/json"
@@ -27,7 +27,7 @@ export const loginStatus = async (req, res, next) => {
             });
         } catch (e) {
             if (e.message === "JWT Session Verify Error") {
-                await fetch("https://localhost:8050/api/users/logout", {
+                await fetch("http://localhost:8050/api/users/logout", {
                     method: "post",
                     headers: {
                         "Content-type": "application/json"
