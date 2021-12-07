@@ -12,7 +12,7 @@
         <input id="chatInput" class="form-control" type="text" placeholder="Chat" aria-describedby="chatInputButton">
         <button id="chatInputButton" class="input-group-text">></button>
       </div>
-      <div id="joinRoomModal" class="modal fade" tabindex="-1" aria-labelledby="joinRoomModalLabel" aria-hidden="true">
+      <!-- <div id="joinRoomModal" class="modal fade" tabindex="-1" aria-labelledby="joinRoomModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
@@ -33,7 +33,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -44,6 +44,59 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.card {
+  align-items: center;
+}
+.chat {
+  margin-top: 30px !important;
+  height: 530px;
+  align-items: unset;
+}
+.chatRecord {
+  overflow: scroll;
+  height:450px;
+}
+ul {
+  padding-left: 15px;
+}
+li {
+  list-style-type: none;
+}
+.chatInputDiv {
+  position: absolute;
+  bottom: 0px;
+  margin-bottom: 0px !important;
+}
+.chatInputForm {
+  bottom: 0px;
+  margin-bottom: 0px !important;
+  margin-left: 0px !important;
+}
+@keyframes goAway {
+  from {
+    transform: none;
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+}
 
+.message {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  max-width: 200px;
+  padding: 10px 20px;
+  border-radius: 10000px;
+  text-align: center;
+  animation: goAway 0.5s ease-in-out forwards;
+  animation-delay: 5s;
+  background-color: aquamarine;
+  color: black;
+}
 </style>

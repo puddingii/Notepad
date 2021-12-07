@@ -24,3 +24,17 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.card {
+  align-items: center;
+}
+.card-text {
+  font-weight: bold;
+}
+.userInfo {
+  margin-top: 30px !important;
+  height: 145px;
+  padding: 5px;
+}
+</style>
