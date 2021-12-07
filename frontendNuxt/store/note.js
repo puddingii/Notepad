@@ -3,7 +3,7 @@ import MArray from '@/store/util/manageArray';
 
 const state = () => ({
   noteList: [],
-  openTab: [],
+  openTabList: [],
   currentNoteId: ''
 });
 
@@ -16,7 +16,7 @@ const mutations = {
     state.currentNoteId = state.noteList.length ? MArray.getObjectByTitle(state.noteList, title)?.id : null;
   },
   initOpenTabList (state, list) {
-    state.openTab = list ? list.split(',') : [];
+    state.openTabList = list ? list.split(',') : [];
   },
   initNotepadList (state, list) {
     state.noteList = list;
