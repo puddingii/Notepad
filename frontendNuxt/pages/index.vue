@@ -31,6 +31,7 @@ export default {
     Chat
   },
   layout: 'default',
+  middleware: ['authenticated'],
   head: {
     script: [{
       src: 'https://code.jquery.com/jquery-3.6.0.js'
@@ -44,10 +45,10 @@ export default {
   },
   computed: {
     userEmail () {
-      return this.$store.state.userEmail;
+      return this.$store.state.user.userEmail;
     },
     isLoggedIn () {
-      return this.$store.isLoggedIn;
+      return this.$store.user.isLoggedIn;
     }
   },
   watched: {

@@ -2,7 +2,7 @@
   <main class="form-signin">
     <form @submit.prevent="handleSubmit">
       <h1 class="h3 mb-3 fw-normal">Join</h1>
-      <h3 class="mb-3 errorMsg">{{ errorMessage }}</h3>
+      <h3 class="mb-3 errorMsg">{{ systemMessage }}</h3>
       <div class="form-floating">
         <input id="floatingInput" v-model="email" class="form-control" type="email" name="loginId" placeholder="name@example.com">
         <label for="floatingInput">Email address</label>
@@ -25,6 +25,7 @@
 <script>
 export default {
   layout: 'sign',
+  middleware: ['anonymous'],
   data () {
     return {
       email: '',
@@ -33,12 +34,12 @@ export default {
     };
   },
   computed: {
-    errorMessage () {
-      return this.$store.state.sign.errorMessage;
+    systemMessage () {
+      return this.$store.state.user.systemMessage;
     }
   },
   watch: {
-    errorMessage (newValue) {
+    systemMessage (newValue) {
       if (newValue === '') {
         this.$router.push('/login');
       }
@@ -46,7 +47,7 @@ export default {
   },
   methods: {
     async handleSubmit () {
-      await this.$store.dispatch('sign/signUp', {
+      await this.$store.dispatch('user/signUp', {
         email: this.email,
         password: this.password,
         passwordCheck: this.passwordCheck

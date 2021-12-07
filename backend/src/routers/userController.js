@@ -61,9 +61,9 @@ userApi.post("/loginStatus", async (req, res) => {
     try {
         const userInfo = await Users.findOne({ where: { email } });
         if (!userInfo) {
-            return res.sendStatus(404);
+            return res.status(201).json({ result: false, msg: "User Not Found" });
         }
-        return res.status(200).json({ loginStatus: userInfo.getStatus() });
+        return res.status(201).json({ result: true, loginStatus: userInfo.getStatus() });
     } catch (e) {
         console.log(e);
         return res.sendStatus(400);
