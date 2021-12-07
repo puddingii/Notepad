@@ -20,7 +20,7 @@
 
 <script>
 export default {
-  layout: 'sign',
+  layout: 'Sign',
   middleware: ['anonymous'],
   data () {
     return {

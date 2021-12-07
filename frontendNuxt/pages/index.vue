@@ -30,7 +30,7 @@ export default {
     UserStatus,
     Chat
   },
-  layout: 'default',
+  layout: 'Notepad',
   middleware: ['authenticated'],
   head: {
     script: [{

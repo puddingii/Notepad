@@ -1,20 +1,21 @@
 <template>
-  <div>
-    <Nuxt />
-  </div>
+  <Nuxt />
 </template>
 
 <script>
 export default {
-
+  name: 'Sign',
+  head () {
+    return {
+      bodyAttrs: {
+        class: 'text-center sign'
+      }
+    };
+  }
 };
 </script>
 
 <style>
-html, body, #__nuxt, #__layout, main {
-  height: 100%;
-}
-
 .sign {
   background-color: #f5f5f5;
   display: flex;

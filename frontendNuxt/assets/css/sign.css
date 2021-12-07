@@ -3,7 +3,6 @@
   width: 330px;
   padding: 15px;
   margin: 0 auto;
-  
 }
 
 .form-signin .checkbox {
@@ -21,7 +20,6 @@
 }
 
 .form-signin input[name="loginPassword2"] {
-
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
