@@ -19,7 +19,10 @@
 
 <script>
 export default {
-
+  asyncData ({ store }) {
+    const currentEmail = store.state.userEmail;
+    console.log(currentEmail);
+  }
 };
 </script>
 

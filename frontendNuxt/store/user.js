@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+// @ts-ignore
 import ENV from '@/env';
 
 const state = () => ({
@@ -68,6 +69,18 @@ const actions = {
       return result;
     } catch (e) {
       commit('setSystemMessage', e);
+    }
+  },
+  async logout ({ commit, state }) {
+    try {
+      const response = await this.$axios.post('http://localhost:8050/api/users/logout', { email: state.userEmail });
+      if (response.status === 201) {
+        commit('setUserInfo');
+      }
+      return response;
+    } catch (e) {
+      console.log(e);
+      return false;
     }
   },
   async checkLoginStatus ({ commit, state }) {
