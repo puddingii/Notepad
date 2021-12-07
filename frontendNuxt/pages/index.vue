@@ -23,6 +23,9 @@ export default {
   },
   layout: 'Home',
   middleware: ['authenticated'],
+  asyncData ({ store }) {
+    store.dispatch('note/loadAll', store.state.user.userEmail);
+  },
   head: {
     script: [{
       src: 'https://code.jquery.com/jquery-3.6.0.js'
@@ -37,17 +40,10 @@ export default {
   computed: {
     userEmail () {
       return this.$store.state.user.userEmail;
-    },
-    isLoggedIn () {
-      return this.$store.user.isLoggedIn;
     }
   },
-  watched: {
-    isLoggedIn (newValue) {
-      if (newValue === '') {
-        this.$router.push('/login');
-      }
-    }
+  methods: {
+
   }
 };
 </script>
