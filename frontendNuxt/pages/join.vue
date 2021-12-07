@@ -38,20 +38,16 @@ export default {
       return this.$store.state.user.systemMessage;
     }
   },
-  watch: {
-    systemMessage (newValue) {
-      if (newValue === '') {
-        this.$router.push('/login');
-      }
-    }
-  },
   methods: {
     async handleSubmit () {
-      await this.$store.dispatch('user/signUp', {
+      const result = await this.$store.dispatch('user/signUp', {
         email: this.email,
         password: this.password,
         passwordCheck: this.passwordCheck
       });
+      if (result) {
+        this.$router.push('/login');
+      }
     }
   }
 };

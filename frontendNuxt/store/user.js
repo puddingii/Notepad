@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import ENV from '@/env';
 
 const state = () => ({
   userEmail: '',
@@ -64,6 +65,7 @@ const actions = {
         throw new Error(responseMessage);
       }
       commit('setSystemMessage');
+      return result;
     } catch (e) {
       commit('setSystemMessage', e);
     }
@@ -81,8 +83,7 @@ const actions = {
       if (loginStatus !== state.userToken) {
         throw new Error('Log out another browser');
       }
-
-      jwt.verify(state.userToken, 'jwtlksajdfjk343irjofii90', (err, decoded) => {
+      jwt.verify(state.userToken, ENV.JWT_SECRET, (err, decoded) => {
         if (err) {
           throw new Error('JWT Session Verify Error');
         }
