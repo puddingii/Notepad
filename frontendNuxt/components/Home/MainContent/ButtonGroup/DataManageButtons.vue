@@ -17,17 +17,16 @@ export default {
   },
   methods: {
     handleSaveClick () {
-      this.emit('save');
+      this.$emit('save');
     },
     handleSaveAsClick () {
-      this.emit('addNewNote', this.saveAsInput);
-      this.emit('save');
+      this.$emit('saveas', this.saveAsInput);
     },
     handleDeleteClick () {
-      this.emit('delete');
+      this.$emit('delete');
     },
     handleCloseClick () {
-      this.emit('close');
+      this.$emit('close');
     }
   }
 };

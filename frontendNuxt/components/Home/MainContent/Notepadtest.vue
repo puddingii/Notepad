@@ -22,13 +22,13 @@
       <div id="noteFormDiv" class="form-floating">
         <textarea id="textareaForm" v-model="textareaValue" class="form-control" />
         <label id="textareaLabel">{{ isSaved ? '저장됨.' : '저장 안됨.' }}</label>
-        <div id="btnGroup">
-          <button id="save" type="button" class="btn btn-outline-primary">save</button>
-          <button id="saveAs" type="button" class="btn btn-outline-primary">saveAs</button>
-          <button id="delete" type="button" class="btn btn-outline-danger">delete</button>
-          <button id="close" type="button" class="btn btn-outline-danger">close</button>
-          <input id="saveAsInput" type="text" class="form-control">
-        </div>
+        <DataManageButtons
+          @save="saveTextarea"
+          @saveas="addNewNote"
+          @delete="deleteTextarea"
+          @close="closeNote"
+        />
+        <p class="systemMessagea">{{ systemMessage }}</p>
       </div>
     </section>
   </div>
@@ -36,9 +36,13 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
+import DataManageButtons from '~/components/Home/MainContent/ButtonGroup/DataManageButtons';
 const { mapState } = createNamespacedHelpers('note');
 
 export default {
+  components: {
+    DataManageButtons
+  },
   data () {
     return {
       isSaved: this.$store.getters['note/currentNoteInfo'].isSaved,
@@ -50,7 +54,8 @@ export default {
     ...mapState([
       'noteList',
       'openTabList',
-      'currentNoteId'
+      'currentNoteId',
+      'systemMessage'
     ])
   },
   watch: {
@@ -71,16 +76,30 @@ export default {
       if (!isExisting) {
         this.$store.commit('note/addOpenTab', noteTitle); // 탭에 없으면 추가
       }
-      this.$store.commit('note/saveTextarea', { content: this.textareaValue, isSaved: this.isSaved }); // textarea 기록 저장
-      this.$store.commit('note/setCurrentNoteId', noteTitle); // 현재 가르키고 있는 Notepad update
+      this.$store.commit('note/setTextarea', { content: this.textareaValue, isSaved: this.isSaved }); // textarea 기록 저장
+      this.$store.commit('note/setCurrentNoteIdByTitle', noteTitle); // 현재 가르키고 있는 Notepad update
       this.textareaValue = this.$store.getters['note/currentNoteInfo'].content; // 가르키고 있는 Notepad가 변경되었으므로 textarea 변경
       this.isSaved = this.$store.getters['note/currentNoteInfo'].isSaved;
     },
     handleListItemClick (noteTitle) {
-      this.$store.commit('note/saveTextarea', { content: this.textareaValue, isSaved: this.isSaved }); // textarea 기록 저장
-      this.$store.commit('note/setCurrentNoteId', noteTitle); // 현재 가르키고 있는 Notepad update
+      this.$store.commit('note/setTextarea', { content: this.textareaValue, isSaved: this.isSaved }); // textarea 기록 저장
+      this.$store.commit('note/setCurrentNoteIdByTitle', noteTitle); // 현재 가르키고 있는 Notepad update
       this.textareaValue = this.$store.getters['note/currentNoteInfo'].content; // 가르키고 있는 Notepad가 변경되었으므로 textarea 변경
       this.isSaved = this.$store.getters['note/currentNoteInfo'].isSaved;
+    },
+    async saveTextarea () {
+      await this.$store.dispatch('note/saveTextarea', this.textareaValue);
+      this.isSaved = this.$store.getters['note/currentNoteInfo'].isSaved;
+    },
+    async addNewNote (saveAsInput) {
+      this.$store.commit('note/setTextarea', { content: this.textareaValue, isSaved: this.isSaved }); // saveAs 하기전 기존거 array에 저장
+      await this.$store.dispatch('note/saveAsTextarea', { title: saveAsInput, content: this.textareaValue });
+    },
+    deleteTextarea () {
+
+    },
+    closeNote () {
+
     }
   }
 };
@@ -112,5 +131,9 @@ li {
 }
 input#difBtn {
   width: 200px;
+}
+.systemMessagea {
+  font: bold;
+  color: red;
 }
 </style>

@@ -63,8 +63,8 @@ apiRouter.post("/saveAs", async (req, res) => {
         if (item) {
             throw new Error("Notepad is not null");
         }
-        await Notepads.create({ email, title, content: text });
-        return res.sendStatus(201);
+        const newNote = await Notepads.create({ email, title, content: text });
+        return res.status(201).json({ id: newNote.dataValues.id, result: true });
     } catch (e) {
         console.log(e);
         return res.sendStatus(400);
