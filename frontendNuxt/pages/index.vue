@@ -5,7 +5,7 @@
       <Chat />
     </div>
     <div class="col col-md-9">
-      <Notepad />
+      <Notepadtest />
     </div>
   </div>
 </template>
@@ -13,13 +13,15 @@
 <script>
 import UserStatus from '~/components/Home/LeftBar/UserStatus';
 import Chat from '~/components/Home/LeftBar/Chat';
-import Notepad from '~/components/Home/MainContent/Notepad';
+// import Notepad from '~/components/Home/MainContent/Notepad';
+import Notepadtest from '~/components/Home/MainContent/Notepadtest';
 
 export default {
   components: {
     UserStatus,
     Chat,
-    Notepad
+    // Notepad,
+    Notepadtest
   },
   layout: 'Home',
   middleware: ['authenticated'],

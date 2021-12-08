@@ -8,7 +8,18 @@ const state = () => ({
 });
 
 const getters = {
-
+  noteList (state) {
+    return state.noteList;
+  },
+  openTabList (state) {
+    return state.openTabList;
+  },
+  currentNoteId (state) {
+    return state.curretnNoteId;
+  },
+  currentNoteInfo (state) {
+    return state.noteList.find(element => element.id === state.currentNoteId);
+  }
 };
 
 const mutations = {
@@ -21,6 +32,14 @@ const mutations = {
   initNotepadList (state, list) {
     state.noteList = list;
     state.noteList.forEach((note) => { note.isSaved = true; });
+  },
+  addOpenTab (state, title) {
+    state.openTabList.push(title);
+  },
+  saveTextarea (state, { content, isSaved }) {
+    const index = MArray.getIndexById(state.noteList, state.currentNoteId);
+    state.noteList[index].content = content;
+    state.noteList[index].isSaved = isSaved;
   }
 };
 

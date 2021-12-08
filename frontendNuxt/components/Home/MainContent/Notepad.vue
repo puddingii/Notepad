@@ -1,14 +1,17 @@
 <template>
   <div class="container childContainer">
-    <NotepadHeader :open-tab-list="openTabList" :note-list="noteList" />
+    <NotepadHeader :open-tab-list="openTabList" :note-list="noteList" @addOpenTab="addOpenTab" />
     <br>
     <NotepadBody :note-content="currentNoteInfo" />
   </div>
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex';
 import NotepadHeader from '~/components/Home/MainContent/NotepadHeader';
 import NotepadBody from '~/components/Home/MainContent/NotepadBody';
+
+const { mapState, mapGetters } = createNamespacedHelpers('note');
 
 export default {
   components: {
@@ -16,14 +19,23 @@ export default {
     NotepadBody
   },
   computed: {
-    noteList () {
-      return this.$store.state.note.noteList;
+    ...mapState([
+      'noteList',
+      'openTabList'
+    ]),
+    ...mapGetters([
+      'currentNoteInfo'
+    ])
+  },
+  methods: {
+    addOpenTab (noteTitle) {
+      const isExisting = this.openTabList.includes(noteTitle);
+      if (!isExisting) {
+        this.$store.commit('note/addOpenTab', noteTitle);
+      }
     },
-    openTabList () {
-      return this.$store.state.note.openTabList;
-    },
-    currentNoteInfo () {
-      return this.$store.state.note.noteList.find(element => element.id === this.$store.state.note.currentNoteId);
+    updateBody (noteTitle) {
+      this.$store.commit('note/updateBody', noteTitle);
     }
   }
 };
