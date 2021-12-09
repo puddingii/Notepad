@@ -91,12 +91,15 @@ export default {
       }
     }
   },
+  beforeDestroy () {
+    this.$store.dispatch('note/saveNoteListStatus');
+  },
   methods: {
-    getId (text = '') {
+    getId (text = '') { // v
       const note = this.noteList.find(note => note.title === text);
       return note ? note.id : false;
     },
-    handleLoadItemClick (noteTitle) {
+    handleLoadItemClick (noteTitle) { // v
       const isExisting = this.openTabList.includes(noteTitle);
       if (!isExisting) {
         this.$store.commit('note/addOpenTab', noteTitle); // 탭에 없으면 추가
@@ -106,14 +109,14 @@ export default {
       this.textareaValue = this.$store.getters['note/currentNoteInfo'].content; // 가르키고 있는 Notepad가 변경되었으므로 textarea 변경
       this.isSaved = this.$store.getters['note/currentNoteInfo'].isSaved;
     },
-    handleListItemClick (noteTitle) {
+    handleListItemClick (noteTitle) { // v
       this.$store.commit('note/setTextarea', { content: this.textareaValue, isSaved: this.isSaved }); // textarea 기록 저장
       this.$store.commit('note/setCurrentNoteIdByTitle', noteTitle); // 현재 가르키고 있는 Notepad update
       this.textareaValue = this.$store.getters['note/currentNoteInfo'].content; // 가르키고 있는 Notepad가 변경되었으므로 textarea 변경
       this.isSaved = this.$store.getters['note/currentNoteInfo'].isSaved;
     },
-    async handleNewButtonClick () {
-      this.$store.commit('note/setTextarea', { content: '', isSaved: true }); // textarea 기록 저장
+    async handleNewButtonClick () { // v
+      this.$store.commit('note/setTextarea', { content: this.textareaValue, isSaved: this.isSaved }); // textarea 기록 저장
       const isSucceed = await this.$store.dispatch('note/saveAsTextarea', { title: this.newNoteTitle, content: '' });
       if (isSucceed) {
         this.textareaValue = '';
@@ -144,7 +147,7 @@ export default {
       this.$store.commit('note/deleteOpenNote', this.$store.getters['note/currentNoteInfo'].title);
       this.$store.commit('note/setCurrentNoteId', -1);
     },
-    resetNewTitleModal () {
+    resetNewTitleModal () { // v
       this.newNoteTitle = '';
     }
   }

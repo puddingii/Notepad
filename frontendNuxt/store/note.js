@@ -22,6 +22,7 @@ const getters = {
     if (state.currentNoteId !== -1) {
       return state.noteList.find(element => element.id === state.currentNoteId);
     }
+    return null;
   }
 };
 
@@ -144,6 +145,22 @@ const actions = {
       commit('addNote', note);
       commit('addOpenTab', title);
       commit('setCurrentNoteId', id);
+      return true;
+    } catch (e) {
+      commit('setSystemMessage', e.message);
+      return false;
+    }
+  },
+  async saveNoteListStatus ({ state, getters, commit }) {
+    try {
+      const response = await this.$axios.post('http://localhost:8050/api/users/saveOpenNote', {
+        email: getters.currentNoteInfo.email,
+        opentab: state.openTabList.toString(),
+        lasttab: getters.currentNoteInfo.title
+      });
+      if (!response.data.result) {
+        throw new Error(response.data.msg);
+      }
       return true;
     } catch (e) {
       commit('setSystemMessage', e.message);

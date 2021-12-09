@@ -1,8 +1,16 @@
 <template>
   <div class="container childContainer">
-    <NotepadHeader :open-tab-list="openTabList" :note-list="noteList" @addOpenTab="addOpenTab" />
+    <NotepadHeader
+      :open-tab-list="openTabList"
+      :note-list="noteList"
+      @addOpenTab="addOpenTab"
+      @handleLoadClick="handleLoadClick"
+      @setCurrentNoteIdByTitle="setCurrentNoteIdByTitle"
+    />
     <br>
-    <NotepadBody :note-content="currentNoteInfo" />
+    <NotepadBody
+      :note-content="currentNoteInfo"
+    />
   </div>
 </template>
 
@@ -36,6 +44,15 @@ export default {
     },
     updateBody (noteTitle) {
       this.$store.commit('note/updateBody', noteTitle);
+    },
+    handleLoadClick (title) {
+      const isExisting = this.openTabList.includes(title);
+      if (!isExisting) {
+        this.$store.commit('note/addOpenTab', title); // 탭에 없으면 추가
+      }
+    },
+    setCurrentNoteIdByTitle (title) {
+      this.$store.commit('note/setCurrentNoteIdByTitle', title); // 현재 가르키고 있는 Notepad update
     }
   }
 };
