@@ -3,7 +3,7 @@
     <header>
       <ul id="navContainer" class="nav nav-tabs sortable">
         <div class="dropdown">
-          <button id="newButton" class="btn btn-primary" type="button">New File</button>
+          <button id="newButton" class="btn btn-primary" type="button" @click="handleNewButtonClick">New File</button>
           <button id="shareButton" class="btn btn-primary" type="button">Share</button>
           <button id="ddButton" class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Load</button>
           <ul id="dropdownMenu" class="dropdown-menu" aria-labelledby="ddButton">
@@ -19,7 +19,7 @@
     </header>
     <br>
     <section class="notepad">
-      <div id="noteFormDiv" class="form-floating">
+      <div v-if="currentNoteId !== -1" id="noteFormDiv" class="form-floating">
         <textarea id="textareaForm" v-model="textareaValue" class="form-control" />
         <label id="textareaLabel">{{ isSaved ? '저장됨.' : '저장 안됨.' }}</label>
         <DataManageButtons
@@ -28,7 +28,7 @@
           @delete="deleteTextarea"
           @close="closeNote"
         />
-        <p class="systemMessagea">{{ systemMessage }}</p>
+        <p class="systemMessage">{{ systemMessage }}</p>
       </div>
     </section>
   </div>
@@ -68,8 +68,9 @@ export default {
     }
   },
   methods: {
-    getId (text) {
-      return this.noteList.find(note => note.title === text).id;
+    getId (text = '') {
+      const note = this.noteList.find(note => note.title === text);
+      return note ? note.id : false;
     },
     handleLoadItemClick (noteTitle) {
       const isExisting = this.openTabList.includes(noteTitle);
@@ -94,12 +95,18 @@ export default {
     async addNewNote (saveAsInput) {
       this.$store.commit('note/setTextarea', { content: this.textareaValue, isSaved: this.isSaved }); // saveAs 하기전 기존거 array에 저장
       await this.$store.dispatch('note/saveAsTextarea', { title: saveAsInput, content: this.textareaValue });
+      this.isSaved = this.$store.getters['note/currentNoteInfo'].isSaved;
     },
-    deleteTextarea () {
-
+    async deleteTextarea () {
+      await this.$store.dispatch('note/deleteNote');
     },
     closeNote () {
-
+      this.$store.commit('note/setTextarea', { content: this.textareaValue, isSaved: this.isSaved });
+      this.$store.commit('note/deleteOpenNote', this.$store.getters['note/currentNoteInfo'].title);
+      this.$store.commit('note/setCurrentNoteId', -1);
+    },
+    async handleNewButtonClick () {
+      await this.$store.dispatch('note/addNewTextarea');
     }
   }
 };
@@ -132,7 +139,7 @@ li {
 input#difBtn {
   width: 200px;
 }
-.systemMessagea {
+.systemMessage {
   font: bold;
   color: red;
 }

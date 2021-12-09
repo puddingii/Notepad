@@ -4,7 +4,7 @@ import MArray from '@/store/util/manageArray';
 const state = () => ({
   noteList: [],
   openTabList: [],
-  currentNoteId: '',
+  currentNoteId: -1,
   systemMessage: ''
 });
 
@@ -16,14 +16,45 @@ const getters = {
     return state.openTabList;
   },
   currentNoteId (state) {
-    return state.curretnNoteId;
+    return state.currentNoteId;
   },
   currentNoteInfo (state) {
-    return state.noteList.find(element => element.id === state.currentNoteId);
+    if (state.currentNoteId !== -1) {
+      return state.noteList.find(element => element.id === state.currentNoteId);
+    }
   }
 };
 
 const mutations = {
+  addOpenTab (state, title) {
+    state.openTabList.push(title);
+  },
+  addNote (state, note) {
+    state.noteList.push(note);
+  },
+  deleteNote (state) {
+    const index = MArray.getIndexById(state.noteList, state.currentNoteId);
+    state.noteList.splice(index, 1);
+  },
+  deleteOpenNote (state, noteTitle) {
+    const index = MArray.getIndex(state.openTabList, noteTitle);
+    state.openTabList.splice(index, 1);
+  },
+  initOpenTabList (state, list) {
+    state.openTabList = list ? list.split(',') : [];
+    state.openTabList = state.openTabList.filter(tab => state.noteList.find(note => note.title === tab));
+  },
+  initNotepadList (state, list) {
+    state.noteList = list;
+    state.noteList.forEach((note) => { note.isSaved = true; });
+  },
+  setTextarea (state, { content, isSaved }) {
+    if (state.currentNoteId > -1) {
+      const index = MArray.getIndexById(state.noteList, state.currentNoteId);
+      state.noteList[index].content = content;
+      state.noteList[index].isSaved = isSaved;
+    }
+  },
   setCurrentNoteId (state, id) {
     state.currentNoteId = id;
   },
@@ -32,28 +63,33 @@ const mutations = {
   },
   setSystemMessage (state, msg) {
     state.systemMessage = msg;
-  },
-  initOpenTabList (state, list) {
-    state.openTabList = list ? list.split(',') : [];
-  },
-  initNotepadList (state, list) {
-    state.noteList = list;
-    state.noteList.forEach((note) => { note.isSaved = true; });
-  },
-  addOpenTab (state, title) {
-    state.openTabList.push(title);
-  },
-  addNote (state, note) {
-    state.noteList.push(note);
-  },
-  setTextarea (state, { content, isSaved }) {
-    const index = MArray.getIndexById(state.noteList, state.currentNoteId);
-    state.noteList[index].content = content;
-    state.noteList[index].isSaved = isSaved;
   }
 };
 
 const actions = {
+  async addNewTextarea ({ state, commit }) {
+    const response = await this.$axios.post('http://localhost:8050/api/notepad/getLastId');
+    const { id } = response.data;
+    if (state.noteList.length) {
+      const localMax = MArray.getMaxId(state.noteList);
+      const maxId = Math.max(localMax, id);
+      return maxId ?? 0;
+    }
+    return id ?? 0;
+  },
+  async deleteNote ({ state, getters, commit }) {
+    const response = await this.$axios.delete('http://localhost:8050/api/notepad/delete', {
+      data: {
+        noteId: state.currentNoteId,
+        email: getters.currentNoteInfo.email
+      }
+    });
+    if (response.data.result) {
+      commit('deleteOpenNote', getters.currentNoteInfo.title);
+      commit('deleteNote');
+      commit('setCurrentNoteId', -1);
+    }
+  },
   async loadAll ({ commit }, email) {
     const response = await this.$axios.post('http://localhost:8050/api/notepad/loadAllData', { email });
     const { endTitle, openTab } = response.data.pop();
@@ -69,10 +105,10 @@ const actions = {
       text: value
     };
     const response = await this.$axios.post('http://localhost:8050/api/notepad/save', requestPacket);
-    if (!response.data.result) {
-      commit('setSystemMessage', response.data.msg);
-      setTimeout(() => commit('setSystemMessage', ''), 3000);
-    }
+
+    commit('setSystemMessage', response.data.msg);
+    setTimeout(() => commit('setSystemMessage', ''), 3000);
+
     const index = MArray.getIndexById(state.noteList, state.currentNoteId);
     state.noteList[index].isSaved = true;
   },
@@ -92,6 +128,10 @@ const actions = {
       content,
       isSaved: true
     };
+
+    commit('setSystemMessage', response.data.msg);
+    setTimeout(() => commit('setSystemMessage', ''), 3000);
+
     commit('addNote', note);
     commit('addOpenTab', title);
     commit('setCurrentNoteId', id);

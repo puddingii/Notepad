@@ -25,10 +25,10 @@ apiRouter.post("/save", async (req, res) => {
         } else {
             await Notepads.create({ email, title, content: text });
         }
-        return res.sendStatus(201);
+        return res.status(201).json({ result: true, msg: "Succeed!!" });
     } catch (e) {
         console.log(e);
-        return res.sendStatus(400);
+        return res.status(201).json({ result: false, msg: e.message });
     }
 });
 
@@ -42,10 +42,11 @@ apiRouter.delete("/delete", async (req, res) => {
             throw new Error("This email is not validated");
         }
         await Notepads.destroy({ where: { id: noteId, email } });
-        return res.sendStatus(201);
+        console.log('hi');
+        return res.status(201).json({ result: true, msg: "Succeed!!" });
     } catch (e) {
         console.log(e);
-        return res.sendStatus(400);
+        return res.status(201).json({ result: true, msg: e.message });
     }
 });
 
@@ -64,10 +65,10 @@ apiRouter.post("/saveAs", async (req, res) => {
             throw new Error("Notepad is not null");
         }
         const newNote = await Notepads.create({ email, title, content: text });
-        return res.status(201).json({ id: newNote.dataValues.id, result: true });
+        return res.status(201).json({ id: newNote.dataValues.id, result: true, msg: "Succeed!!" });
     } catch (e) {
         console.log(e);
-        return res.sendStatus(400);
+        return res.status(201).json({ result: true, msg: e.message });
     }
 });
 
