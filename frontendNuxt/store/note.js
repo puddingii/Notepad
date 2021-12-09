@@ -67,27 +67,24 @@ const mutations = {
 };
 
 const actions = {
-  async addNewTextarea ({ state, commit }) {
-    const response = await this.$axios.post('http://localhost:8050/api/notepad/getLastId');
-    const { id } = response.data;
-    if (state.noteList.length) {
-      const localMax = MArray.getMaxId(state.noteList);
-      const maxId = Math.max(localMax, id);
-      return maxId ?? 0;
-    }
-    return id ?? 0;
-  },
   async deleteNote ({ state, getters, commit }) {
-    const response = await this.$axios.delete('http://localhost:8050/api/notepad/delete', {
-      data: {
-        noteId: state.currentNoteId,
-        email: getters.currentNoteInfo.email
+    try {
+      const response = await this.$axios.delete('http://localhost:8050/api/notepad/delete', {
+        data: {
+          noteId: state.currentNoteId,
+          email: getters.currentNoteInfo.email
+        }
+      });
+      if (!response.data.result) {
+        throw new Error(response.data.msg);
       }
-    });
-    if (response.data.result) {
       commit('deleteOpenNote', getters.currentNoteInfo.title);
       commit('deleteNote');
       commit('setCurrentNoteId', -1);
+      return true;
+    } catch (e) {
+      commit('setSystemMessage', e.message);
+      return false;
     }
   },
   async loadAll ({ commit }, email) {
@@ -104,13 +101,21 @@ const actions = {
       title: getters.currentNoteInfo.title,
       text: value
     };
-    const response = await this.$axios.post('http://localhost:8050/api/notepad/save', requestPacket);
+    try {
+      const response = await this.$axios.post('http://localhost:8050/api/notepad/save', requestPacket);
+      if (!response.data.result) {
+        throw new Error(response.data.msg);
+      }
+      commit('setSystemMessage', response.data.msg);
+      setTimeout(() => commit('setSystemMessage', ''), 3000);
 
-    commit('setSystemMessage', response.data.msg);
-    setTimeout(() => commit('setSystemMessage', ''), 3000);
-
-    const index = MArray.getIndexById(state.noteList, state.currentNoteId);
-    state.noteList[index].isSaved = true;
+      const index = MArray.getIndexById(state.noteList, state.currentNoteId);
+      state.noteList[index].isSaved = true;
+      return true;
+    } catch (e) {
+      commit('setSystemMessage', e.message);
+      return false;
+    }
   },
   async saveAsTextarea ({ getters, commit }, { title, content }) {
     const requestPacket = {
@@ -118,23 +123,32 @@ const actions = {
       title,
       text: content
     };
-    const response = await this.$axios.post('http://localhost:8050/api/notepad/saveAs', requestPacket);
-    // DB에 저장된 ID값을 가지고 Array.push해야함.
-    const { id } = response.data;
-    const note = {
-      id,
-      email: getters.currentNoteInfo.email,
-      title,
-      content,
-      isSaved: true
-    };
+    try {
+      const response = await this.$axios.post('http://localhost:8050/api/notepad/saveAs', requestPacket);
+      if (!response.data.result) {
+        throw new Error(response.data.msg);
+      }
+      // DB에 저장된 ID값을 가지고 Array.push해야함.
+      const { id } = response.data;
+      const note = {
+        id,
+        email: getters.currentNoteInfo.email,
+        title,
+        content,
+        isSaved: true
+      };
 
-    commit('setSystemMessage', response.data.msg);
-    setTimeout(() => commit('setSystemMessage', ''), 3000);
+      commit('setSystemMessage', response.data.msg);
+      setTimeout(() => commit('setSystemMessage', ''), 3000);
 
-    commit('addNote', note);
-    commit('addOpenTab', title);
-    commit('setCurrentNoteId', id);
+      commit('addNote', note);
+      commit('addOpenTab', title);
+      commit('setCurrentNoteId', id);
+      return true;
+    } catch (e) {
+      commit('setSystemMessage', e.message);
+      return false;
+    }
   }
 };
 

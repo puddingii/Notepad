@@ -3,7 +3,30 @@
     <header>
       <ul id="navContainer" class="nav nav-tabs sortable">
         <div class="dropdown">
-          <button id="newButton" class="btn btn-primary" type="button" @click="handleNewButtonClick">New File</button>
+          <b-button
+            id="newButton"
+            v-b-modal.newNoteTitleModal
+            variant="primary"
+            class="btn btn-primary"
+            type="button"
+          >
+            New File
+          </b-button>
+          <b-modal
+            id="newNoteTitleModal"
+            title="New Note Title"
+            @show="resetNewTitleModal"
+            @hidden="resetNewTitleModal"
+            @ok.prevent="handleNewButtonClick"
+          >
+            <form ref="form" @submit.stop.prevent="handleNewButtonClick">
+              <b-form-input
+                id="newNoteTitle-input"
+                v-model="newNoteTitle"
+                required
+              />
+            </form>
+          </b-modal>
           <button id="shareButton" class="btn btn-primary" type="button">Share</button>
           <button id="ddButton" class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Load</button>
           <ul id="dropdownMenu" class="dropdown-menu" aria-labelledby="ddButton">
@@ -24,7 +47,7 @@
         <label id="textareaLabel">{{ isSaved ? '저장됨.' : '저장 안됨.' }}</label>
         <DataManageButtons
           @save="saveTextarea"
-          @saveas="addNewNote"
+          @saveas="saveAsTextarea"
           @delete="deleteTextarea"
           @close="closeNote"
         />
@@ -47,7 +70,8 @@ export default {
     return {
       isSaved: this.$store.getters['note/currentNoteInfo'].isSaved,
       textareaValue: this.$store.getters['note/currentNoteInfo'].content,
-      beforeNoteId: this.$store.state.note.currentNoteId
+      beforeNoteId: this.$store.state.note.currentNoteId,
+      newNoteTitle: ''
     };
   },
   computed: {
@@ -88,14 +112,29 @@ export default {
       this.textareaValue = this.$store.getters['note/currentNoteInfo'].content; // 가르키고 있는 Notepad가 변경되었으므로 textarea 변경
       this.isSaved = this.$store.getters['note/currentNoteInfo'].isSaved;
     },
-    async saveTextarea () {
-      await this.$store.dispatch('note/saveTextarea', this.textareaValue);
-      this.isSaved = this.$store.getters['note/currentNoteInfo'].isSaved;
+    async handleNewButtonClick () {
+      this.$store.commit('note/setTextarea', { content: '', isSaved: true }); // textarea 기록 저장
+      const isSucceed = await this.$store.dispatch('note/saveAsTextarea', { title: this.newNoteTitle, content: '' });
+      if (isSucceed) {
+        this.textareaValue = '';
+        this.isSaved = this.$store.getters['note/currentNoteInfo'].isSaved;
+        this.$nextTick(() => {
+          this.$bvModal.hide('newNoteTitleModal');
+        });
+      }
     },
-    async addNewNote (saveAsInput) {
+    async saveTextarea () {
+      const isSucceed = await this.$store.dispatch('note/saveTextarea', this.textareaValue);
+      if (isSucceed) {
+        this.isSaved = this.$store.getters['note/currentNoteInfo'].isSaved;
+      }
+    },
+    async saveAsTextarea (saveAsInput) {
       this.$store.commit('note/setTextarea', { content: this.textareaValue, isSaved: this.isSaved }); // saveAs 하기전 기존거 array에 저장
-      await this.$store.dispatch('note/saveAsTextarea', { title: saveAsInput, content: this.textareaValue });
-      this.isSaved = this.$store.getters['note/currentNoteInfo'].isSaved;
+      const isSucceed = await this.$store.dispatch('note/saveAsTextarea', { title: saveAsInput, content: this.textareaValue });
+      if (isSucceed) {
+        this.isSaved = this.$store.getters['note/currentNoteInfo'].isSaved;
+      }
     },
     async deleteTextarea () {
       await this.$store.dispatch('note/deleteNote');
@@ -105,8 +144,8 @@ export default {
       this.$store.commit('note/deleteOpenNote', this.$store.getters['note/currentNoteInfo'].title);
       this.$store.commit('note/setCurrentNoteId', -1);
     },
-    async handleNewButtonClick () {
-      await this.$store.dispatch('note/addNewTextarea');
+    resetNewTitleModal () {
+      this.newNoteTitle = '';
     }
   }
 };

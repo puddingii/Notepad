@@ -21,7 +21,7 @@ apiRouter.post("/save", async (req, res) => {
         if (!user) {
             throw new Error("User is not existed");
         } else if (note && user) {
-            await Notepads.update({ content: text }, { where: { id } });
+            await Notepads.update({ content: text }, { where: { id: note.id } });
         } else {
             await Notepads.create({ email, title, content: text });
         }
@@ -46,7 +46,7 @@ apiRouter.delete("/delete", async (req, res) => {
         return res.status(201).json({ result: true, msg: "Succeed!!" });
     } catch (e) {
         console.log(e);
-        return res.status(201).json({ result: true, msg: e.message });
+        return res.status(201).json({ result: false, msg: e.message });
     }
 });
 
@@ -62,13 +62,13 @@ apiRouter.post("/saveAs", async (req, res) => {
         }
         const item = await Notepads.findOne({ where: { email, title } });
         if (item) {
-            throw new Error("Notepad is not null");
+            throw new Error("Note's title is existed");
         }
         const newNote = await Notepads.create({ email, title, content: text });
         return res.status(201).json({ id: newNote.dataValues.id, result: true, msg: "Succeed!!" });
     } catch (e) {
         console.log(e);
-        return res.status(201).json({ result: true, msg: e.message });
+        return res.status(201).json({ result: false, msg: e.message });
     }
 });
 
