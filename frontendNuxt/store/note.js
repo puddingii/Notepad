@@ -9,16 +9,16 @@ const state = () => ({
 });
 
 const getters = {
-  noteList (state) {
+  getNoteList (state) {
     return state.noteList;
   },
-  openTabList (state) {
+  getOpenTabList (state) {
     return state.openTabList;
   },
-  currentNoteId (state) {
+  getCurrentNoteId (state) {
     return state.currentNoteId;
   },
-  currentNoteInfo (state) {
+  getCurrentNoteInfo (state) {
     if (state.currentNoteId !== -1) {
       return state.noteList.find(element => element.id === state.currentNoteId);
     }
@@ -73,13 +73,13 @@ const actions = {
       const response = await this.$axios.delete('http://localhost:8050/api/notepad/delete', {
         data: {
           noteId: state.currentNoteId,
-          email: getters.currentNoteInfo.email
+          email: getters.getCurrentNoteInfo.email
         }
       });
       if (!response.data.result) {
         throw new Error(response.data.msg);
       }
-      commit('deleteOpenNote', getters.currentNoteInfo.title);
+      commit('deleteOpenNote', getters.getCurrentNoteInfo.title);
       commit('deleteNote');
       commit('setCurrentNoteId', -1);
       return true;
@@ -97,9 +97,9 @@ const actions = {
   },
   async saveTextarea ({ state, getters, commit }, value) {
     const requestPacket = {
-      id: getters.currentNoteInfo.id,
-      email: getters.currentNoteInfo.email,
-      title: getters.currentNoteInfo.title,
+      id: getters.getCurrentNoteInfo.id,
+      email: getters.getCurrentNoteInfo.email,
+      title: getters.getCurrentNoteInfo.title,
       text: value
     };
     try {
@@ -120,7 +120,7 @@ const actions = {
   },
   async saveAsTextarea ({ getters, commit }, { title, content }) {
     const requestPacket = {
-      email: getters.currentNoteInfo.email,
+      email: getters.getCurrentNoteInfo.email,
       title,
       text: content
     };
@@ -133,7 +133,7 @@ const actions = {
       const { id } = response.data;
       const note = {
         id,
-        email: getters.currentNoteInfo.email,
+        email: getters.getCurrentNoteInfo.email,
         title,
         content,
         isSaved: true
@@ -156,7 +156,7 @@ const actions = {
       const response = await this.$axios.post('http://localhost:8050/api/users/saveOpenNote', {
         email,
         opentab: state.openTabList.toString(),
-        lasttab: getters.currentNoteInfo?.title ?? ''
+        lasttab: getters.getCurrentNoteInfo?.title ?? ''
       });
       if (!response.data.result) {
         throw new Error(response.data.msg);

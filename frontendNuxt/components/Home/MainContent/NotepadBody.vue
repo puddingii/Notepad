@@ -27,9 +27,9 @@ export default {
   },
   data () {
     return {
-      isSaved: this.$store.getters['note/currentNoteInfo']?.isSaved,
-      textareaValue: this.$store.getters['note/currentNoteInfo']?.content ?? '',
-      beforeNoteId: this.$store.state.note.currentNoteId
+      isSaved: this.$store.getters['note/getCurrentNoteInfo']?.isSaved,
+      textareaValue: this.$store.getters['note/getCurrentNoteInfo']?.content ?? '',
+      beforeNoteId: this.$store.getters['note/getCurrentNoteId']
     };
   },
   computed: {
@@ -56,14 +56,14 @@ export default {
         this.textareaValue = info.content;
         this.isSaved = info.isSaved;
       }
-      this.textareaValue = this.$store.getters['note/currentNoteInfo'].content; // 가르키고 있는 Notepad가 변경되었으므로 textarea 변경
-      this.isSaved = this.$store.getters['note/currentNoteInfo'].isSaved;
+      this.textareaValue = this.$store.getters['note/getCurrentNoteInfo'].content; // 가르키고 있는 Notepad가 변경되었으므로 textarea 변경
+      this.isSaved = this.$store.getters['note/getCurrentNoteInfo'].isSaved;
     });
   },
   methods: {
     handleCloseButton () {
       this.$store.commit('note/setTextarea', { content: this.textareaValue, isSaved: this.isSaved });
-      this.$store.commit('note/deleteOpenNote', this.$store.getters['note/currentNoteInfo'].title);
+      this.$store.commit('note/deleteOpenNote', this.$store.getters['note/getCurrentNoteInfo'].title);
       this.$store.commit('note/setCurrentNoteId', -1);
     },
     async handleDeleteButton () {
@@ -72,14 +72,14 @@ export default {
     async handleSaveButton () {
       const isSucceed = await this.$store.dispatch('note/saveTextarea', this.textareaValue);
       if (isSucceed) {
-        this.isSaved = this.$store.getters['note/currentNoteInfo'].isSaved;
+        this.isSaved = this.$store.getters['note/getCurrentNoteInfo'].isSaved;
       }
     },
     async handleSaveAsButton (saveAsInput) {
       this.$store.commit('note/setTextarea', { content: this.textareaValue, isSaved: this.isSaved }); // saveAs 하기전 기존거 array에 저장
       const isSucceed = await this.$store.dispatch('note/saveAsTextarea', { title: saveAsInput, content: this.textareaValue });
       if (isSucceed) {
-        this.isSaved = this.$store.getters['note/currentNoteInfo'].isSaved;
+        this.isSaved = this.$store.getters['note/getCurrentNoteInfo'].isSaved;
       }
     }
   }
@@ -97,10 +97,6 @@ export default {
 
 #btnGroup {
   margin-top: 10px;
-}
-
-input#difBtn {
-  width: 200px;
 }
 
 .systemMessage {

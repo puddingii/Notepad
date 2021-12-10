@@ -17,7 +17,7 @@ import { createNamespacedHelpers } from 'vuex';
 import NotepadHeader from '~/components/Home/MainContent/NotepadHeader';
 import NotepadBody from '~/components/Home/MainContent/NotepadBody';
 
-const { mapState } = createNamespacedHelpers('note');
+const { mapGetters } = createNamespacedHelpers('note');
 
 export default {
   components: {
@@ -25,10 +25,10 @@ export default {
     NotepadBody
   },
   computed: {
-    ...mapState([
-      'noteList',
-      'openTabList'
-    ])
+    ...mapGetters({
+      noteList: 'getNoteList',
+      openTabList: 'getOpenTabList'
+    })
   },
   methods: {
     addOpenTab (noteTitle) {

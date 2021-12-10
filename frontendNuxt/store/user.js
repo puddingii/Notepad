@@ -3,21 +3,23 @@ import jwt from 'jsonwebtoken';
 import ENV from '@/env';
 
 const state = () => ({
-  userEmail: '',
-  userToken: '',
+  email: '',
+  token: '',
   systemMessage: ''
 });
 
 const getters = {
-  getUserEmail: state => state.userEmail,
-  isLoggedIn: state => state.userToken !== ''
+  getEmail: state => state.email,
+  getToken: state => state.token,
+  getSystemMessage: state => state.systemMessage,
+  isLoggedIn: state => state.token !== ''
 };
 
 const mutations = {
-  setUserInfo (state, userInfo = { userEmail: '', userToken: '' }) {
-    const { userEmail, userToken } = userInfo;
-    state.userEmail = userEmail;
-    state.userToken = userToken;
+  setUserInfo (state, userInfo = { email: '', token: '' }) {
+    const { email, token } = userInfo;
+    state.email = email;
+    state.token = token;
   },
   setSystemMessage (state, msg = '') {
     state.systemMessage = msg;
@@ -40,12 +42,12 @@ const actions = {
         }
       } = response;
 
-      if (result) {
-        commit('setUserInfo', { userEmail: userInfo.email, userToken: token });
-        commit('setSystemMessage');
-      } else {
-        commit('setSystemMessage', responseMessage);
+      if (!result) {
+        throw new Error(responseMessage);
       }
+      commit('setUserInfo', { email: userInfo.email, token });
+      commit('setSystemMessage');
+
       return result;
     } catch (e) {
       commit('setSystemMessage', e);
@@ -74,7 +76,7 @@ const actions = {
   },
   async logout ({ commit, state }) {
     try {
-      const response = await this.$axios.post('http://localhost:8050/api/users/logout', { email: state.userEmail });
+      const response = await this.$axios.post('http://localhost:8050/api/users/logout', { email: state.email });
       if (response.status === 201) {
         commit('setUserInfo');
       }
@@ -86,18 +88,18 @@ const actions = {
   },
   async checkLoginStatus ({ commit, state }) {
     try {
-      if (!state.userToken) {
+      if (!state.token) {
         throw new Error('Token is not existing');
       }
-      const response = await this.$axios.post('http://localhost:8050/api/users/loginStatus', { email: state.userEmail });
+      const response = await this.$axios.post('http://localhost:8050/api/users/loginStatus', { email: state.email });
       const {
         data: { loginStatus }
       } = response;
 
-      if (loginStatus !== state.userToken) {
+      if (loginStatus !== state.token) {
         throw new Error('Log out another browser');
       }
-      jwt.verify(state.userToken, ENV.JWT_SECRET, (err, decoded) => {
+      jwt.verify(state.token, ENV.JWT_SECRET, (err, decoded) => {
         if (err) {
           throw new Error('JWT Session Verify Error');
         }
@@ -107,7 +109,7 @@ const actions = {
       });
     } catch (e) {
       if (e.message === 'JWT Session Verify Error') {
-        await this.$axios.post('http://localhost:8050/api/users/logout', state.userEmail);
+        await this.$axios.post('http://localhost:8050/api/users/logout', state.email);
       }
       commit('setSystemMessage', e.message);
       commit('setUserInfo');

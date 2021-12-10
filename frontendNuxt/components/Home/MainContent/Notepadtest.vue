@@ -20,23 +20,47 @@
             @ok.prevent="handleNewButtonClick"
           >
             <form ref="form" @submit.stop.prevent="handleNewButtonClick">
-              <b-form-input
-                id="newNoteTitle-input"
-                v-model="newNoteTitle"
-                required
-              />
+              <b-form-input id="newNoteTitle-input" v-model="newNoteTitle" required />
             </form>
           </b-modal>
           <button id="shareButton" class="btn btn-primary" type="button">Share</button>
-          <button id="ddButton" class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Load</button>
+          <button
+            id="ddButton"
+            class="btn btn-primary dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Load
+          </button>
           <ul id="dropdownMenu" class="dropdown-menu" aria-labelledby="ddButton">
             <li v-for="note in noteList" :key="note.id" :data-current-id="note.id">
-              <a href="#" :data-currentid="note.id" class="dropdown-item" @click="handleLoadItemClick(note.title)">{{ note.title }}</a>
+              <a
+                href="#"
+                :data-currentid="note.id"
+                class="dropdown-item"
+                @click="handleLoadItemClick(note.title)"
+              >
+                {{ note.title }}
+              </a>
             </li>
           </ul>
         </div>
-        <li v-for="(text, index) in openTabList" :id="`noteList${getId(text)}`" :key="index" class="nav-item notetab">
-          <a :id="`noteId${getId(text)}`" href="#" class="nav-link notelink" :data-currentid="getId(text)" @click="handleListItemClick(text)">{{ text }}</a>
+        <li
+          v-for="(text, index) in openTabList"
+          :id="`noteList${getId(text)}`"
+          :key="index"
+          class="nav-item notetab"
+        >
+          <a
+            :id="`noteId${getId(text)}`"
+            href="#"
+            class="nav-link notelink"
+            :data-currentid="getId(text)"
+            @click="handleListItemClick(text)"
+          >
+            {{ text }}
+          </a>
         </li>
       </ul>
     </header>
@@ -68,9 +92,9 @@ export default {
   },
   data () {
     return {
-      isSaved: this.$store.getters['note/currentNoteInfo'].isSaved,
-      textareaValue: this.$store.getters['note/currentNoteInfo'].content,
-      beforeNoteId: this.$store.state.note.currentNoteId,
+      isSaved: this.$store.getters['note/getCurrentNoteInfo'].isSaved,
+      textareaValue: this.$store.getters['note/getCurrentNoteInfo'].content,
+      beforeNoteId: this.$store.getters['note/getCurrentNoteId'],
       newNoteTitle: ''
     };
   },
@@ -106,21 +130,21 @@ export default {
       }
       this.$store.commit('note/setTextarea', { content: this.textareaValue, isSaved: this.isSaved }); // textarea 기록 저장
       this.$store.commit('note/setCurrentNoteIdByTitle', noteTitle); // 현재 가르키고 있는 Notepad update
-      this.textareaValue = this.$store.getters['note/currentNoteInfo'].content; // 가르키고 있는 Notepad가 변경되었으므로 textarea 변경
-      this.isSaved = this.$store.getters['note/currentNoteInfo'].isSaved;
+      this.textareaValue = this.$store.getters['note/getCurrentNoteInfo'].content; // 가르키고 있는 Notepad가 변경되었으므로 textarea 변경
+      this.isSaved = this.$store.getters['note/getCurrentNoteInfo'].isSaved;
     },
     handleListItemClick (noteTitle) {
       this.$store.commit('note/setTextarea', { content: this.textareaValue, isSaved: this.isSaved }); // textarea 기록 저장
       this.$store.commit('note/setCurrentNoteIdByTitle', noteTitle); // 현재 가르키고 있는 Notepad update
-      this.textareaValue = this.$store.getters['note/currentNoteInfo'].content; // 가르키고 있는 Notepad가 변경되었으므로 textarea 변경
-      this.isSaved = this.$store.getters['note/currentNoteInfo'].isSaved;
+      this.textareaValue = this.$store.getters['note/getCurrentNoteInfo'].content; // 가르키고 있는 Notepad가 변경되었으므로 textarea 변경
+      this.isSaved = this.$store.getters['note/getCurrentNoteInfo'].isSaved;
     },
     async handleNewButtonClick () {
       this.$store.commit('note/setTextarea', { content: this.textareaValue, isSaved: this.isSaved }); // textarea 기록 저장
       const isSucceed = await this.$store.dispatch('note/saveAsTextarea', { title: this.newNoteTitle, content: '' });
       if (isSucceed) {
         this.textareaValue = '';
-        this.isSaved = this.$store.getters['note/currentNoteInfo'].isSaved;
+        this.isSaved = this.$store.getters['note/getCurrentNoteInfo'].isSaved;
         this.$nextTick(() => {
           this.$bvModal.hide('newNoteTitleModal');
         });
@@ -129,14 +153,14 @@ export default {
     async saveTextarea () {
       const isSucceed = await this.$store.dispatch('note/saveTextarea', this.textareaValue);
       if (isSucceed) {
-        this.isSaved = this.$store.getters['note/currentNoteInfo'].isSaved;
+        this.isSaved = this.$store.getters['note/getCurrentNoteInfo'].isSaved;
       }
     },
     async saveAsTextarea (saveAsInput) {
       this.$store.commit('note/setTextarea', { content: this.textareaValue, isSaved: this.isSaved }); // saveAs 하기전 기존거 array에 저장
       const isSucceed = await this.$store.dispatch('note/saveAsTextarea', { title: saveAsInput, content: this.textareaValue });
       if (isSucceed) {
-        this.isSaved = this.$store.getters['note/currentNoteInfo'].isSaved;
+        this.isSaved = this.$store.getters['note/getCurrentNoteInfo'].isSaved;
       }
     },
     async deleteTextarea () {
@@ -144,7 +168,7 @@ export default {
     },
     closeNote () {
       this.$store.commit('note/setTextarea', { content: this.textareaValue, isSaved: this.isSaved });
-      this.$store.commit('note/deleteOpenNote', this.$store.getters['note/currentNoteInfo'].title);
+      this.$store.commit('note/deleteOpenNote', this.$store.getters['note/getCurrentNoteInfo'].title);
       this.$store.commit('note/setCurrentNoteId', -1);
     },
     resetNewTitleModal () {

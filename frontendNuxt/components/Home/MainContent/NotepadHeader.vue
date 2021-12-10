@@ -19,23 +19,47 @@
           @ok.prevent="onNewClick"
         >
           <form ref="form" @submit.stop.prevent="onNewClick">
-            <b-form-input
-              id="newNoteTitle-input"
-              v-model="newNoteTitle"
-              required
-            />
+            <b-form-input id="newNoteTitle-input" v-model="newNoteTitle" required />
           </form>
         </b-modal>
         <button id="shareButton" class="btn btn-primary" type="button">Share</button>
-        <button id="ddButton" class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Load</button>
+        <button
+          id="ddButton"
+          class="btn btn-primary dropdown-toggle"
+          type="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          Load
+        </button>
         <ul id="dropdownMenu" class="dropdown-menu" aria-labelledby="ddButton">
           <li v-for="note in noteList" :key="note.id" :data-current-id="note.id">
-            <a href="#" :data-currentid="note.id" class="dropdown-item" @click="onLoadClick(note.title)">{{ note.title }}</a>
+            <a
+              href="#"
+              :data-currentid="note.id"
+              class="dropdown-item"
+              @click="onLoadClick(note.title)"
+            >
+              {{ note.title }}
+            </a>
           </li>
         </ul>
       </div>
-      <li v-for="(text, index) in openTabList" :id="`noteList${getId(text)}`" :key="index" class="nav-item notetab">
-        <a :id="`noteId${getId(text)}`" href="#" class="nav-link notelink" :data-currentid="getId(text)" @click="onOpenTitleClick(text)">{{ text }}</a>
+      <li
+        v-for="(text, index) in openTabList"
+        :id="`noteList${getId(text)}`"
+        :key="index"
+        class="nav-item notetab"
+      >
+        <a
+          :id="`noteId${getId(text)}`"
+          href="#"
+          class="nav-link notelink"
+          :data-currentid="getId(text)"
+          @click="onOpenTitleClick(text)"
+        >
+          {{ text }}
+        </a>
       </li>
     </ul>
   </header>
@@ -71,10 +95,9 @@ export default {
     },
     async onNewClick () {
       this.$nuxt.$emit('saveNotepadInfo'); // textarea 기록 저장
-      // 현재 바라보고있는  note업데이트 분리할 것 아래거 말하는거임.
       const isSucceed = await this.$store.dispatch('note/saveAsTextarea', { title: this.newNoteTitle, content: '' });
       if (isSucceed) {
-        this.$nuxt.$emit('updateNotepadInfo', { content: '', isSaved: this.$store.getters['note/currentNoteInfo'].isSaved });
+        this.$nuxt.$emit('updateNotepadInfo', { content: '', isSaved: this.$store.getters['note/getCurrentNoteInfo'].isSaved });
         this.$nextTick(() => {
           this.$bvModal.hide('newNoteTitleModal');
         });

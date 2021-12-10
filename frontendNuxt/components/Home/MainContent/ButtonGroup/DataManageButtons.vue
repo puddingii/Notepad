@@ -32,10 +32,7 @@ export default {
 };
 </script>
 
-<style>
-#btnGroup {
-  margin-top: 10px;
-}
+<style scoped>
 input#difBtn {
   width: 200px;
 }

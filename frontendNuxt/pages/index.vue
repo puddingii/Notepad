@@ -1,7 +1,7 @@
 <template>
   <div class="row align-items-md-stretch">
     <div class="col col-md-2 leftCard">
-      <UserStatus :user-email="userEmail" />
+      <UserStatus :email="email" />
       <Chat />
     </div>
     <div class="col col-md-9">
@@ -26,7 +26,7 @@ export default {
   layout: 'Home',
   middleware: ['authenticated'],
   asyncData ({ store }) {
-    store.dispatch('note/loadAll', store.state.user.userEmail);
+    store.dispatch('note/loadAll', store.getters['user/getEmail']);
   },
   head: {
     script: [{
@@ -40,8 +40,8 @@ export default {
     }]
   },
   computed: {
-    userEmail () {
-      return this.$store.state.user.userEmail;
+    email () {
+      return this.$store.getters['user/getEmail'];
     }
   },
   methods: {

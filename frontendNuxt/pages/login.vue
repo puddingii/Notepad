@@ -30,7 +30,7 @@ export default {
   },
   computed: {
     systemMessage () {
-      return this.$store.state.user.systemMessage;
+      return this.$store.getters['user/getSystemMessage'];
     }
   },
   methods: {
