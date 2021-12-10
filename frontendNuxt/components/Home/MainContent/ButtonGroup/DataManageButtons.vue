@@ -1,9 +1,9 @@
 <template>
   <div id="btnGroup">
-    <button id="save" type="button" class="btn btn-outline-primary" @click="onSaveClick">save</button>
-    <button id="saveAs" type="button" class="btn btn-outline-primary" @click="onSaveAsClick">saveAs</button>
-    <button id="delete" type="button" class="btn btn-outline-danger" @click="onDeleteClick">delete</button>
-    <button id="close" type="button" class="btn btn-outline-danger" @click="onCloseClick">close</button>
+    <button id="save" type="button" class="btn btn-outline-primary" @click="onSaveClick">Save</button>
+    <button id="saveAs" type="button" class="btn btn-outline-primary" @click="onSaveAsClick">SaveAs</button>
+    <button id="delete" type="button" class="btn btn-outline-danger" @click="onDeleteClick">Delete</button>
+    <button id="close" type="button" class="btn btn-outline-danger" @click="onCloseClick">Close</button>
     <input id="saveAsInput" v-model="saveAsInput" type="text" class="form-control">
   </div>
 </template>

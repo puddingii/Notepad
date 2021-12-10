@@ -85,10 +85,10 @@ apiRouter.post("/loadAllData", async (req, res) => {
         notepadInfo.push({ endTitle: userInfo.getLasttab(), openTab: userInfo.getOpentab() });
         const data = jsonManage.classToTextToJson(notepadInfo);
 
-        return res.status(200).json(data);
+        return res.status(200).json({ noteList: data, result: true });
     } catch (e) {
         console.log(e);
-        return res.sendStatus(400);
+        return res.status(200).json({ result: false, msg: e.message});
     }
 });
 

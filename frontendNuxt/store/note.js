@@ -1,6 +1,7 @@
 // @ts-ignore
 import MArray from '@/store/util/manageArray';
 
+/** @returns {ifStore.Note.State}  */
 const state = () => ({
   noteList: [],
   openTabList: [],
@@ -8,6 +9,7 @@ const state = () => ({
   systemMessage: ''
 });
 
+/** @type {ifStore.Note.Getters}  */
 const getters = {
   getNoteList: state => state.noteList,
   getOpenTabList: state => state.openTabList,
@@ -22,6 +24,7 @@ const getters = {
 
 };
 
+/** @type {ifStore.Note.Mutations}  */
 const mutations = {
   ADD_OPEN_TAB (state, title) {
     state.openTabList.push(title);
@@ -64,6 +67,7 @@ const mutations = {
   }
 };
 
+/** @type {ifStore.Note.Actions}  */
 const actions = {
   async deleteNote ({ state, getters, commit }) {
     try {
@@ -86,11 +90,23 @@ const actions = {
     }
   },
   async loadAll ({ commit }, email) {
-    const response = await this.$axios.post('http://localhost:8050/api/notepad/loadAllData', { email });
-    const { endTitle, openTab } = response.data.pop();
-    commit('SET_NOTE_LIST', response.data);
-    commit('SET_CURRENT_NOTE_ID', { title: endTitle });
-    commit('SET_OPENTAB_LIST', openTab);
+    try {
+      const response = await this.$axios.post('http://localhost:8050/api/notepad/loadAllData', { email });
+      const {
+        data: { noteList, result, msg }
+      } = response;
+      if (!result) {
+        throw new Error(msg);
+      }
+      const { endTitle, openTab } = noteList.pop();
+      commit('SET_NOTE_LIST', noteList);
+      commit('SET_CURRENT_NOTE_ID', { title: endTitle });
+      commit('SET_OPENTAB_LIST', openTab);
+      return true;
+    } catch (e) {
+      commit('SET_SYSTEM_MESSAGE', e.message);
+      return false;
+    }
   },
   async saveTextarea ({ state, getters, commit }, value) {
     const requestPacket = {

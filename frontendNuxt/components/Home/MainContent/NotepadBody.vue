@@ -79,6 +79,10 @@ export default {
       }
     },
     async handleSaveAsButton (saveAsInput) {
+      if (saveAsInput === '') {
+        this.$store.commit('note/SET_SYSTEM_MESSAGE', 'SaveAs Title is empty!');
+        return;
+      }
       this.$store.commit('note/SET_TEXTAREA', { content: this.textareaValue, isSaved: this.isSaved }); // saveAs 하기전 기존거 array에 저장
       const isSucceed = await this.$store.dispatch('note/saveAsTextarea', { title: saveAsInput, content: this.textareaValue });
       if (isSucceed) {

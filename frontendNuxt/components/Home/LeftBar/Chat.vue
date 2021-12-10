@@ -12,7 +12,7 @@
         <input id="chatInput" class="form-control" type="text" placeholder="Chat" aria-describedby="chatInputButton">
         <button id="chatInputButton" class="input-group-text">></button>
       </div>
-      <!-- <div id="joinRoomModal" class="modal fade" tabindex="-1" aria-labelledby="joinRoomModalLabel" aria-hidden="true">
+      <div id="joinRoomModal" class="modal fade" tabindex="-1" aria-labelledby="joinRoomModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
@@ -33,7 +33,7 @@
             </div>
           </div>
         </div>
-      </div> -->
+      </div>
     </div>
   </div>
 </template>

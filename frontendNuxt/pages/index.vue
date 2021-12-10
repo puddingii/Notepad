@@ -2,7 +2,7 @@
   <div class="row align-items-md-stretch">
     <div class="col col-md-2 leftCard">
       <UserStatus :email="email" />
-      <Chat />
+      <!-- <Chat /> -->
     </div>
     <div class="col col-md-9">
       <Notepad />
@@ -12,15 +12,15 @@
 
 <script>
 import UserStatus from '~/components/Home/LeftBar/UserStatus';
-import Chat from '~/components/Home/LeftBar/Chat';
 import Notepad from '~/components/Home/MainContent/Notepad';
+// import Chat from '~/components/Home/LeftBar/Chat';
 // import Notepadtest from '~/components/Home/MainContent/Notepadtest';
 
 export default {
   components: {
     UserStatus,
-    Chat,
     Notepad
+    // Chat,
     // Notepadtest
   },
   layout: 'Home',
