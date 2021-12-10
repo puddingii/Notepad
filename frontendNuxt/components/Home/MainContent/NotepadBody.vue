@@ -1,6 +1,6 @@
 <template>
   <section class="notepad">
-    <div v-if="currentNoteId !== -1" id="noteFormDiv" class="form-floating">
+    <div v-if="currentNoteInfo !== null" id="noteFormDiv" class="form-floating">
       <textarea id="textareaForm" v-model="textareaValue" class="form-control" />
       <label id="textareaLabel">{{ isSaved ? '저장됨.' : '저장 안됨.' }}</label>
       <DataManageButtons
@@ -17,13 +17,17 @@
 <script>
 import { createNamespacedHelpers } from 'vuex';
 import DataManageButtons from '~/components/Home/MainContent/ButtonGroup/DataManageButtons';
-const { mapState } = createNamespacedHelpers('note');
+const { mapGetters } = createNamespacedHelpers('note');
 
 export default {
   components: {
     DataManageButtons
   },
   props: {
+    currentNoteInfo: {
+      type: Object,
+      default: null
+    }
   },
   data () {
     return {
@@ -33,23 +37,22 @@ export default {
     };
   },
   computed: {
-    ...mapState([
-      'currentNoteId',
-      'systemMessage'
-    ])
+    ...mapGetters({
+      systemMessage: 'getSystemMessage'
+    })
   },
   watch: {
     textareaValue (newValue) {
-      if (newValue && this.beforeNoteId === this.currentNoteId) {
+      if (newValue && this.beforeNoteId === this.currentNoteInfo.id) {
         this.isSaved = false;
       } else {
-        this.beforeNoteId = this.currentNoteId;
+        this.beforeNoteId = this.currentNoteInfo.id;
       }
     }
   },
   created () {
     this.$nuxt.$on('saveNotepadInfo', () => {
-      this.$store.commit('note/setTextarea', { content: this.textareaValue, isSaved: this.isSaved });
+      this.$store.commit('note/SET_TEXTAREA', { content: this.textareaValue, isSaved: this.isSaved });
     });
     this.$nuxt.$on('updateNotepadInfo', (info) => {
       if (info) {
@@ -62,9 +65,9 @@ export default {
   },
   methods: {
     handleCloseButton () {
-      this.$store.commit('note/setTextarea', { content: this.textareaValue, isSaved: this.isSaved });
-      this.$store.commit('note/deleteOpenNote', this.$store.getters['note/getCurrentNoteInfo'].title);
-      this.$store.commit('note/setCurrentNoteId', -1);
+      this.$store.commit('note/SET_TEXTAREA', { content: this.textareaValue, isSaved: this.isSaved });
+      this.$store.commit('note/REMOVE_OPEN_NOTE', this.$store.getters['note/getCurrentNoteInfo'].title);
+      this.$store.commit('note/SET_CURRENT_NOTE_ID', { id: -1 });
     },
     async handleDeleteButton () {
       await this.$store.dispatch('note/deleteNote');
@@ -76,7 +79,7 @@ export default {
       }
     },
     async handleSaveAsButton (saveAsInput) {
-      this.$store.commit('note/setTextarea', { content: this.textareaValue, isSaved: this.isSaved }); // saveAs 하기전 기존거 array에 저장
+      this.$store.commit('note/SET_TEXTAREA', { content: this.textareaValue, isSaved: this.isSaved }); // saveAs 하기전 기존거 array에 저장
       const isSucceed = await this.$store.dispatch('note/saveAsTextarea', { title: saveAsInput, content: this.textareaValue });
       if (isSucceed) {
         this.isSaved = this.$store.getters['note/getCurrentNoteInfo'].isSaved;

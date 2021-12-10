@@ -126,21 +126,21 @@ export default {
     handleLoadItemClick (noteTitle) {
       const isExisting = this.openTabList.includes(noteTitle);
       if (!isExisting) {
-        this.$store.commit('note/addOpenTab', noteTitle); // 탭에 없으면 추가
+        this.$store.commit('note/ADD_OPEN_TAB', noteTitle); // 탭에 없으면 추가
       }
-      this.$store.commit('note/setTextarea', { content: this.textareaValue, isSaved: this.isSaved }); // textarea 기록 저장
-      this.$store.commit('note/setCurrentNoteIdByTitle', noteTitle); // 현재 가르키고 있는 Notepad update
+      this.$store.commit('note/SET_TEXTAREA', { content: this.textareaValue, isSaved: this.isSaved }); // textarea 기록 저장
+      this.$store.commit('note/SET_CURRENT_NOTE_ID', { title: noteTitle }); // 현재 가르키고 있는 Notepad update
       this.textareaValue = this.$store.getters['note/getCurrentNoteInfo'].content; // 가르키고 있는 Notepad가 변경되었으므로 textarea 변경
       this.isSaved = this.$store.getters['note/getCurrentNoteInfo'].isSaved;
     },
     handleListItemClick (noteTitle) {
-      this.$store.commit('note/setTextarea', { content: this.textareaValue, isSaved: this.isSaved }); // textarea 기록 저장
-      this.$store.commit('note/setCurrentNoteIdByTitle', noteTitle); // 현재 가르키고 있는 Notepad update
+      this.$store.commit('note/SET_TEXTAREA', { content: this.textareaValue, isSaved: this.isSaved }); // textarea 기록 저장
+      this.$store.commit('note/SET_CURRENT_NOTE_ID', { title: noteTitle }); // 현재 가르키고 있는 Notepad update
       this.textareaValue = this.$store.getters['note/getCurrentNoteInfo'].content; // 가르키고 있는 Notepad가 변경되었으므로 textarea 변경
       this.isSaved = this.$store.getters['note/getCurrentNoteInfo'].isSaved;
     },
     async handleNewButtonClick () {
-      this.$store.commit('note/setTextarea', { content: this.textareaValue, isSaved: this.isSaved }); // textarea 기록 저장
+      this.$store.commit('note/SET_TEXTAREA', { content: this.textareaValue, isSaved: this.isSaved }); // textarea 기록 저장
       const isSucceed = await this.$store.dispatch('note/saveAsTextarea', { title: this.newNoteTitle, content: '' });
       if (isSucceed) {
         this.textareaValue = '';
@@ -157,7 +157,7 @@ export default {
       }
     },
     async saveAsTextarea (saveAsInput) {
-      this.$store.commit('note/setTextarea', { content: this.textareaValue, isSaved: this.isSaved }); // saveAs 하기전 기존거 array에 저장
+      this.$store.commit('note/SET_TEXTAREA', { content: this.textareaValue, isSaved: this.isSaved }); // saveAs 하기전 기존거 array에 저장
       const isSucceed = await this.$store.dispatch('note/saveAsTextarea', { title: saveAsInput, content: this.textareaValue });
       if (isSucceed) {
         this.isSaved = this.$store.getters['note/getCurrentNoteInfo'].isSaved;
@@ -167,9 +167,9 @@ export default {
       await this.$store.dispatch('note/deleteNote');
     },
     closeNote () {
-      this.$store.commit('note/setTextarea', { content: this.textareaValue, isSaved: this.isSaved });
-      this.$store.commit('note/deleteOpenNote', this.$store.getters['note/getCurrentNoteInfo'].title);
-      this.$store.commit('note/setCurrentNoteId', -1);
+      this.$store.commit('note/SET_TEXTAREA', { content: this.textareaValue, isSaved: this.isSaved });
+      this.$store.commit('note/REMOVE_OPEN_NOTE', this.$store.getters['note/getCurrentNoteInfo'].title);
+      this.$store.commit('note/SET_CURRENT_NOTE_ID', { id: -1 });
     },
     resetNewTitleModal () {
       this.newNoteTitle = '';

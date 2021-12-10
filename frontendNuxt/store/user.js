@@ -10,18 +10,17 @@ const state = () => ({
 
 const getters = {
   getEmail: state => state.email,
-  getToken: state => state.token,
   getSystemMessage: state => state.systemMessage,
   isLoggedIn: state => state.token !== ''
 };
 
 const mutations = {
-  setUserInfo (state, userInfo = { email: '', token: '' }) {
+  SET_USER_INFO (state, userInfo = { email: '', token: '' }) {
     const { email, token } = userInfo;
     state.email = email;
     state.token = token;
   },
-  setSystemMessage (state, msg = '') {
+  SET_SYSTEM_MESSAGE (state, msg = '') {
     state.systemMessage = msg;
   }
 };
@@ -45,12 +44,12 @@ const actions = {
       if (!result) {
         throw new Error(responseMessage);
       }
-      commit('setUserInfo', { email: userInfo.email, token });
-      commit('setSystemMessage');
+      commit('SET_USER_INFO', { email: userInfo.email, token });
+      commit('SET_SYSTEM_MESSAGE');
 
       return result;
     } catch (e) {
-      commit('setSystemMessage', e);
+      commit('SET_SYSTEM_MESSAGE', e);
     }
   },
   async signUp ({ commit }, userInfo) {
@@ -68,17 +67,17 @@ const actions = {
       if (!result) {
         throw new Error(responseMessage);
       }
-      commit('setSystemMessage');
+      commit('SET_SYSTEM_MESSAGE');
       return result;
     } catch (e) {
-      commit('setSystemMessage', e);
+      commit('SET_SYSTEM_MESSAGE', e);
     }
   },
   async logout ({ commit, state }) {
     try {
       const response = await this.$axios.post('http://localhost:8050/api/users/logout', { email: state.email });
       if (response.status === 201) {
-        commit('setUserInfo');
+        commit('SET_USER_INFO');
       }
       return response;
     } catch (e) {
@@ -104,15 +103,15 @@ const actions = {
           throw new Error('JWT Session Verify Error');
         }
         if (decoded) {
-          commit('setSystemMessage');
+          commit('SET_SYSTEM_MESSAGE');
         }
       });
     } catch (e) {
       if (e.message === 'JWT Session Verify Error') {
         await this.$axios.post('http://localhost:8050/api/users/logout', state.email);
       }
-      commit('setSystemMessage', e.message);
-      commit('setUserInfo');
+      commit('SET_SYSTEM_MESSAGE', e.message);
+      commit('SET_USER_INFO');
     }
   }
 };

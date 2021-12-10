@@ -3,12 +3,15 @@
     <NotepadHeader
       :open-tab-list="openTabList"
       :note-list="noteList"
+      :current-note-info="currentNoteInfo"
       @addOpenTab="addOpenTab"
       @handleLoadClick="handleLoadClick"
-      @setCurrentNoteIdByTitle="setCurrentNoteIdByTitle"
+      @setCurrentNoteId="setCurrentNoteId"
     />
     <br>
-    <NotepadBody />
+    <NotepadBody
+      :current-note-info="currentNoteInfo"
+    />
   </div>
 </template>
 
@@ -27,14 +30,15 @@ export default {
   computed: {
     ...mapGetters({
       noteList: 'getNoteList',
-      openTabList: 'getOpenTabList'
+      openTabList: 'getOpenTabList',
+      currentNoteInfo: 'getCurrentNoteInfo'
     })
   },
   methods: {
     addOpenTab (noteTitle) {
       const isExisting = this.openTabList.includes(noteTitle);
       if (!isExisting) {
-        this.$store.commit('note/addOpenTab', noteTitle);
+        this.$store.commit('note/ADD_OPEN_TAB', noteTitle);
       }
     },
     updateBody (noteTitle) {
@@ -43,11 +47,11 @@ export default {
     handleLoadClick (title) {
       const isExisting = this.openTabList.includes(title);
       if (!isExisting) {
-        this.$store.commit('note/addOpenTab', title); // 탭에 없으면 추가
+        this.$store.commit('note/ADD_OPEN_TAB', title); // 탭에 없으면 추가
       }
     },
-    setCurrentNoteIdByTitle (title) {
-      this.$store.commit('note/setCurrentNoteIdByTitle', title); // 현재 가르키고 있는 Notepad update
+    setCurrentNoteId (title) {
+      this.$store.commit('note/SET_CURRENT_NOTE_ID', { title }); // 현재 가르키고 있는 Notepad update
     }
   }
 };

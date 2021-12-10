@@ -54,6 +54,7 @@
         <a
           :id="`noteId${getId(text)}`"
           href="#"
+          :class="currentNoteInfo.title === text ? 'active' : ''"
           class="nav-link notelink"
           :data-currentid="getId(text)"
           @click="onOpenTitleClick(text)"
@@ -75,6 +76,10 @@ export default {
     noteList: {
       type: Array,
       required: true
+    },
+    currentNoteInfo: {
+      type: Object,
+      default: null
     }
   },
   data () {
@@ -90,7 +95,7 @@ export default {
     onLoadClick (noteTitle) {
       this.$emit('handleLoadClick', noteTitle);
       this.$nuxt.$emit('saveNotepadInfo'); // 가르키고 있는 notepad update 기록 저장(body부분으로 넘겨줘야할듯 , value랑 isSaved가 필요함)
-      this.$emit('setCurrentNoteIdByTitle', noteTitle);
+      this.$emit('setCurrentNoteId', noteTitle);
       this.$nuxt.$emit('updateNotepadInfo'); // 가르키고 있는 노트를 업데이트 했으므로 textarea도 업데이트 해야함.
     },
     async onNewClick () {
@@ -105,7 +110,7 @@ export default {
     },
     onOpenTitleClick (title) {
       this.$nuxt.$emit('saveNotepadInfo');
-      this.$emit('setCurrentNoteIdByTitle', title);
+      this.$emit('setCurrentNoteId', title);
       this.$nuxt.$emit('updateNotepadInfo');
     },
     resetNewButtonModal () {

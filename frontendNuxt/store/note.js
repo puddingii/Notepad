@@ -9,60 +9,57 @@ const state = () => ({
 });
 
 const getters = {
-  getNoteList (state) {
-    return state.noteList;
-  },
-  getOpenTabList (state) {
-    return state.openTabList;
-  },
-  getCurrentNoteId (state) {
-    return state.currentNoteId;
-  },
+  getNoteList: state => state.noteList,
+  getOpenTabList: state => state.openTabList,
+  getCurrentNoteId: state => state.currentNoteId,
+  getSystemMessage: state => state.systemMessage,
   getCurrentNoteInfo (state) {
     if (state.currentNoteId !== -1) {
       return state.noteList.find(element => element.id === state.currentNoteId);
     }
     return null;
   }
+
 };
 
 const mutations = {
-  addOpenTab (state, title) {
+  ADD_OPEN_TAB (state, title) {
     state.openTabList.push(title);
   },
-  addNote (state, note) {
+  ADD_NOTE (state, note) {
     state.noteList.push(note);
   },
-  deleteNote (state) {
+  REMOVE_NOTE (state) {
     const index = MArray.getIndexById(state.noteList, state.currentNoteId);
     state.noteList.splice(index, 1);
   },
-  deleteOpenNote (state, noteTitle) {
+  REMOVE_OPEN_NOTE (state, noteTitle) {
     const index = MArray.getIndex(state.openTabList, noteTitle);
     state.openTabList.splice(index, 1);
   },
-  initOpenTabList (state, list) {
+  SET_OPENTAB_LIST (state, list) {
     state.openTabList = list ? list.split(',') : [];
     state.openTabList = state.openTabList.filter(tab => state.noteList.find(note => note.title === tab));
   },
-  initNotepadList (state, list) {
+  SET_NOTE_LIST (state, list) {
     state.noteList = list;
     state.noteList.forEach((note) => { note.isSaved = true; });
   },
-  setTextarea (state, { content, isSaved }) {
+  SET_TEXTAREA (state, { content, isSaved }) {
     if (state.currentNoteId > -1) {
       const index = MArray.getIndexById(state.noteList, state.currentNoteId);
       state.noteList[index].content = content;
       state.noteList[index].isSaved = isSaved;
     }
   },
-  setCurrentNoteId (state, id) {
-    state.currentNoteId = id;
+  SET_CURRENT_NOTE_ID (state, { id, title }) {
+    if (id) {
+      state.currentNoteId = id;
+    } else {
+      state.currentNoteId = state.noteList.length ? MArray.getObjectByTitle(state.noteList, title)?.id ?? -1 : -1;
+    }
   },
-  setCurrentNoteIdByTitle (state, title) {
-    state.currentNoteId = state.noteList.length ? MArray.getObjectByTitle(state.noteList, title)?.id ?? -1 : -1;
-  },
-  setSystemMessage (state, msg) {
+  SET_SYSTEM_MESSAGE (state, msg) {
     state.systemMessage = msg;
   }
 };
@@ -79,21 +76,21 @@ const actions = {
       if (!response.data.result) {
         throw new Error(response.data.msg);
       }
-      commit('deleteOpenNote', getters.getCurrentNoteInfo.title);
-      commit('deleteNote');
-      commit('setCurrentNoteId', -1);
+      commit('REMOVE_OPEN_NOTE', getters.getCurrentNoteInfo.title);
+      commit('REMOVE_NOTE');
+      commit('SET_CURRENT_NOTE_ID', { id: -1 });
       return true;
     } catch (e) {
-      commit('setSystemMessage', e.message);
+      commit('SET_SYSTEM_MESSAGE', e.message);
       return false;
     }
   },
   async loadAll ({ commit }, email) {
     const response = await this.$axios.post('http://localhost:8050/api/notepad/loadAllData', { email });
     const { endTitle, openTab } = response.data.pop();
-    commit('initNotepadList', response.data);
-    commit('setCurrentNoteIdByTitle', endTitle);
-    commit('initOpenTabList', openTab);
+    commit('SET_NOTE_LIST', response.data);
+    commit('SET_CURRENT_NOTE_ID', { title: endTitle });
+    commit('SET_OPENTAB_LIST', openTab);
   },
   async saveTextarea ({ state, getters, commit }, value) {
     const requestPacket = {
@@ -107,14 +104,14 @@ const actions = {
       if (!response.data.result) {
         throw new Error(response.data.msg);
       }
-      commit('setSystemMessage', response.data.msg);
-      setTimeout(() => commit('setSystemMessage', ''), 3000);
+      commit('SET_SYSTEM_MESSAGE', response.data.msg);
+      setTimeout(() => commit('SET_SYSTEM_MESSAGE', ''), 3000);
 
       const index = MArray.getIndexById(state.noteList, state.currentNoteId);
       state.noteList[index].isSaved = true;
       return true;
     } catch (e) {
-      commit('setSystemMessage', e.message);
+      commit('SET_SYSTEM_MESSAGE', e.message);
       return false;
     }
   },
@@ -139,15 +136,15 @@ const actions = {
         isSaved: true
       };
 
-      commit('setSystemMessage', response.data.msg);
-      setTimeout(() => commit('setSystemMessage', ''), 3000);
+      commit('SET_SYSTEM_MESSAGE', response.data.msg);
+      setTimeout(() => commit('SET_SYSTEM_MESSAGE', ''), 3000);
 
-      commit('addNote', note);
-      commit('addOpenTab', title);
-      commit('setCurrentNoteId', id);
+      commit('ADD_NOTE', note);
+      commit('ADD_OPEN_TAB', title);
+      commit('SET_CURRENT_NOTE_ID', { id });
       return true;
     } catch (e) {
-      commit('setSystemMessage', e.message);
+      commit('SET_SYSTEM_MESSAGE', e.message);
       return false;
     }
   },
@@ -163,7 +160,7 @@ const actions = {
       }
       return true;
     } catch (e) {
-      commit('setSystemMessage', e.message);
+      commit('SET_SYSTEM_MESSAGE', e.message);
       return false;
     }
   }
