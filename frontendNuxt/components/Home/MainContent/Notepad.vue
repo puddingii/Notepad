@@ -8,9 +8,7 @@
       @setCurrentNoteIdByTitle="setCurrentNoteIdByTitle"
     />
     <br>
-    <NotepadBody
-      :note-content="currentNoteInfo"
-    />
+    <NotepadBody />
   </div>
 </template>
 
@@ -19,7 +17,7 @@ import { createNamespacedHelpers } from 'vuex';
 import NotepadHeader from '~/components/Home/MainContent/NotepadHeader';
 import NotepadBody from '~/components/Home/MainContent/NotepadBody';
 
-const { mapState, mapGetters } = createNamespacedHelpers('note');
+const { mapState } = createNamespacedHelpers('note');
 
 export default {
   components: {
@@ -30,9 +28,6 @@ export default {
     ...mapState([
       'noteList',
       'openTabList'
-    ]),
-    ...mapGetters([
-      'currentNoteInfo'
     ])
   },
   methods: {

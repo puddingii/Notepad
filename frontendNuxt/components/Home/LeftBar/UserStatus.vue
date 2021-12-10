@@ -16,6 +16,7 @@ export default {
   },
   methods: {
     async handleLogout () {
+      await this.$store.dispatch('note/saveNoteListStatus', this.userEmail);
       const result = await this.$store.dispatch('user/logout');
       if (result) {
         this.$router.push('/login');

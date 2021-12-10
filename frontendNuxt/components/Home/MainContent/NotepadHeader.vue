@@ -74,7 +74,7 @@ export default {
       // 현재 바라보고있는  note업데이트 분리할 것 아래거 말하는거임.
       const isSucceed = await this.$store.dispatch('note/saveAsTextarea', { title: this.newNoteTitle, content: '' });
       if (isSucceed) {
-        this.$nuxt.$emit('saveNotepadInfo', { content: '', isSaved: this.$store.getters['note/currentNoteInfo'].isSaved });
+        this.$nuxt.$emit('updateNotepadInfo', { content: '', isSaved: this.$store.getters['note/currentNoteInfo'].isSaved });
         this.$nextTick(() => {
           this.$bvModal.hide('newNoteTitleModal');
         });

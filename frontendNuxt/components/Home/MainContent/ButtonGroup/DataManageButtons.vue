@@ -1,9 +1,9 @@
 <template>
   <div id="btnGroup">
-    <button id="save" type="button" class="btn btn-outline-primary" @click="handleSaveClick">save</button>
-    <button id="saveAs" type="button" class="btn btn-outline-primary" @click="handleSaveAsClick">saveAs</button>
-    <button id="delete" type="button" class="btn btn-outline-danger" @click="handleDeleteClick">delete</button>
-    <button id="close" type="button" class="btn btn-outline-danger" @click="handleCloseClick">close</button>
+    <button id="save" type="button" class="btn btn-outline-primary" @click="onSaveClick">save</button>
+    <button id="saveAs" type="button" class="btn btn-outline-primary" @click="onSaveAsClick">saveAs</button>
+    <button id="delete" type="button" class="btn btn-outline-danger" @click="onDeleteClick">delete</button>
+    <button id="close" type="button" class="btn btn-outline-danger" @click="onCloseClick">close</button>
     <input id="saveAsInput" v-model="saveAsInput" type="text" class="form-control">
   </div>
 </template>
@@ -16,16 +16,16 @@ export default {
     };
   },
   methods: {
-    handleSaveClick () {
+    onSaveClick () {
       this.$emit('save');
     },
-    handleSaveAsClick () {
+    onSaveAsClick () {
       this.$emit('saveas', this.saveAsInput);
     },
-    handleDeleteClick () {
+    onDeleteClick () {
       this.$emit('delete');
     },
-    handleCloseClick () {
+    onCloseClick () {
       this.$emit('close');
     }
   }

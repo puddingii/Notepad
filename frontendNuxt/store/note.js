@@ -60,7 +60,7 @@ const mutations = {
     state.currentNoteId = id;
   },
   setCurrentNoteIdByTitle (state, title) {
-    state.currentNoteId = state.noteList.length ? MArray.getObjectByTitle(state.noteList, title)?.id : null;
+    state.currentNoteId = state.noteList.length ? MArray.getObjectByTitle(state.noteList, title)?.id ?? -1 : -1;
   },
   setSystemMessage (state, msg) {
     state.systemMessage = msg;
@@ -151,12 +151,12 @@ const actions = {
       return false;
     }
   },
-  async saveNoteListStatus ({ state, getters, commit }) {
+  async saveNoteListStatus ({ state, getters, commit }, email) {
     try {
       const response = await this.$axios.post('http://localhost:8050/api/users/saveOpenNote', {
-        email: getters.currentNoteInfo.email,
+        email,
         opentab: state.openTabList.toString(),
-        lasttab: getters.currentNoteInfo.title
+        lasttab: getters.currentNoteInfo?.title ?? ''
       });
       if (!response.data.result) {
         throw new Error(response.data.msg);

@@ -9,6 +9,7 @@ const state = () => ({
 });
 
 const getters = {
+  getUserEmail: state => state.userEmail,
   isLoggedIn: state => state.userToken !== ''
 };
 

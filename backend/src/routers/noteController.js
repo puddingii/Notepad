@@ -42,7 +42,6 @@ apiRouter.delete("/delete", async (req, res) => {
             throw new Error("This email is not validated");
         }
         await Notepads.destroy({ where: { id: noteId, email } });
-        console.log('hi');
         return res.status(201).json({ result: true, msg: "Succeed!!" });
     } catch (e) {
         console.log(e);
