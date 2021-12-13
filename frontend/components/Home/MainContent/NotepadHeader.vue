@@ -94,7 +94,7 @@ export default {
     },
     onLoadClick (noteTitle) {
       this.$emit('handleLoadClick', noteTitle);
-      this.$nuxt.$emit('saveNotepadInfo'); // 가르키고 있는 notepad update 기록 저장(body부분으로 넘겨줘야할듯 , value랑 isSaved가 필요함)
+      this.$nuxt.$emit('saveNotepadInfo'); // 가르키고 있는 notepad update 기록 저장
       this.$emit('setCurrentNoteId', noteTitle);
       this.$nuxt.$emit('updateNotepadInfo'); // 가르키고 있는 노트를 업데이트 했으므로 textarea도 업데이트 해야함.
     },

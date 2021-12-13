@@ -49,7 +49,7 @@ const actions = {
         throw new Error(responseMessage);
       }
       const userSettings = { email: userInfo.email, token };
-      commit('SET_USER_INFO', { email: userInfo.email, token });
+      commit('SET_USER_INFO', userSettings);
       commit('SET_SYSTEM_MESSAGE');
       this.$cookies.set('userInfo', userSettings, { path: '/' });
 
