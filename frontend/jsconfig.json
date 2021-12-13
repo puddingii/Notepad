@@ -1,0 +1,46 @@
+{
+	"compilerOptions": {
+		// ES2022 문법을 사용하기 위함(class private field)
+		"target": "ESNext",
+		"module": "ESNext",
+		// "noImplicitAny": true,
+		"esModuleInterop": true,
+		// workspace상에서 references 패키지에서 root packges 모듈을 찾지 못하는 문제 해결
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+		"allowSyntheticDefaultImports": true,
+		// class static private 변수를 사용하기 위함
+		"useDefineForClassFields": true,
+		"skipLibCheck": true,
+		"allowJs": true,
+		"checkJs": true,
+		"baseUrl": "./",
+		"lib": ["ESNext", "DOM"],
+		"types": [
+			"@nuxt/types",
+			"@nuxtjs/axios",
+			"node"
+		]
+	},
+	"include": [
+    "**/*.ts",
+		"**/*.vue",
+		"**/*.js",
+		"./interfaces",
+		"./types"
+  ],
+	"exclude": [
+		"**/*/coverage",
+		"coverage",
+		"nuxt.config.js",
+		"node_modules",
+		".output",
+		".nuxt",
+		"docs",
+		"dist",
+		".vscode",
+		".cache",
+		"build",
+		"local_history"
+	]
+}

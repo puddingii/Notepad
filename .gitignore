@@ -6,3 +6,4 @@ env.js
 .nuxt
 .vscode
 interfaces
+yarn-error.log

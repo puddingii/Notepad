@@ -3,7 +3,7 @@
     <div v-if="currentNoteInfo !== null" id="noteFormDiv" class="form-floating">
       <textarea id="textareaForm" v-model="textareaValue" class="form-control" />
       <label id="textareaLabel">{{ isSaved ? '저장됨.' : '저장 안됨.' }}</label>
-      <DataManageButtons
+      <NoteControlButtons
         @save="handleSaveButton"
         @saveas="handleSaveAsButton"
         @delete="handleDeleteButton"
@@ -16,12 +16,12 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
-import DataManageButtons from '~/components/Home/MainContent/ButtonGroup/DataManageButtons';
+import NoteControlButtons from '~/components/Home/MainContent/NoteControlButtons';
 const { mapGetters } = createNamespacedHelpers('note');
 
 export default {
   components: {
-    DataManageButtons
+    NoteControlButtons
   },
   props: {
     currentNoteInfo: {
