@@ -1,53 +1,23 @@
 {
-    "parser": "babel-eslint",
-    "env": {
-        "browser": true,
-        "es2021": true,
-        "node": true
-    },
-    "plugins": [
-        "jsdoc",
-        "sort-class-members"
-    ],
-    "extends": [
-        "eslint:recommended",
-        "plugin:jsdoc/recommended"
-    ],
-    "parserOptions": {
-        "ecmaVersion": 6,
-        "sourceType": "module",
-        "ecmaFeatures": {
-            "modules": true
-        }
-    },
-    "globals": {
-        "globalThis": false,
-        "*": false
-    },
-    "rules": {
-        "semi": [
-            "error",
-            "always"
-        ],
-        "sort-class-members/sort-class-members": [
-            2,
-            {
-                "order": [
-                    "[static-properties]",
-                    "[static-methods]",
-                    "[properties]",
-                    "[conventional-private-properties]",
-                    "constructor",
-                    "[methods]",
-                    "[conventional-private-methods]"
-                ],
-                "accessorPairPositioning": "getThenSet"
-            }
-        ],
-        "keyword-spacing": 0,
-        "no-unused-vars": 1,
-        "space-before-function-paren": 0,
-        "linebreak-style": 0,
-        "no-tabs": 0
-    }
+  "root": true,
+  "parserOptions": {
+    "parser": "@babel/eslint-parser",
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "extends": [
+    "@nuxtjs"
+  ],
+  "plugins": [],
+  "rules": { 
+    "vue/max-attributes-per-line": "off",
+    "vue/singleline-html-element-content-newline": "off",
+    "vue/multi-word-component-names": "off",
+    "no-console": "off",
+    "semi": ["error", "always"]
+  }
 }

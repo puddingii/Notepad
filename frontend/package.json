@@ -1,36 +1,25 @@
 {
-  "name": "notepad",
+  "name": "frontend",
   "version": "1.0.0",
-  "type": "module",
-  "description": "메모장 시스템을 서버와 연동하는 어플리케이션",
-  "main": "app.js",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "dev:home": "nodemon -L --exec babel-node src/app.js"
+    "dev": "nuxt"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@socket.io/admin-ui": "^0.2.0",
-    "express": "^4.17.1",
-    "express-mysql-session": "^2.1.7",
-    "express-session": "^1.17.2",
-    "helmet": "^4.6.0",
+    "@nuxtjs/axios": "^5.13.6",
+    "@nuxtjs/dotenv": "^1.4.1",
+    "bootstrap-vue": "^2.21.2",
+    "cookie-universal-nuxt": "^2.1.5",
     "jsonwebtoken": "^8.5.1",
-    "morgan": "^1.10.0",
-    "node-fetch": "^3.0.0",
-    "pug": "^3.0.2",
-    "socket.io": "^4.3.1"
+    "nuxt": "^2.15.8",
+    "vue": "^2.6.14"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.5",
-    "@babel/node": "^7.15.4",
-    "@babel/preset-env": "^7.15.6",
-    "axios": "^0.23.0",
-    "babel-eslint": "^10.1.0",
-    "eslint": "^7.32.0",
-    "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-jsdoc": "^36.1.1",
-    "eslint-plugin-sort-class-members": "^1.12.0",
-    "nodemon": "^2.0.13"
+    "@babel/eslint-parser": "^7.16.3",
+    "@nuxtjs/eslint-config": "^8.0.0",
+    "eslint": "^8.4.0"
   }
 }
