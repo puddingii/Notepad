@@ -25,8 +25,8 @@ export default {
   },
   layout: 'Home',
   middleware: ['authenticated'],
-  asyncData ({ store }) {
-    store.dispatch('note/loadAll', store.getters['user/getEmail']);
+  async asyncData ({ store }) {
+    await store.dispatch('note/loadAll', store.getters['user/getEmail']);
   },
   head: {
     script: [{
@@ -43,9 +43,6 @@ export default {
     email () {
       return this.$store.getters['user/getEmail'];
     }
-  },
-  methods: {
-
   }
 };
 </script>

@@ -12,6 +12,7 @@
     "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/dotenv": "^1.4.1",
     "bootstrap-vue": "^2.21.2",
+    "cookie-universal-nuxt": "^2.1.5",
     "jsonwebtoken": "^8.5.1",
     "nuxt": "^2.15.8",
     "vue": "^2.6.14"

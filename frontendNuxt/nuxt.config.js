@@ -2,7 +2,11 @@ export default {
   buildModules: [
     '@nuxtjs/dotenv'
   ],
-  modules: ['@nuxtjs/axios', 'bootstrap-vue/nuxt'],
+  modules: [
+    '@nuxtjs/axios',
+    'bootstrap-vue/nuxt',
+    'cookie-universal-nuxt'
+  ],
   head: {
     meta: [
       { charset: 'utf-8' },
