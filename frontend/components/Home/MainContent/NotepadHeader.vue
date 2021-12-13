@@ -100,7 +100,7 @@ export default {
     },
     async onNewClick () {
       this.$nuxt.$emit('saveNotepadInfo'); // textarea 기록 저장
-      const isSucceed = await this.$store.dispatch('note/saveAsTextarea', { title: this.newNoteTitle, content: '' });
+      const isSucceed = await this.$store.dispatch('note/saveAsTextarea', { title: this.newNoteTitle, content: '', email: this.$store.getters['user/getEmail'] });
       if (isSucceed) {
         this.$nuxt.$emit('updateNotepadInfo', { content: '', isSaved: this.$store.getters['note/getCurrentNoteInfo'].isSaved });
         this.$nextTick(() => {

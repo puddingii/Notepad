@@ -84,7 +84,7 @@ export default {
         return;
       }
       this.$store.commit('note/SET_TEXTAREA', { content: this.textareaValue, isSaved: this.isSaved }); // saveAs 하기전 기존거 array에 저장
-      const isSucceed = await this.$store.dispatch('note/saveAsTextarea', { title: saveAsInput, content: this.textareaValue });
+      const isSucceed = await this.$store.dispatch('note/saveAsTextarea', { title: saveAsInput, content: this.textareaValue, email: this.$store.getters['user/getEmail'] });
       if (isSucceed) {
         this.isSaved = this.$store.getters['note/getCurrentNoteInfo'].isSaved;
       }

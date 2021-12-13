@@ -131,9 +131,9 @@ const actions = {
       return false;
     }
   },
-  async saveAsTextarea ({ getters, commit }, { title, content }) {
+  async saveAsTextarea ({ commit }, { title, content, email }) {
     const requestPacket = {
-      email: getters.getCurrentNoteInfo.email,
+      email,
       title,
       text: content
     };
@@ -146,7 +146,7 @@ const actions = {
       const { id } = response.data;
       const note = {
         id,
-        email: getters.getCurrentNoteInfo.email,
+        email,
         title,
         content,
         isSaved: true
