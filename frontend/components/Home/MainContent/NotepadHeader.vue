@@ -101,7 +101,7 @@ export default {
     },
     async onNewClick () {
       this.$nuxt.$emit('saveTextareaInfo'); // textarea 기록 저장
-      const response = await this.$store.dispatch('note/saveNewTextarea', { title: this.newNoteTitle, content: '', email: this.$store.getters['user/getEmail'] });
+      const response = await this.$store.dispatch('note/createNewTextarea', { title: this.newNoteTitle, content: '', email: this.$store.getters['user/getEmail'] });
       const {
         result, msg, note
       } = response;

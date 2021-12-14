@@ -83,13 +83,10 @@ const actions = {
       if (!result) {
         throw new Error(msg);
       }
-      commit('REMOVE_OPEN_NOTE', getters.getCurrentNoteInfo.title);
-      commit('REMOVE_NOTE');
-      commit('SET_CURRENT_NOTE_ID', { id: -1 });
-      return true;
+
+      return { result, msg };
     } catch (e) {
-      commit('SET_SYSTEM_MESSAGE', e.message);
-      return false;
+      return { result: false, msg: e.message };
     }
   },
   async loadAll ({ commit }, email) {
@@ -111,7 +108,7 @@ const actions = {
       return false;
     }
   },
-  async saveTextarea ({ state, getters, commit }, value) {
+  async updateTextarea ({ state, getters, commit }, value) {
     const requestPacket = {
       id: getters.getCurrentNoteInfo.id,
       email: getters.getCurrentNoteInfo.email,
@@ -133,7 +130,7 @@ const actions = {
       return false;
     }
   },
-  async saveNewTextarea (_, { title, content, email }) {
+  async createNewTextarea (_, { title, content, email }) {
     const requestPacket = {
       email,
       title,

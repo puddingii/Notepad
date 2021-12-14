@@ -4,7 +4,6 @@
       :open-tab-list="openTabList"
       :note-list="noteList"
       :current-note-info="currentNoteInfo"
-      @addOpenTab="addOpenTab"
       @handleLoadClick="handleLoadClick"
       @setCurrentNoteId="setCurrentNoteId"
       @setSystemMessage="setSystemMessage"
@@ -16,6 +15,7 @@
       @setCurrentNoteId="setCurrentNoteId"
       @removeOpenNote="removeOpenNote"
       @setSystemMessage="setSystemMessage"
+      @handleRemoveNote="handleRemoveNote"
     />
   </div>
 </template>
@@ -40,12 +40,6 @@ export default {
     })
   },
   methods: {
-    addOpenTab (title) {
-      const isExisting = this.openTabList.includes(title);
-      if (!isExisting) {
-        this.$store.commit('note/ADD_OPEN_TAB', title);
-      }
-    },
     handleLoadClick (title) {
       const isExisting = this.openTabList.includes(title);
       if (!isExisting) {
@@ -65,6 +59,11 @@ export default {
       this.$store.commit('note/ADD_NOTE', note);
       this.$store.commit('note/ADD_OPEN_TAB', note.title);
       this.$store.commit('note/SET_CURRENT_NOTE_ID', { id: note.id });
+    },
+    handleRemoveNote () {
+      this.$store.commit('note/REMOVE_OPEN_NOTE', this.currentNoteInfo.title);
+      this.$store.commit('note/REMOVE_NOTE');
+      this.$store.commit('note/SET_CURRENT_NOTE_ID', { id: -1 });
     }
   }
 };

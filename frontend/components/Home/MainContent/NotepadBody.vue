@@ -6,7 +6,7 @@
       <div id="btnGroup">
         <button id="save" type="button" class="btn btn-outline-primary" @click="onSaveClick">Save</button>
         <button id="saveAs" type="button" class="btn btn-outline-primary" @click="onSaveAsClick">SaveAs</button>
-        <button id="delete" type="button" class="btn btn-outline-danger" @click="onDeleteClick">Delete</button>
+        <button id="delete" type="button" class="btn btn-outline-danger" @click="onRemoveClick">Delete</button>
         <button id="close" type="button" class="btn btn-outline-danger" @click="onCloseClick">Close</button>
         <input id="saveAsInput" v-model="saveAsInput" type="text" class="form-control">
       </div>
@@ -67,11 +67,20 @@ export default {
       this.$emit('removeOpenNote');
       this.$emit('setCurrentNoteId', { id: -1 });
     },
-    async onDeleteClick () {
-      await this.$store.dispatch('note/removeNote');
+    async onRemoveClick () {
+      const response = await this.$store.dispatch('note/removeNote');
+      const {
+        result, msg
+      } = response;
+
+      if (result) {
+        this.$emit('handleRemoveNote');
+      } else {
+        this.$emit('setSystemMessage', msg);
+      }
     },
     async onSaveClick () {
-      const isSucceed = await this.$store.dispatch('note/saveTextarea', this.textareaValue);
+      const isSucceed = await this.$store.dispatch('note/updateTextarea', this.textareaValue);
       if (isSucceed) {
         this.isSaved = this.$store.getters['note/getCurrentNoteInfo'].isSaved;
       }
@@ -82,7 +91,7 @@ export default {
         return;
       }
       this.$store.commit('note/SET_TEXTAREA', { content: this.textareaValue, isSaved: this.isSaved }); // saveAs 하기전 기존거 array에 저장
-      const response = await this.$store.dispatch('note/saveNewTextarea', { title: this.saveAsInput, content: this.textareaValue, email: this.$store.getters['user/getEmail'] });
+      const response = await this.$store.dispatch('note/createNewTextarea', { title: this.saveAsInput, content: this.textareaValue, email: this.$store.getters['user/getEmail'] });
       const {
         result, msg, note
       } = response;
