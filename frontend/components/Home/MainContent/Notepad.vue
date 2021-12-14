@@ -16,6 +16,7 @@
       @removeOpenNote="removeOpenNote"
       @setSystemMessage="setSystemMessage"
       @handleRemoveNote="handleRemoveNote"
+      @handleNewNote="handleNewNote"
     />
   </div>
 </template>
