@@ -80,9 +80,12 @@ export default {
       }
     },
     async onSaveClick () {
-      const isSucceed = await this.$store.dispatch('note/updateTextarea', this.textareaValue);
-      if (isSucceed) {
+      const response = await this.$store.dispatch('note/updateTextarea', this.textareaValue);
+      if (response.result) {
         this.isSaved = this.$store.getters['note/getCurrentNoteInfo'].isSaved;
+        this.$emit('setSystemMessage', 'Save succeed!');
+      } else {
+        this.$emit('setSystemMessage', response.msg);
       }
     },
     async onSaveAsClick () {

@@ -2,7 +2,6 @@
   <div class="row align-items-md-stretch">
     <div class="col col-md-2 leftCard">
       <UserStatus :email="email" />
-      <!-- <Chat /> -->
     </div>
     <div class="col col-md-9">
       <Notepad />
@@ -13,20 +12,26 @@
 <script>
 import UserStatus from '~/components/Home/LeftBar/UserStatus';
 import Notepad from '~/components/Home/MainContent/Notepad';
-// import Chat from '~/components/Home/LeftBar/Chat';
-// import Notepadtest from '~/components/Home/MainContent/Notepadtest';
 
 export default {
   components: {
     UserStatus,
     Notepad
-    // Chat,
-    // Notepadtest
   },
   layout: 'Home',
   middleware: ['authenticated'],
   async asyncData ({ store }) {
-    await store.dispatch('note/loadAll', store.getters['user/getEmail']);
+    const response = await store.dispatch('note/loadAll', store.getters['user/getEmail']);
+    const {
+      result, msg, noteList, endTitle, openTab
+    } = response;
+    if (result) {
+      store.commit('note/INIT_NOTE_LIST', noteList);
+      store.commit('note/SET_CURRENT_NOTE_ID', { title: endTitle });
+      store.commit('note/INIT_OPENTAB_LIST', openTab);
+    } else {
+      store.commit('note/SET_SYSTEM_MESSAGE', msg);
+    }
   },
   head: {
     script: [{
