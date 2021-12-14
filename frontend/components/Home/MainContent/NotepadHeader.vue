@@ -54,7 +54,7 @@
         <a
           :id="`noteId${getId(text)}`"
           href="#"
-          :class="currentNoteInfo.title === text ? 'active' : ''"
+          :class="currentNoteInfo ? (currentNoteInfo.title === text ? 'active' : '') : ''"
           class="nav-link notelink"
           :data-currentid="getId(text)"
           @click="onOpenTitleClick(text)"
@@ -92,26 +92,34 @@ export default {
       const note = this.noteList.find(note => note.title === text);
       return note ? note.id : false;
     },
-    onLoadClick (noteTitle) {
-      this.$emit('handleLoadClick', noteTitle);
-      this.$nuxt.$emit('saveNotepadInfo'); // 가르키고 있는 notepad update 기록 저장
-      this.$emit('setCurrentNoteId', noteTitle);
-      this.$nuxt.$emit('updateNotepadInfo'); // 가르키고 있는 노트를 업데이트 했으므로 textarea도 업데이트 해야함.
+    onLoadClick (title) {
+      this.$emit('handleLoadClick', title);
+      this.$nuxt.$emit('saveTextareaInfo'); // 가르키고 있는 notepad update 기록 저장
+      this.$emit('setCurrentNoteId', { title }); // 가르키고 있는 notepad를 클릭한 notepad로 변경
+      this.$nuxt.$emit('updateTextareaInfo'); // 가르키고 있는 노트를 업데이트 했으므로 textarea도 업데이트 해야함.
+      this.$emit('setSystemMessage', 'Load succeed!');
     },
     async onNewClick () {
-      this.$nuxt.$emit('saveNotepadInfo'); // textarea 기록 저장
-      const isSucceed = await this.$store.dispatch('note/saveAsTextarea', { title: this.newNoteTitle, content: '', email: this.$store.getters['user/getEmail'] });
-      if (isSucceed) {
-        this.$nuxt.$emit('updateNotepadInfo', { content: '', isSaved: this.$store.getters['note/getCurrentNoteInfo'].isSaved });
+      this.$nuxt.$emit('saveTextareaInfo'); // textarea 기록 저장
+      const response = await this.$store.dispatch('note/saveNewTextarea', { title: this.newNoteTitle, content: '', email: this.$store.getters['user/getEmail'] });
+      const {
+        result, msg, note
+      } = response;
+      if (result) {
+        this.$emit('handleNewNote', note);
+        this.$nuxt.$emit('updateTextareaInfo', { content: '', isSaved: note.isSaved });
         this.$nextTick(() => {
           this.$bvModal.hide('newNoteTitleModal');
         });
+        this.$emit('setSystemMessage', 'Create new note succeed!');
+      } else {
+        this.$emit('setSystemMessage', msg);
       }
     },
     onOpenTitleClick (title) {
-      this.$nuxt.$emit('saveNotepadInfo');
-      this.$emit('setCurrentNoteId', title);
-      this.$nuxt.$emit('updateNotepadInfo');
+      this.$nuxt.$emit('saveTextareaInfo');
+      this.$emit('setCurrentNoteId', { title });
+      this.$nuxt.$emit('updateTextareaInfo');
     },
     resetNewButtonModal () {
       this.newNoteTitle = '';

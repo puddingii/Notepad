@@ -3,12 +3,13 @@
     <div v-if="currentNoteInfo !== null" id="noteFormDiv" class="form-floating">
       <textarea id="textareaForm" v-model="textareaValue" class="form-control" />
       <label id="textareaLabel">{{ isSaved ? '저장됨.' : '저장 안됨.' }}</label>
-      <NoteControlButtons
-        @save="handleSaveButton"
-        @saveas="handleSaveAsButton"
-        @delete="handleDeleteButton"
-        @close="handleCloseButton"
-      />
+      <div id="btnGroup">
+        <button id="save" type="button" class="btn btn-outline-primary" @click="onSaveClick">Save</button>
+        <button id="saveAs" type="button" class="btn btn-outline-primary" @click="onSaveAsClick">SaveAs</button>
+        <button id="delete" type="button" class="btn btn-outline-danger" @click="onDeleteClick">Delete</button>
+        <button id="close" type="button" class="btn btn-outline-danger" @click="onCloseClick">Close</button>
+        <input id="saveAsInput" v-model="saveAsInput" type="text" class="form-control">
+      </div>
       <p class="systemMessage">{{ systemMessage }}</p>
     </div>
   </section>
@@ -16,13 +17,9 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
-import NoteControlButtons from '~/components/Home/MainContent/NoteControlButtons';
 const { mapGetters } = createNamespacedHelpers('note');
 
 export default {
-  components: {
-    NoteControlButtons
-  },
   props: {
     currentNoteInfo: {
       type: Object,
@@ -33,7 +30,8 @@ export default {
     return {
       isSaved: this.$store.getters['note/getCurrentNoteInfo']?.isSaved,
       textareaValue: this.$store.getters['note/getCurrentNoteInfo']?.content ?? '',
-      beforeNoteId: this.$store.getters['note/getCurrentNoteId']
+      beforeNoteId: this.$store.getters['note/getCurrentNoteId'],
+      saveAsInput: ''
     };
   },
   computed: {
@@ -51,10 +49,10 @@ export default {
     }
   },
   created () {
-    this.$nuxt.$on('saveNotepadInfo', () => {
+    this.$nuxt.$on('saveTextareaInfo', () => {
       this.$store.commit('note/SET_TEXTAREA', { content: this.textareaValue, isSaved: this.isSaved });
     });
-    this.$nuxt.$on('updateNotepadInfo', (info) => {
+    this.$nuxt.$on('updateTextareaInfo', (info) => {
       if (info) {
         this.textareaValue = info.content;
         this.isSaved = info.isSaved;
@@ -64,29 +62,36 @@ export default {
     });
   },
   methods: {
-    handleCloseButton () {
+    onCloseClick () {
       this.$store.commit('note/SET_TEXTAREA', { content: this.textareaValue, isSaved: this.isSaved });
-      this.$store.commit('note/REMOVE_OPEN_NOTE', this.$store.getters['note/getCurrentNoteInfo'].title);
-      this.$store.commit('note/SET_CURRENT_NOTE_ID', { id: -1 });
+      this.$emit('removeOpenNote');
+      this.$emit('setCurrentNoteId', { id: -1 });
     },
-    async handleDeleteButton () {
-      await this.$store.dispatch('note/deleteNote');
+    async onDeleteClick () {
+      await this.$store.dispatch('note/removeNote');
     },
-    async handleSaveButton () {
+    async onSaveClick () {
       const isSucceed = await this.$store.dispatch('note/saveTextarea', this.textareaValue);
       if (isSucceed) {
         this.isSaved = this.$store.getters['note/getCurrentNoteInfo'].isSaved;
       }
     },
-    async handleSaveAsButton (saveAsInput) {
-      if (saveAsInput === '') {
-        this.$store.commit('note/SET_SYSTEM_MESSAGE', 'SaveAs Title is empty!');
+    async onSaveAsClick () {
+      if (this.saveAsInput === '') {
+        this.$emit('setSystemMessage', 'SaveAs Title is empty!');
         return;
       }
       this.$store.commit('note/SET_TEXTAREA', { content: this.textareaValue, isSaved: this.isSaved }); // saveAs 하기전 기존거 array에 저장
-      const isSucceed = await this.$store.dispatch('note/saveAsTextarea', { title: saveAsInput, content: this.textareaValue, email: this.$store.getters['user/getEmail'] });
-      if (isSucceed) {
-        this.isSaved = this.$store.getters['note/getCurrentNoteInfo'].isSaved;
+      const response = await this.$store.dispatch('note/saveNewTextarea', { title: this.saveAsInput, content: this.textareaValue, email: this.$store.getters['user/getEmail'] });
+      const {
+        result, msg, note
+      } = response;
+      if (result) {
+        this.$emit('handleNewNote', note);
+        this.isSaved = note.isSaved;
+        this.$emit('setSystemMessage', 'Saveas succeed!');
+      } else {
+        this.$emit('setSystemMessage', msg);
       }
     }
   }
@@ -109,5 +114,9 @@ export default {
 .systemMessage {
   font: bold;
   color: red;
+}
+
+input#difBtn {
+  width: 200px;
 }
 </style>

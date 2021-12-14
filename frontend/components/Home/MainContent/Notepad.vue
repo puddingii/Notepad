@@ -7,10 +7,15 @@
       @addOpenTab="addOpenTab"
       @handleLoadClick="handleLoadClick"
       @setCurrentNoteId="setCurrentNoteId"
+      @setSystemMessage="setSystemMessage"
+      @handleNewNote="handleNewNote"
     />
     <br>
     <NotepadBody
       :current-note-info="currentNoteInfo"
+      @setCurrentNoteId="setCurrentNoteId"
+      @removeOpenNote="removeOpenNote"
+      @setSystemMessage="setSystemMessage"
     />
   </div>
 </template>
@@ -35,14 +40,11 @@ export default {
     })
   },
   methods: {
-    addOpenTab (noteTitle) {
-      const isExisting = this.openTabList.includes(noteTitle);
+    addOpenTab (title) {
+      const isExisting = this.openTabList.includes(title);
       if (!isExisting) {
-        this.$store.commit('note/ADD_OPEN_TAB', noteTitle);
+        this.$store.commit('note/ADD_OPEN_TAB', title);
       }
-    },
-    updateBody (noteTitle) {
-      this.$store.commit('note/updateBody', noteTitle);
     },
     handleLoadClick (title) {
       const isExisting = this.openTabList.includes(title);
@@ -50,8 +52,19 @@ export default {
         this.$store.commit('note/ADD_OPEN_TAB', title); // 탭에 없으면 추가
       }
     },
-    setCurrentNoteId (title) {
-      this.$store.commit('note/SET_CURRENT_NOTE_ID', { title }); // 현재 가르키고 있는 Notepad update
+    setCurrentNoteId (noteInfo) {
+      this.$store.commit('note/SET_CURRENT_NOTE_ID', noteInfo); // 현재 가르키고 있는 Notepad update
+    },
+    setSystemMessage (message) {
+      this.$store.commit('note/SET_SYSTEM_MESSAGE', message);
+    },
+    removeOpenNote () {
+      this.$store.commit('note/REMOVE_OPEN_NOTE', this.currentNoteInfo.title);
+    },
+    handleNewNote (note) {
+      this.$store.commit('note/ADD_NOTE', note);
+      this.$store.commit('note/ADD_OPEN_TAB', note.title);
+      this.$store.commit('note/SET_CURRENT_NOTE_ID', { id: note.id });
     }
   }
 };

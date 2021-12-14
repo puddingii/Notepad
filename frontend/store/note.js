@@ -69,7 +69,7 @@ const mutations = {
 
 /** @type {ifStore.Note.Actions}  */
 const actions = {
-  async deleteNote ({ state, getters, commit }) {
+  async removeNote ({ state, getters, commit }) {
     try {
       const response = await this.$axios.delete('http://localhost:8050/api/notepad/delete', {
         data: {
@@ -77,8 +77,11 @@ const actions = {
           email: getters.getCurrentNoteInfo.email
         }
       });
-      if (!response.data.result) {
-        throw new Error(response.data.msg);
+      const {
+        data: { result, msg }
+      } = response;
+      if (!result) {
+        throw new Error(msg);
       }
       commit('REMOVE_OPEN_NOTE', getters.getCurrentNoteInfo.title);
       commit('REMOVE_NOTE');
@@ -121,7 +124,6 @@ const actions = {
         throw new Error(response.data.msg);
       }
       commit('SET_SYSTEM_MESSAGE', response.data.msg);
-      setTimeout(() => commit('SET_SYSTEM_MESSAGE', ''), 3000);
 
       const index = MArray.getIndexById(state.noteList, state.currentNoteId);
       state.noteList[index].isSaved = true;
@@ -131,7 +133,7 @@ const actions = {
       return false;
     }
   },
-  async saveAsTextarea ({ commit }, { title, content, email }) {
+  async saveNewTextarea (_, { title, content, email }) {
     const requestPacket = {
       email,
       title,
@@ -139,11 +141,13 @@ const actions = {
     };
     try {
       const response = await this.$axios.post('http://localhost:8050/api/notepad/saveAs', requestPacket);
-      if (!response.data.result) {
-        throw new Error(response.data.msg);
+      const {
+        data: { id, result, msg }
+      } = response;
+      if (!result) {
+        throw new Error(msg);
       }
-      // DB에 저장된 ID값을 가지고 Array.push해야함.
-      const { id } = response.data;
+
       const note = {
         id,
         email,
@@ -152,16 +156,9 @@ const actions = {
         isSaved: true
       };
 
-      commit('SET_SYSTEM_MESSAGE', response.data.msg);
-      setTimeout(() => commit('SET_SYSTEM_MESSAGE', ''), 3000);
-
-      commit('ADD_NOTE', note);
-      commit('ADD_OPEN_TAB', title);
-      commit('SET_CURRENT_NOTE_ID', { id });
-      return true;
+      return { result, msg, note };
     } catch (e) {
-      commit('SET_SYSTEM_MESSAGE', e.message);
-      return false;
+      return { result: false, msg: e.message };
     }
   },
   async saveNoteListStatus ({ state, getters, commit }, email) {
