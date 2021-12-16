@@ -17,11 +17,11 @@ export default {
   methods: {
     async handleLogout () {
       const saveResponse = await this.$store.dispatch('note/saveNoteListStatus', this.email);
-      if (!saveResponse.result) {
-        this.$store.commit('note/SET_SYSTEM_MESSAGE', saveResponse.msg);
+      if (!saveResponse.isSucceed) {
+        return;
       }
-      const result = await this.$store.dispatch('user/logout');
-      if (result) {
+      const isSucceed = await this.$store.dispatch('user/logout');
+      if (isSucceed) {
         this.$router.push('/login');
       }
     }

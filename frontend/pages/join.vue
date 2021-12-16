@@ -69,12 +69,12 @@ export default {
   },
   methods: {
     async handleSubmit () {
-      const result = await this.$store.dispatch('user/signUp', {
+      const isSucceed = await this.$store.dispatch('user/signUp', {
         email: this.email,
         password: this.password,
         passwordCheck: this.passwordCheck
       });
-      if (result) {
+      if (isSucceed) {
         this.$router.push('/login');
       }
     }

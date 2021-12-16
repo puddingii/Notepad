@@ -36,15 +36,15 @@ export default {
   methods: {
     async handleSubmit () {
       try {
-        const result = await this.$store.dispatch('user/signIn', {
+        const { isSucceed } = await this.$store.dispatch('user/signIn', {
           email: this.email,
           password: this.password
         });
-        if (result) {
+        if (isSucceed) {
           this.$router.push({ path: '/' });
         }
-      } catch (error) {
-
+      } catch (e) {
+        this.$store.commit('user/SET_SYSTEM_MESSAGE', e.message);
       }
     }
   }

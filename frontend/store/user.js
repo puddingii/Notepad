@@ -30,33 +30,33 @@ const mutations = {
 
 /** @type {ifStore.User.Actions}  */
 const actions = {
-  async signIn ({ commit }, userInfo) {
+  async signIn ({ commit }, loginInfo) {
     try {
       const {
         email: loginId,
         password: loginPassword
-      } = userInfo;
+      } = loginInfo;
       const response = await this.$axios.post('http://localhost:8050/api/users/login', { loginId, loginPassword });
       const {
         data: {
-          result,
+          isSucceed,
           msg: responseMessage,
           token
         }
       } = response;
 
-      if (!result) {
+      if (!isSucceed) {
         throw new Error(responseMessage);
       }
-      const userSettings = { email: userInfo.email, token };
-      commit('SET_USER_INFO', userSettings);
+      const userInfo = { email: loginInfo.email, token };
+      commit('SET_USER_INFO', userInfo);
       commit('SET_SYSTEM_MESSAGE');
-      this.$cookies.set('userInfo', userSettings, { path: '/' });
+      this.$cookies.set('userInfo', userInfo, { path: '/' });
 
-      return true;
+      return { isSucceed };
     } catch (e) {
-      commit('SET_SYSTEM_MESSAGE', e);
-      return false;
+      commit('SET_SYSTEM_MESSAGE', e.message);
+      return { isSucceed: false };
     }
   },
   async signUp ({ commit }, userInfo) {
@@ -67,18 +67,18 @@ const actions = {
       const response = await this.$axios.post('http://localhost:8050/api/users/join', { loginId, password, chkPassword });
       const {
         data: {
-          result,
+          isSucceed,
           msg: responseMessage
         }
       } = response;
-      if (!result) {
+      if (!isSucceed) {
         throw new Error(responseMessage);
       }
       commit('SET_SYSTEM_MESSAGE');
-      return true;
+      return { isSucceed };
     } catch (e) {
       commit('SET_SYSTEM_MESSAGE', e);
-      return false;
+      return { isSucceed: false };
     }
   },
   async logout ({ commit, state }) {
@@ -116,14 +116,14 @@ const actions = {
       }
 
       commit('SET_SYSTEM_MESSAGE');
-      return { result: true, decoded };
+      return { isSucceed: true, decoded };
     } catch (e) {
       if (e.message === 'JWT Session Verify Error') {
         await this.$axios.post('http://localhost:8050/api/users/logout', userInfo.email);
       }
       commit('SET_SYSTEM_MESSAGE', e.message);
       commit('SET_USER_INFO');
-      return false;
+      return { isSucceed: false, msg: e.message };
     }
   }
 };

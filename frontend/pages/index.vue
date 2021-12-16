@@ -1,37 +1,20 @@
 <template>
-  <div class="row align-items-md-stretch">
-    <div class="col col-md-2 leftCard">
-      <UserStatus :email="email" />
-    </div>
-    <div class="col col-md-9">
-      <Notepad />
-    </div>
-  </div>
+  <Test />
 </template>
 
 <script>
-import UserStatus from '~/components/Home/LeftBar/UserStatus';
 import Notepad from '~/components/Home/MainContent/Notepad';
+import Test from '~/components/Home/MainContent/test';
 
 export default {
   components: {
-    UserStatus,
-    Notepad
+    Notepad,
+    Test
   },
   layout: 'Home',
   middleware: ['authenticated'],
   async asyncData ({ store }) {
-    const response = await store.dispatch('note/loadAll', store.getters['user/getEmail']);
-    const {
-      result, msg, noteList, endTitle, openTab
-    } = response;
-    if (result) {
-      store.commit('note/INIT_NOTE_LIST', noteList);
-      store.commit('note/SET_CURRENT_NOTE_ID', { title: endTitle });
-      store.commit('note/INIT_OPENTAB_LIST', openTab);
-    } else {
-      store.commit('note/SET_SYSTEM_MESSAGE', msg);
-    }
+    await store.dispatch('note/loadAll', store.getters['user/getEmail']);
   },
   head: {
     script: [{
@@ -43,11 +26,6 @@ export default {
       integrity: 'sha384-KAZ4DtjNhLChOB/hxXuKqhMLYvx3b5MlT55xPEiNmREKRzeEm+RVPlTnAn0ajQNs',
       crossorigin: 'anonymous'
     }]
-  },
-  computed: {
-    email () {
-      return this.$store.getters['user/getEmail'];
-    }
   }
 };
 </script>

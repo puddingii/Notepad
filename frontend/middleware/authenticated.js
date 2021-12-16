@@ -1,6 +1,6 @@
 export default async function ({ store, redirect, app }) {
   const response = await store.dispatch('user/checkLoginStatus', app.$cookies.get('userInfo'));
-  if (!response) {
+  if (!response.isSucceed) {
     redirect('/login');
   }
 

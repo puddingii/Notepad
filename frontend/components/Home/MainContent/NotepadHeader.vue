@@ -22,7 +22,6 @@
             <b-form-input id="newNoteTitle-input" v-model="newNoteTitle" required />
           </form>
         </b-modal>
-        <button id="shareButton" class="btn btn-primary" type="button">Share</button>
         <button
           id="ddButton"
           class="btn btn-primary dropdown-toggle"
@@ -87,38 +86,40 @@ export default {
       newNoteTitle: ''
     };
   },
+
   methods: {
     getId (text = '') {
       const note = this.noteList.find(note => note.title === text);
       return note ? note.id : false;
     },
     onLoadClick (title) {
-      this.$emit('handleLoadClick', title);
+      const isExisting = this.openTabList.includes(title);
+      if (!isExisting) {
+        this.$store.commit('note/ADD_OPEN_TAB', title); // 탭에 없으면 추가
+      }
       this.$nuxt.$emit('saveTextareaInfo'); // 가르키고 있는 notepad update 기록 저장
-      this.$emit('setCurrentNoteId', { title }); // 가르키고 있는 notepad를 클릭한 notepad로 변경
+      this.$store.commit('note/SET_CURRENT_NOTE_ID', { title }); // 현재 가르키고 있는 Notepad update
       this.$nuxt.$emit('updateTextareaInfo'); // 가르키고 있는 노트를 업데이트 했으므로 textarea도 업데이트 해야함.
-      this.$emit('setSystemMessage', 'Load succeed!');
     },
     async onNewClick () {
-      this.$nuxt.$emit('saveTextareaInfo'); // textarea 기록 저장
-      const response = await this.$store.dispatch('note/createNewTextarea', { title: this.newNoteTitle, content: '', email: this.$store.getters['user/getEmail'] });
-      const {
-        result, msg, note
-      } = response;
-      if (result) {
-        this.$emit('handleNewNote', note);
+      try {
+        this.$nuxt.$emit('saveTextareaInfo'); // textarea 기록 저장
+        const { isSucceed, msg, note } = await this.$store.dispatch('note/createNewTextarea', { title: this.newNoteTitle, content: '', email: this.$store.getters['user/getEmail'] });
+        if (!isSucceed) {
+          throw new Error(msg);
+        }
         this.$nuxt.$emit('updateTextareaInfo', { content: '', isSaved: note.isSaved });
         this.$nextTick(() => {
           this.$bvModal.hide('newNoteTitleModal');
         });
-        this.$emit('setSystemMessage', 'Create new note succeed!');
-      } else {
-        this.$emit('setSystemMessage', msg);
+        this.$store.commit('note/SET_SYSTEM_MESSAGE', 'Create new note succeed!');
+      } catch (e) {
+        this.$store.commit('note/SET_SYSTEM_MESSAGE', e.message);
       }
     },
     onOpenTitleClick (title) {
       this.$nuxt.$emit('saveTextareaInfo');
-      this.$emit('setCurrentNoteId', { title });
+      this.$store.commit('note/SET_CURRENT_NOTE_ID', { title });
       this.$nuxt.$emit('updateTextareaInfo');
     },
     resetNewButtonModal () {

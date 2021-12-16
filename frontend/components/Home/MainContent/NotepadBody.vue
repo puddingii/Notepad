@@ -8,7 +8,7 @@
         <button id="saveAs" type="button" class="btn btn-outline-primary" @click="onSaveAsClick">SaveAs</button>
         <button id="delete" type="button" class="btn btn-outline-danger" @click="onRemoveClick">Delete</button>
         <button id="close" type="button" class="btn btn-outline-danger" @click="onCloseClick">Close</button>
-        <input id="saveAsInput" v-model="saveAsInput" type="text" class="form-control">
+        <input id="saveAsInput" v-model="saveAsInput" placeholder="Input saveas title" type="text" class="form-control">
       </div>
       <p class="systemMessage">{{ systemMessage }}</p>
     </div>
@@ -63,47 +63,28 @@ export default {
   },
   methods: {
     onCloseClick () {
-      this.$store.commit('note/SET_TEXTAREA', { content: this.textareaValue, isSaved: this.isSaved });
-      this.$emit('removeOpenNote');
-      this.$emit('setCurrentNoteId', { id: -1 });
+      this.$store.dispatch('note/closeNote', { content: this.textareaValue, isSaved: this.isSaved });
     },
     async onRemoveClick () {
-      const response = await this.$store.dispatch('note/removeNote');
-      const {
-        result, msg
-      } = response;
-
-      if (result) {
-        this.$emit('handleRemoveNote');
-      } else {
-        this.$emit('setSystemMessage', msg);
-      }
+      await this.$store.dispatch('note/removeNote');
     },
     async onSaveClick () {
-      const response = await this.$store.dispatch('note/updateTextarea', this.textareaValue);
-      if (response.result) {
+      const { isSucceed } = await this.$store.dispatch('note/updateTextarea', this.textareaValue);
+      if (isSucceed) {
         this.isSaved = this.$store.getters['note/getCurrentNoteInfo'].isSaved;
-        this.$emit('setSystemMessage', 'Save succeed!');
-      } else {
-        this.$emit('setSystemMessage', response.msg);
       }
     },
     async onSaveAsClick () {
       if (this.saveAsInput === '') {
-        this.$emit('setSystemMessage', 'SaveAs Title is empty!');
+        this.$store.commit('note/SET_SYSTEM_MESSAGE', 'SaveAs Title is empty!');
         return;
       }
+
       this.$store.commit('note/SET_TEXTAREA', { content: this.textareaValue, isSaved: this.isSaved }); // saveAs 하기전 기존거 array에 저장
-      const response = await this.$store.dispatch('note/createNewTextarea', { title: this.saveAsInput, content: this.textareaValue, email: this.$store.getters['user/getEmail'] });
-      const {
-        result, msg, note
-      } = response;
-      if (result) {
-        this.$emit('handleNewNote', note);
-        this.isSaved = note.isSaved;
-        this.$emit('setSystemMessage', 'Saveas succeed!');
-      } else {
-        this.$emit('setSystemMessage', msg);
+      const { isSucceed } = await this.$store.dispatch('note/createNewTextarea', { title: this.saveAsInput, content: this.textareaValue, email: this.$store.getters['user/getEmail'] });
+      if (isSucceed) {
+        this.isSaved = true;
+        this.saveAsInput = '';
       }
     }
   }

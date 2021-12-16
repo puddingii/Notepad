@@ -25,10 +25,10 @@ apiRouter.post("/save", async (req, res) => {
         } else {
             await Notepads.create({ email, title, content: text });
         }
-        return res.status(201).json({ result: true, msg: "Succeed!!" });
+        return res.status(201).json({ isSucceed: true, msg: "Succeed!!" });
     } catch (e) {
         console.log(e);
-        return res.status(201).json({ result: false, msg: e.message });
+        return res.status(201).json({ isSucceed: false, msg: e.message });
     }
 });
 
@@ -42,10 +42,10 @@ apiRouter.delete("/delete", async (req, res) => {
             throw new Error("This email is not validated");
         }
         await Notepads.destroy({ where: { id: noteId, email } });
-        return res.status(201).json({ result: true, msg: "Succeed!!" });
+        return res.status(201).json({ isSucceed: true, msg: "Succeed!!" });
     } catch (e) {
         console.log(e);
-        return res.status(201).json({ result: false, msg: e.message });
+        return res.status(201).json({ isSucceed: false, msg: e.message });
     }
 });
 
@@ -64,10 +64,10 @@ apiRouter.post("/saveAs", async (req, res) => {
             throw new Error("Note's title is existed");
         }
         const newNote = await Notepads.create({ email, title, content: text });
-        return res.status(201).json({ id: newNote.dataValues.id, result: true, msg: "Succeed!!" });
+        return res.status(201).json({ id: newNote.dataValues.id, isSucceed: true, msg: "Succeed!!" });
     } catch (e) {
         console.log(e);
-        return res.status(201).json({ result: false, msg: e.message });
+        return res.status(201).json({ isSucceed: false, msg: e.message });
     }
 });
 
@@ -85,10 +85,10 @@ apiRouter.post("/loadAllData", async (req, res) => {
         notepadInfo.push({ endTitle: userInfo.getLasttab(), openTab: userInfo.getOpentab() });
         const data = jsonManage.classToTextToJson(notepadInfo);
 
-        return res.status(200).json({ noteList: data, result: true });
+        return res.status(200).json({ noteList: data, isSucceed: true });
     } catch (e) {
         console.log(e);
-        return res.status(200).json({ result: false, msg: e.message});
+        return res.status(200).json({ isSucceed: false, msg: e.message});
     }
 });
 

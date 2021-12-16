@@ -73,7 +73,7 @@ const mutations = {
 
 /** @type {ifStore.Note.Actions}  */
 const actions = {
-  async removeNote ({ state, getters }) {
+  async removeNote ({ state, getters, commit }) {
     try {
       const response = await this.$axios.delete('http://localhost:8050/api/notepad/delete', {
         data: {
@@ -82,30 +82,40 @@ const actions = {
         }
       });
       const {
-        data: { result, msg }
+        data: { isSucceed, msg }
       } = response;
-      if (!result) {
+      if (!isSucceed) {
         throw new Error(msg);
       }
 
-      return { result };
+      commit('REMOVE_OPEN_NOTE', getters.getCurrentNoteInfo.title);
+      commit('REMOVE_NOTE');
+      commit('SET_CURRENT_NOTE_ID', { id: -1 });
+      commit('SET_SYSTEM_MESSAGE', 'Remove succeed!');
+
+      return { isSucceed };
     } catch (e) {
-      return { result: false, msg: e.message };
+      commit('SET_SYSTEM_MESSAGE', e.message);
+      return { isSucceed: false, msg: e.message };
     }
   },
-  async loadAll (_, email) {
+  async loadAll ({ commit }, email) {
     try {
       const response = await this.$axios.post('http://localhost:8050/api/notepad/loadAllData', { email });
       const {
-        data: { noteList, result, msg }
+        data: { noteList, isSucceed, msg }
       } = response;
-      if (!result) {
+      if (!isSucceed) {
         throw new Error(msg);
       }
       const { endTitle, openTab } = noteList.pop();
-      return { result, noteList, endTitle, openTab };
+      commit('INIT_NOTE_LIST', noteList);
+      commit('SET_CURRENT_NOTE_ID', { title: endTitle });
+      commit('INIT_OPENTAB_LIST', openTab);
+      return { isSucceed, noteList, endTitle, openTab };
     } catch (e) {
-      return { result: false, msg: e.message };
+      commit('SET_SYSTEM_MESSAGE', e.message);
+      return { isSucceed: false, msg: e.message };
     }
   },
   async updateTextarea ({ getters, commit }, value) {
@@ -118,20 +128,29 @@ const actions = {
     try {
       const response = await this.$axios.post('http://localhost:8050/api/notepad/save', requestPacket);
       const {
-        data: { result, msg }
+        data: { isSucceed = false, msg = '' }
       } = response;
 
-      if (!result) {
+      if (isSucceed === false) {
         throw new Error(msg);
       }
       commit('SET_ISSAVED_TRUE');
-
-      return { result };
+      commit('SET_SYSTEM_MESSAGE', 'Save succeed!');
+      return { isSucceed };
     } catch (e) {
-      return { result: false, msg: e.message };
+      commit('SET_SYSTEM_MESSAGE', e.message);
+      return { isSucceed: false, msg: e.message };
     }
   },
-  async createNewTextarea (_, { title, content, email }) {
+  changeNote ({ getters, commit }, noteInfo) {
+    const isExisting = getters.getOpenTabList.includes(noteInfo.title);
+    if (!isExisting) {
+      commit('ADD_OPEN_TAB', noteInfo.title); // 탭에 없으면 추가
+    }
+    commit('SET_TEXTAREA', { content: noteInfo.content, isSaved: noteInfo.isSaved }); // 가르키고 있는 notepad update 기록 저장
+    commit('SET_CURRENT_NOTE_ID', { title: noteInfo.title });
+  },
+  async createNewTextarea ({ commit }, { title, content, email }) {
     const requestPacket = {
       email,
       title,
@@ -140,9 +159,9 @@ const actions = {
     try {
       const response = await this.$axios.post('http://localhost:8050/api/notepad/saveAs', requestPacket);
       const {
-        data: { id, result, msg }
+        data: { id, isSucceed, msg }
       } = response;
-      if (!result) {
+      if (!isSucceed) {
         throw new Error(msg);
       }
 
@@ -154,24 +173,48 @@ const actions = {
         isSaved: true
       };
 
-      return { result, note };
+      commit('ADD_NOTE', note);
+      commit('ADD_OPEN_TAB', note.title);
+      commit('SET_CURRENT_NOTE_ID', { id: note.id });
+      commit('SET_SYSTEM_MESSAGE', 'Create succeed!');
+
+      return { isSucceed, note };
     } catch (e) {
-      return { result: false, msg: e.message };
+      commit('SET_SYSTEM_MESSAGE', e.message);
+      return { isSucceed: false, msg: e.message };
     }
   },
-  async saveNoteListStatus ({ state, getters }, email) {
+  async createSaveAsNote ({ commit, dispatch }, noteInfo) {
+    if (noteInfo.saveAsInput === '') {
+      commit('SET_TEXTAREA', 'SaveAs Title is empty!');
+      return;
+    }
+
+    commit('SET_TEXTAREA', { content: noteInfo.content, isSaved: noteInfo.isSaved }); // saveAs 하기전 기존거 array에 저장
+    const { isSucceed, msg, note } = await dispatch('createNewTextarea', { title: noteInfo.saveAsInput, content: noteInfo.content, email: noteInfo.email });
+    return { isSucceed };
+  },
+  closeNote ({ getters, commit }, noteInfo) {
+    const { textareaValue, isSaved } = noteInfo;
+    commit('SET_TEXTAREA', { content: textareaValue, isSaved });
+    commit('REMOVE_OPEN_NOTE', getters.getCurrentNoteInfo.title);
+    commit('SET_CURRENT_NOTE_ID', { id: -1 });
+  },
+  async saveNoteListStatus ({ state, getters, commit }, email) {
     try {
-      const { data: { result, msg } } = await this.$axios.post('http://localhost:8050/api/users/saveOpenNote', {
+      const { data: { isSucceed, msg } } = await this.$axios.post('http://localhost:8050/api/users/saveOpenNote', {
         email,
         opentab: state.openTabList.toString(),
         lasttab: getters.getCurrentNoteInfo?.title ?? ''
       });
-      if (!result) {
+      console.log(isSucceed);
+      if (!isSucceed) {
         throw new Error(msg);
       }
-      return { result };
+      return { isSucceed };
     } catch (e) {
-      return { result: false, msg: e.message };
+      commit('SET_SYSTEM_MESSAGE', e.message);
+      return { isSucceed: false, msg: e.message };
     }
   }
 };

@@ -17,21 +17,21 @@ userApi.post("/login", async (req, res) => {
     try {
         const userInfo = await Users.findOne({ where: { email } });
         if (!userInfo) {
-            return res.status(201).json({ result: false, msg: "User is not existed" });
+            return res.status(201).json({ isSucceed: false, msg: "User is not existed" });
         }
 
         const storedPasswd = userInfo.getPassword();
         const isSame = await bcrypt.compare(passwd, storedPasswd);
         if (isSame && userInfo.getStatus() !== LOGOUT) {
             await Users.update({ loginStatus: LOGOUT }, { where: { email } });
-            return res.status(201).json({ result: false, msg: "Log out another browser" });
+            return res.status(201).json({ isSucceed: false, msg: "Log out another browser" });
         }
         else if (!isSame) {
-            return res.status(201).json({ result: false, msg: "Incorrect password" });
+            return res.status(201).json({ isSucceed: false, msg: "Incorrect password" });
         }
         jwt.sign({ _id: userInfo.getId(), email }, SECURE_INFO.JWT_SECRET, { expiresIn: '1h' }, async (err, token) => {
             await Users.update({ loginStatus: token }, { where: { email } })
-            return res.status(201).json({ token, result: true });
+            return res.status(201).json({ token, isSucceed: true });
         });
     } catch (e) {
         console.log(e);
@@ -61,9 +61,9 @@ userApi.post("/loginStatus", async (req, res) => {
     try {
         const userInfo = await Users.findOne({ where: { email } });
         if (!userInfo) {
-            return res.status(201).json({ result: false, msg: "User Not Found" });
+            return res.status(201).json({ isSucceed: false, msg: "User Not Found" });
         }
-        return res.status(201).json({ result: true, loginStatus: userInfo.getStatus() });
+        return res.status(201).json({ isSucceed: true, loginStatus: userInfo.getStatus() });
     } catch (e) {
         console.log(e);
         return res.sendStatus(400);
@@ -85,10 +85,10 @@ userApi.post("/saveOpenNote", async (req, res) => {
         }
 
         await Users.update({ opentab: opentabArr.join(), lasttab }, { where: { email } });
-        return res.sendStatus(201);
+        return res.status(201).json({ isSucceed: true });
     } catch (e) {
         console.log(e);
-        return res.sendStatus(400);
+        return res.status(400);
     }
 });
 
@@ -98,15 +98,15 @@ userApi.post("/join", async (req, res) => {
     } = req;
     try {
         if (password !== chkPassword) {
-            return res.status(201).json({ result: false, msg: "Passwords are not the same" });
+            return res.status(201).json({ isSucceed: false, msg: "Passwords are not the same" });
         }
         const isExisted = await Users.findOne({ where: { email: loginId } });
         if (isExisted) {
-            return res.status(201).json({ result: false, msg: "Duplicated Email!!" });
+            return res.status(201).json({ isSucceed: false, msg: "Duplicated Email!!" });
         }
         const hashPassword = await bcrypt.hash(password, 10);
         await Users.create({ email: loginId, password: hashPassword });
-        return res.status(201).json({ result: true, msg: "" });
+        return res.status(201).json({ isSucceed: true, msg: "" });
     } catch (e) {
         console.log(e);
         return res.sendStatus(400);
