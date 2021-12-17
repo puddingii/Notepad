@@ -1,20 +1,24 @@
 <template>
-  <Test />
+  <Notepad />
 </template>
 
 <script>
 import Notepad from '~/components/Home/MainContent/Notepad';
-import Test from '~/components/Home/MainContent/test';
 
 export default {
   components: {
-    Notepad,
-    Test
+    Notepad
   },
   layout: 'Home',
   middleware: ['authenticated'],
   async asyncData ({ store }) {
     await store.dispatch('note/loadAll', store.getters['user/getEmail']);
+    if (process.server) {
+      console.log('server');
+    }
+    if (process.client) {
+      console.log('client');
+    }
   },
   head: {
     script: [{
@@ -29,13 +33,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.leftCard {
-  min-width: 191px;
-  max-width: 230px;
-  height: 734px;
-  margin-left: 30px;
-  word-break:break-all;
-}
-</style>

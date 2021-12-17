@@ -1,9 +1,9 @@
 <template>
   <div class="row align-items-md-stretch">
-    <div class="col col-md-2 leftCard">
+    <div class="col col-2 leftCard">
       <UserStatus :email="email" />
     </div>
-    <div class="col col-md-9">
+    <div class="col col-9 rightMain">
       <Nuxt />
     </div>
   </div>
@@ -25,8 +25,15 @@ export default {
 };
 </script>
 
-<style>
-html, body, #__nuxt, #__layout, main {
-  height: 100%;
+<style scoped>
+.leftCard {
+  min-width: 191px;
+  max-width: 230px;
+  height: 734px;
+  margin-left: 30px;
+  word-break:break-all;
+}
+.rightMain {
+  max-width: 1120px;
 }
 </style>

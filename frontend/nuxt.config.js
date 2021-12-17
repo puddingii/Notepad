@@ -28,5 +28,5 @@ export default {
     }],
     title: 'Notepad'
   },
-  css: ['@/assets/css/sign.css']
+  css: ['@/assets/css/default.css']
 };

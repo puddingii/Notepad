@@ -92,7 +92,6 @@ const actions = {
       return true;
     } catch (e) {
       commit('SET_SYSTEM_MESSAGE', e.message);
-      console.log(e);
       return false;
     }
   },

@@ -150,7 +150,7 @@ const actions = {
     commit('SET_TEXTAREA', { content: noteInfo.content, isSaved: noteInfo.isSaved }); // 가르키고 있는 notepad update 기록 저장
     commit('SET_CURRENT_NOTE_ID', { title: noteInfo.title });
   },
-  async createNewTextarea ({ commit }, { title, content, email }) {
+  async createNewNote ({ commit }, { title, content, email }) {
     const requestPacket = {
       email,
       title,
@@ -191,7 +191,7 @@ const actions = {
     }
 
     commit('SET_TEXTAREA', { content: noteInfo.content, isSaved: noteInfo.isSaved }); // saveAs 하기전 기존거 array에 저장
-    const { isSucceed, msg, note } = await dispatch('createNewTextarea', { title: noteInfo.saveAsInput, content: noteInfo.content, email: noteInfo.email });
+    const { isSucceed } = await dispatch('createNewNote', { title: noteInfo.saveAsInput, content: noteInfo.content, email: noteInfo.email });
     return { isSucceed };
   },
   closeNote ({ getters, commit }, noteInfo) {
@@ -207,7 +207,7 @@ const actions = {
         opentab: state.openTabList.toString(),
         lasttab: getters.getCurrentNoteInfo?.title ?? ''
       });
-      console.log(isSucceed);
+
       if (!isSucceed) {
         throw new Error(msg);
       }

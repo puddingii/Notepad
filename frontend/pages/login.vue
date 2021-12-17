@@ -50,3 +50,7 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+@import '~/assets/css/sign.css';
+</style>
