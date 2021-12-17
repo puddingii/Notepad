@@ -5,7 +5,8 @@ export default {
   modules: [
     '@nuxtjs/axios',
     'bootstrap-vue/nuxt',
-    'cookie-universal-nuxt'
+    'cookie-universal-nuxt',
+    '@nuxtjs/vuetify'
   ],
   head: {
     meta: [
@@ -28,5 +29,11 @@ export default {
     }],
     title: 'Notepad'
   },
-  css: ['@/assets/css/default.css']
+  css: ['@/assets/css/default.css'],
+  vuetify: {
+    icons: {
+      iconfont: 'mdi'
+    }
+  }
+
 };
